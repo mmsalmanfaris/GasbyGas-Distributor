@@ -1,13 +1,17 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+
+
+    <h2 class="text-center mb-6">Admin Register</h2>
+
+    <form method="POST" action="{{ route('admin.register') }}">
         @csrf
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required
-                autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-input-label for="fname" :value="__('Name')" />
+            <x-text-input id="fname" class="block mt-1 w-full" type="text" name="fname" :value="old('fname')" required
+                autofocus autocomplete="fname" />
+            <x-input-error :messages="$errors->get('fname')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
@@ -16,6 +20,22 @@
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
                 required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <!-- NIC Address -->
+        <div class="mt-4">
+            <x-input-label for="nic" :value="__('NIC Number')" />
+            <x-text-input id="nic" class="block mt-1 w-full" type="text" name="nic" :value="old('nic')"
+                required autocomplete="nic" />
+            <x-input-error :messages="$errors->get('nic')" class="mt-2" />
+        </div>
+
+        <!-- Contact Address -->
+        <div class="mt-4">
+            <x-input-label for="contact" :value="__('Contact')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="number" name="contact" :value="old('contact')"
+                required autocomplete="contact" />
+            <x-input-error :messages="$errors->get('contact')" class="mt-2" />
         </div>
 
         <!-- Password -->
