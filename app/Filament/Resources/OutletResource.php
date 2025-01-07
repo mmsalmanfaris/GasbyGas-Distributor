@@ -74,24 +74,22 @@ class OutletResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('district')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('town')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('stock')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('contact')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime('Y-m-d')
 
             ])
             ->filters([
@@ -99,6 +97,7 @@ class OutletResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
