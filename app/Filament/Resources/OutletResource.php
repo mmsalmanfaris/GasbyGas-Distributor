@@ -7,11 +7,14 @@ use App\Filament\Resources\OutletResource\RelationManagers;
 use App\Models\Outlet;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Pages\Page;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use NunoMaduro\Collision\Adapters\Phpunit\State;
 
 class OutletResource extends Resource
 {
@@ -27,25 +30,34 @@ class OutletResource extends Resource
                     ->label('Name')
                     ->required(),
 
-                Forms\Components\TextInput::make('district')
+                Forms\Components\Select::make('district')
                     ->label('District')
+                    ->options([
+                        'ampara' => 'Ampara',
+                        'batticaloa' => 'Batticaloa',
+                        'trincomale' => 'Trincomale',
+                    ])
                     ->required(),
 
-                Forms\Components\TextInput::make('phone')
-                    ->label('Phone')
+                Forms\Components\TextInput::make('town')
+                    ->label('Town')
                     ->required(),
 
                 Forms\Components\TextInput::make('email')
-                    ->label('Email')
+                    ->label('Email Address')
+                    ->email()
+                    ->unique('outlets', 'email')
                     ->required(),
 
-                Forms\Components\TextInput::make('latitude')
-                    ->label('Latitude')
+                Forms\Components\TextInput::make('contact')
+                    ->label('Contact')
                     ->required(),
 
-                Forms\Components\TextInput::make('longitude')
-                    ->label('Longitude')
-                    ->required(),
+                Forms\Components\TextInput::make('password')
+                    ->label('Password')
+                    ->password()
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required(fn(Page $livewire): bool => $livewire instanceof CreateRecord),
             ]);
     }
 
@@ -53,7 +65,34 @@ class OutletResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('district')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('town')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('stock')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('contact')
+                    ->searchable()
+                    ->sortable(),
+
             ])
             ->filters([
                 //
