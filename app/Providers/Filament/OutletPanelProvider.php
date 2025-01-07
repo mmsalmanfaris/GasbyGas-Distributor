@@ -17,14 +17,16 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\RedirectToProperPanelMiddleware;
 
 class OutletPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
             ->id('outlet')
-            ->path('outlet')
+            ->path('/outlet')
             ->login()
             ->colors([
                 'primary' => Color::Emerald,
@@ -51,6 +53,7 @@ class OutletPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
+                RedirectToProperPanelMiddleware::class,
                 Authenticate::class,
             ]);
     }

@@ -12,13 +12,11 @@ return new class extends Migration {
     {
         Schema::create('outlets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->casecadeOnDelete();
             $table->string('name');
             $table->string('district');
             $table->string('town')->unique();
-            $table->string('email')->unique();
-            $table->string('contact');
             $table->integer('stock')->nullable();
-            $table->string('password')->unique();
             $table->timestamps();
         });
     }
