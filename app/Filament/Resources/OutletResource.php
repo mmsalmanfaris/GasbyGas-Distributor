@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OutletResource\Pages;
 use App\Filament\Resources\OutletResource\RelationManagers;
 use App\Models\Outlet;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
@@ -30,6 +31,12 @@ class OutletResource extends Resource
                     ->label('Name')
                     ->required(),
 
+                Forms\Components\Select::make('user_id')
+                    ->live()
+                    ->label('Select Manager')
+                    ->options(User::where('is_admin', false)->pluck('email', 'id')->toArray())
+                    ->required(),
+
                 Forms\Components\Select::make('district')
                     ->label('District')
                     ->options([
@@ -42,22 +49,6 @@ class OutletResource extends Resource
                 Forms\Components\TextInput::make('town')
                     ->label('Town')
                     ->required(),
-
-                Forms\Components\TextInput::make('email')
-                    ->label('Email Address')
-                    ->email()
-                    ->unique('outlets', 'email')
-                    ->required(),
-
-                Forms\Components\TextInput::make('contact')
-                    ->label('Contact')
-                    ->required(),
-
-                Forms\Components\TextInput::make('password')
-                    ->label('Password')
-                    ->password()
-                    ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(Page $livewire): bool => $livewire instanceof CreateRecord),
             ]);
     }
 
@@ -73,19 +64,16 @@ class OutletResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('user_id')
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('district')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('town')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-
                 Tables\Columns\TextColumn::make('stock')
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('contact')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
