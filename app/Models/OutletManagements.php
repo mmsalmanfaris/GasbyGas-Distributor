@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Outlet extends Model
+class OutletManagements extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -31,6 +31,6 @@ class Outlet extends Model
 
     public function orequest()
     {
-        return $this->hasMany(Orequest::class);
+        return $this->hasMany(DispatchSchedules::class);
     }
 }

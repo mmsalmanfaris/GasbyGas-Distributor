@@ -2,24 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OutletResource\Pages;
-use App\Filament\Resources\OutletResource\RelationManagers;
-use App\Models\Outlet;
-use App\Models\User;
+use App\Filament\Resources\OutletManagementsResource\Pages;
+use App\Filament\Resources\OutletManagementsResource\RelationManagers;
+use App\Models\OutletManagements;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Pages\Page;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use NunoMaduro\Collision\Adapters\Phpunit\State;
 
-class OutletResource extends Resource
+class OutletManagementsResource extends Resource
 {
-    protected static ?string $model = Outlet::class;
+    protected static ?string $model = OutletManagements::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
@@ -27,28 +23,18 @@ class OutletResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('user_id')
+                    ->required()
+                    ->numeric(),
                 Forms\Components\TextInput::make('name')
-                    ->label('Name')
-                    ->required(),
-
-                Forms\Components\Select::make('user_id')
-                    ->live()
-                    ->label('Select Manager')
-                    ->options(User::where('is_admin', false)->pluck('email', 'id')->toArray())
-                    ->required(),
-
-                Forms\Components\Select::make('district')
-                    ->label('District')
-                    ->options([
-                        'ampara' => 'Ampara',
-                        'batticaloa' => 'Batticaloa',
-                        'trincomale' => 'Trincomale',
-                    ])
-                    ->required(),
-
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('district')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('town')
-                    ->label('Town')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -56,36 +42,32 @@ class OutletResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('user_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-
                 Tables\Columns\TextColumn::make('district')
                     ->searchable(),
-
                 Tables\Columns\TextColumn::make('town')
                     ->searchable(),
-
                 Tables\Columns\TextColumn::make('stock')
-                    ->searchable(),
-
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('Y-m-d')
-
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -104,9 +86,9 @@ class OutletResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOutlets::route('/'),
-            'create' => Pages\CreateOutlet::route('/create'),
-            'edit' => Pages\EditOutlet::route('/{record}/edit'),
+            'index' => Pages\ListOutletManagements::route('/'),
+            'create' => Pages\CreateOutletManagements::route('/create'),
+            'edit' => Pages\EditOutletManagements::route('/{record}/edit'),
         ];
     }
 }

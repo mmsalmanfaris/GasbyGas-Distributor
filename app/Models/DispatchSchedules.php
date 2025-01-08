@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Orequest extends Model
+class DispatchSchedules extends Model
 {
     use HasFactory;
     protected $fillable = [
