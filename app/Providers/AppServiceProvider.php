@@ -2,9 +2,17 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Filament\Http\Responses\Auth\LoginResponse;
 use Filament\Http\Responses\Auth\LogoutResponse;
+
+use Filament\Facades\Filament;
+
+use App\Admin\Resources\UserResource;
+use App\Admin\Resources\OutletManagementsResource;
+use App\Admin\Resources\DispatchSchedulesResource;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +33,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        schema::defaultStringLength(191);
     }
 }
