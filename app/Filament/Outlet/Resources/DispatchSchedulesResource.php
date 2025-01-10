@@ -23,19 +23,19 @@ class DispatchSchedulesResource extends Resource
     {
         return $form
             ->schema([
-                // Forms\Components\TextInput::make('outlet_id')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('quantity')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\DateTimePicker::make('request')
-                //     ->required(),
-                // Forms\Components\DatePicker::make('edelivery')
-                //     ->required(),
-                // Forms\Components\DatePicker::make('sdelivery'),
-                // Forms\Components\TextInput::make('status')
-                //     ->required(),
+                Forms\Components\TextInput::make('outlet_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('quantity')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\DateTimePicker::make('request')
+                    ->required(),
+                Forms\Components\DatePicker::make('edelivery')
+                    ->required(),
+                Forms\Components\DatePicker::make('sdelivery'),
+                Forms\Components\TextInput::make('status')
+                    ->required(),
             ]);
     }
 
@@ -43,12 +43,31 @@ class DispatchSchedulesResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\Layout\Column::make()
-                    ->columns(columns: 1)
-                    ->schema([
-                        
-                    ])
-                    ->            ])
+                Tables\Columns\TextColumn::make('outlet_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('request')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('edelivery')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('sdelivery')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
             ->filters([
                 //
             ])
