@@ -1,5 +1,5 @@
 <?php
-include_once '../components/header-links.php';
+include_once '../../components/header-links.php';
 ?>
 
 </head>
@@ -41,80 +41,35 @@ include_once '../components/header-links.php';
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item mb-3">
-                            <a class="nav-link active fs-5 rounded-2" aria-current="page" href="./">
+                            <a class="nav-link active fs-5 rounded-2" aria-current="page" href="../">
                                 <i class="bi bi-speedometer2 pe-2 "></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./outlet/">
+                            <a class="nav-link fs-5 rounded-2" href="../outlet/">
                                 <i class="bi bi-shop pe-2"></i> Outlet
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./dispatch/">
+                            <a class="nav-link fs-5 rounded-2" href="../dispatch/">
                                 <i class="bi bi-truck pe-2"></i> Dispatch
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./sales-report/">
+                            <a class="nav-link fs-5 rounded-2" href="../sales-report/">
                                 <i class="bi bi-bar-chart pe-2"></i> Sales Report
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./soon/">
+                            <a class="nav-link fs-5 rounded-2" href="../soon/">
                                 <i class="bi bi-clock pe-2"></i> Soon
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./soon/">
+                            <a class="nav-link fs-5 rounded-2" href="../soon/">
                                 <i class="bi bi-clock pe-2"></i> Soon
                             </a>
                         </li>
                     </ul>
                 </div>
             </nav>
-
-            <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-header">Total Sales</div>
-                            <div class="card-body">
-                                <h5 class="card-title">$12,345</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-header">New Orders</div>
-                            <div class="card-body">
-                                <h5 class="card-title">120</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-header">Pending Requests</div>
-                            <div class="card-body">
-                                <h5 class="card-title">15</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <?php
-    include_once '../components/footer-links.php';
-    ?>
-
-</body>
-
-</html>

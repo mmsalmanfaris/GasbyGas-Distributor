@@ -108,13 +108,11 @@ include_once '../components/header-links.php';
                     </div>
                 </div>
             </main>
-
-
         </div>
     </div>
 
     <?php
-    include_once '../../components/footer-links.php';
+    include_once '../components/footer-links.php';
     ?>
 
 </body>
