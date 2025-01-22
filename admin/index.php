@@ -1,5 +1,16 @@
 <?php
 include_once '../components/header-links.php';
+
+
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== true) {
+    header('Location: login.php'); // Redirect to login if not admin
+    exit;
+}
+
+echo "<h1>Welcome Admin: " . $_SESSION['name'] . "</h1>";
+
 ?>
 
 </head>

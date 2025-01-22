@@ -60,6 +60,11 @@ require_once './includes/login_view.inc.php';
                                 check_login_errors();
                                 ?>
                             </form>
+                            <ul>
+                                <li><a href="register.php">Register User</a></li>
+                                <li><a href="login.php">Login User</a></li>
+                                <li><a href="fetch_users.php">Fetch Users</a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
