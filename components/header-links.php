@@ -8,3 +8,7 @@
 <!-- Datatable -->
 <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.css">
+
+
+<!-- Chart Js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
