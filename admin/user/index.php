@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap Dashboard</title>
+    <title>User Management - Admin</title>
 
 
 
     <?php
     include_once '../components/manager-dashboard-top.php';
+
+    // include_once '../../includes/register.inc.php';
     ?>
 
     <!-- Main Content -->
@@ -19,46 +21,55 @@
         <div class="modal fade bd-example-modal-lg" id="addOutletModal" tabindex="-1" role="dialog"
             aria-labelledby="myLargeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content modal-content-lg">
-                    <div class="modal-body text-black ">
-                        <form action="./includes/addOutlet.inc.php" method="post"
-                            class="form row px-3 py-md-4 py-4 form-control-lg pe-0">
-                            <div class="d-flex mb-2">
-                                <div class="form-group ">
-                                    <label for="name">Name:</label><br>
+                <div class="modal-content">
+                    <div class="modal-body text-black p-5">
+                        <form action="./includes/addOutlet.inc.php" method="post" class="row g-3 needs-validation"
+                            novalidate>
+                            <!-- Row for Name and Email -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Name:</label>
                                     <input type="text" class="form-control form-control-lg" name="name" id="name"
-                                        required><br><br>
+                                        required>
                                 </div>
-                                <div class="form-group">
-                                    <label for="email">Email:</label><br>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email:</label>
                                     <input type="email" class="form-control form-control-lg" name="email" id="email"
-                                        required><br><br>
+                                        required>
                                 </div>
                             </div>
-                            <div class="d-flex">
-                                <div class="">
-                                    <label for="password">Password:</label><br>
+
+                            <!-- Row for Password and Contact -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label">Password:</label>
                                     <input type="password" class="form-control form-control-lg" name="password"
-                                        id="password" required><br><br>
+                                        id="password" required>
                                 </div>
-                                <div class="">
-                                    <label for="contact">Contact:</label><br>
+                                <div class="col-md-6">
+                                    <label for="contact" class="form-label">Contact:</label>
                                     <input type="text" class="form-control form-control-lg" name="contact" id="contact"
-                                        required><br><br>
+                                        required>
                                 </div>
                             </div>
-                            <div class="d-flex">
-                                <div class="form-group">
-                                    <label for="nic">NIC:</label><br>
+
+                            <!-- Row for NIC and Admin -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="nic" class="form-label">NIC:</label>
                                     <input type="text" class="form-control form-control-lg" name="nic" id="nic"
-                                        required><br><br>
+                                        required>
                                 </div>
-                                <div class="form-group">
-                                    <label for="isAdmin">Is Admin:</label><br>
-                                    <input type="checkbox" class="form-check-input" name="isAdmin" id="isAdmin"><br><br>
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" name="isAdmin" id="isAdmin">
+                                        <label class="form-check-label" for="isAdmin">Is Admin</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class=" row">
+
+                            <!-- Submit Button -->
+                            <div class="row">
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary btn-lg w-100">Register</button>
                                 </div>
@@ -154,6 +165,10 @@
     </script>
 
 
+
     <?php
+    // Sweet Message
+    output_message();
+
     include_once '../components/manager-dashboard-down.php';
     ?>

@@ -12,3 +12,7 @@
 
 <!-- Chart Js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<!-- Sweet Alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

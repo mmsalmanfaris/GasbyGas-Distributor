@@ -1,13 +1,22 @@
 <?php
 include_once '../components/header-links.php';
+
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
+    header('Location: ../login.php'); // Redirect to login if not manager
+    exit;
+}
+
+"</h1>";
 ?>
 
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
         <div class="container-fluid">
-            <a class="navbar-brand fs-4" href="#">Outlet Dashboard</a>
+            <p class="navbar-brand fs-3 pt-3">Outlet Dashboard, <?php echo $_SESSION['name'] ?></p>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -24,7 +33,7 @@ include_once '../components/header-links.php';
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white" href="#">
+                        <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white" href="../includes/logout.inc.php">
                             <i class="bi bi-box-arrow-right"></i>
                         </a>
                     </li>

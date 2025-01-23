@@ -1,0 +1,35 @@
+# Ignore dependencies
+node_modules/
+vendor/
+package-lock.json/
+composer.lock/
+
+# Cache and logs
+/cache/
+/logs/
+/tmp/
+ 
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*~
+*.DS_Store
+ 
+# OS-specific files
+Thumbs.db
+ 
+# Deployment-related files (if applicable)
+/build/
+/dist/
+ 
+# PHPUnit test results (if applicable)
+/phpunit.xml.dist
+/phpunit.xml
+/coverage/
+ 
+# Other files you might want to ignore
+npm-debug.log
+yarn-error.log
+.DS_Store
+*.log
