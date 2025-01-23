@@ -1,22 +1,11 @@
 <?php
-require '../vendor/autoload.php';
+require '../../vendor/autoload.php';
 
 use Kreait\Firebase\Factory;
 
 
 // Initialize Firebase
-$factory = (new Factory)->withServiceAccount('../gasbygas-97e19-firebase-adminsdk-fbsvc-21d66d3153.json');
-$auth = $factory->createAuth();
-$database = $factory->createDatabase();
-
-
-// Initialize Firebase
-$factory = (new Factory)
-    ->withServiceAccount('../gasbygas-97e19-firebase-adminsdk-fbsvc-21d66d3153.json')
-    ->withDatabaseUri('https://gasbygas-97e19-default-rtdb.firebaseio.com/');
-
-$auth = $factory->createAuth();
-$database = $factory->createDatabase();
+include_once 'firebase.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];

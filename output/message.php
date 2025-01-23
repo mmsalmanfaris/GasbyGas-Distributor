@@ -38,6 +38,23 @@ function message_success()
             ";
         }
 
+        if ($status === 'dataupdate') {
+            echo "
+                <script>
+                    Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: 'Data Updated Successfully',
+                    showConfirmButton: false,
+                    timer: 2500
+                    });
+    
+                    // Clear the URL after the success message
+                    window.history.replaceState(null, null, window.location.pathname);
+                </script>
+            ";
+        }
+
     }
 }
 
