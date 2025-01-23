@@ -1,6 +1,6 @@
 <?php
 
-include_once '../firebase.php';
+include_once '../includes/firebase.php';
 include_once '../../components/header-links.php';
 
 // <!-- Edit Model -->
