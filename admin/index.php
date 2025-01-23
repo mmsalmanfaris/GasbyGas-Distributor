@@ -57,23 +57,23 @@ echo "<h1>Welcome Admin: " . $_SESSION['name'] . "</h1>";
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./outlet/">
-                                <i class="bi bi-shop pe-2"></i> Outlet
-                            </a>
-                        </li>
-                        <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2" href="./dispatch/">
                                 <i class="bi bi-truck pe-2"></i> Dispatch
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./sales-report/">
-                                <i class="bi bi-bar-chart pe-2"></i> Sales Report
+                            <a class="nav-link fs-5 rounded-2" href="./user/">
+                                <i class="bi bi-clock pe-2"></i> Users Manage
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./soon/">
-                                <i class="bi bi-clock pe-2"></i> Soon
+                            <a class="nav-link fs-5 rounded-2" href="./outlet/">
+                                <i class="bi bi-shop pe-2"></i> Outlet Manage
+                            </a>
+                        </li>
+                        <li class="nav-item mb-3">
+                            <a class="nav-link fs-5 rounded-2" href="./sales-report/">
+                                <i class="bi bi-bar-chart pe-2"></i> Sales Report
                             </a>
                         </li>
                         <li class="nav-item mb-3">

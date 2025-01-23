@@ -2,7 +2,6 @@
 require 'vendor/autoload.php';
 
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\Auth\user;
 
 
 // Initialize Firebase
