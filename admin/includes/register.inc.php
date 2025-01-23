@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'user_id' => $userId
         ]);
 
-        header("Location: ../admin/user/?status=register");
+        header("Location: ../user/?status=datasuccess");
 
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();

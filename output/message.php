@@ -1,40 +1,43 @@
 <?php
-function output_message()
+function message_success()
 {
     if (isset($_GET['status'])) {
         $status = $_GET['status'];
 
-        if ($status === 'register') {
+        if ($status === 'datasuccess') {
             echo "
                 <script>
                     Swal.fire({
-                    position: 'top-end',
                     icon: 'success',
-                    title: 'User Registered',
+                    title: 'Success',
+                    text: 'Data Insert Successfull',
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 2500
                     });
     
                     // Clear the URL after the success message
                     window.history.replaceState(null, null, window.location.pathname);
                 </script>
-                  ";
-        } else if ($status === 'failed') {
-            echo "
-            <script>
-                    Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Canva Premium Request Failed. Try again!',
-                    showConfirmButton: false,
-                    timer: 4000
-    
-                    // Clear the URL after the success message
-                    window.history.replaceState(null, null, window.location.pathname);
-                    });
-                </script>
-          ";
+            ";
         }
+
+        if ($status === 'datadelete') {
+            echo "
+                <script>
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Deleted',
+                    text: 'Data Deleted Successfully',
+                    showConfirmButton: false,
+                    timer: 2500
+                    });
+    
+                    // Clear the URL after the success message
+                    window.history.replaceState(null, null, window.location.pathname);
+                </script>
+            ";
+        }
+
     }
 }
 

@@ -1,7 +1,6 @@
 <?php
 include_once '../../components/header-links.php';
 
-include_once '../../includes/message.inc.php';
 
 // session_start();
 
@@ -9,6 +8,18 @@ include_once '../../includes/message.inc.php';
 //     header('Location: ../../login.php'); // Redirect to login if not admin
 //     exit;
 // }
+
+
+require '../../vendor/autoload.php';
+
+use Kreait\Firebase\Factory;
+
+// Initialize Firebase
+$factory = (new Factory)
+    ->withServiceAccount('../../gasbygas-97e19-firebase-adminsdk-fbsvc-21d66d3153.json')
+    ->withDatabaseUri('https://gasbygas-97e19-default-rtdb.firebaseio.com/');
+
+$database = $factory->createDatabase();
 
 ?>
 
