@@ -1,8 +1,8 @@
 # Ignore dependencies
 node_modules/
 vendor/
-package-lock.json/
-composer.lock/
+package-lock.json
+composer.lock
 
 # Cache and logs
 /cache/
@@ -33,3 +33,4 @@ npm-debug.log
 yarn-error.log
 .DS_Store
 *.log
+

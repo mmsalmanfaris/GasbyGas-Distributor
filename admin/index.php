@@ -16,7 +16,7 @@ include_once '../components/header-links.php';
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
         <div class="container-fluid">
-            <p class="navbar-brand fs-3 pt-3">Admin Dashboard, <?php echo $_SESSION['name'] ?></p>
+            <!-- <p class="navbar-brand fs-3 pt-3">Admin Dashboard, <?php echo $_SESSION['name'] ?></p> -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
