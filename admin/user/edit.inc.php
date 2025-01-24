@@ -53,6 +53,22 @@ if (isset($_GET['user_id'])) {
                                                 </div>
                                             </div>
                                         </div>
+                                          <!-- Row for Outlet Selection -->
+                                           <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <label for="outlet_id" class="form-label">Outlet:</label>
+                                                <select class="form-select form-control-lg" name="outlet_id" id="outlet_id">
+                                                    <option value="" disabled >Select Outlet</option>';
+        $outlets = $database->getReference('outlets')->getValue();
+        if ($outlets) {
+            foreach ($outlets as $outletId => $outlet) {
+                $selected = (isset($user['outlet_id']) && $outlet['outlet_id'] == $user['outlet_id']) ? 'selected' : '';
+                echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . ' - ' . htmlspecialchars($outlet['district']) . '</option>';
+            }
+        }
+        echo '</select>
+                                            </div>
+                                        </div>
 
                                         <!-- Submit Button -->
                                         <div class="row">
