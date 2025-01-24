@@ -16,6 +16,7 @@
 
         <?php
         $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue();
+        $outlets = $database->getReference('outlets')->getValue();
         ?>
 
         <div class="d-flex mt-5">
@@ -102,6 +103,38 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="mt-5 p-4 border">
+            <h4>Delivery Schedule</h4>
+            <form id="deliveryScheduleForm" action="../includes/updateDispatchStatus.inc.php" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="districtSelect" class="form-label">Select District:</label>
+                        <select class="form-select form-control-lg" name="district" id="districtSelect" required>
+                            <option value="" disabled selected>Select a District</option>
+                            <?php
+                            if ($outlets) {
+                                $districts = array_unique(array_column($outlets, 'district'));
+                                foreach ($districts as $district) {
+                                    echo '<option value="' . htmlspecialchars($district) . '">' . htmlspecialchars($district) . '</option>';
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="totalQuantity" class="form-label">Total Quantity:</label>
+                        <input type="text" class="form-control form-control-lg" id="totalQuantity" value="0" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="deliveryDate" class="form-label">Scheduled Delivery Date:</label>
+                        <input type="date" class="form-control form-control-lg" name="delivery_date" id="deliveryDate" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Mark as Dispatched</button>
+            </form>
+        </div>
     </main>
 
     <script>
@@ -118,6 +151,33 @@
                 const editModal = new bootstrap.Modal(document.getElementById('editDispatchModal'));
                 editModal.show();
             }
+
+            const districtSelect = document.getElementById('districtSelect');
+            const totalQuantityInput = document.getElementById('totalQuantity');
+
+            districtSelect.addEventListener('change', function() {
+                const selectedDistrict = districtSelect.value;
+                let totalQuantity = 0;
+
+                if (selectedDistrict) {
+                    <?php
+                    if ($dispatchSchedules) { ?>
+                        const schedules = <?php echo json_encode($dispatchSchedules); ?>;
+                        Object.values(schedules).forEach(schedule => {
+                            <?php
+                            if ($outlets) { ?>
+                                const outlets = <?php echo json_encode($outlets); ?>;
+                                Object.values(outlets).forEach(outlet => {
+                                    if (outlet.district == selectedDistrict && outlet.outlet_id == schedule.outlet_id) {
+                                        totalQuantity += parseInt(schedule.quantity);
+                                    }
+                                });
+                            <?php } ?>
+                        });
+                    <?php } ?>
+                }
+                totalQuantityInput.value = totalQuantity;
+            });
         });
     </script>
 
