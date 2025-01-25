@@ -2,8 +2,17 @@
 
 include_once 'firebase.php';
 
-if (isset($_GET['user_id'])) {
-    $user_id = $_GET['user_id'];
-    $database->getReference('users/' . $user_id)->remove();
-    header("Location: ../user/?status=datadelete");
+if (isset($_GET['id'])) {
+    $id = $_GET['id']; // User ID
+
+    try {
+        // Remove user data from Firebase
+        $database->getReference('users/' . $id)->remove();
+        header("Location: ../user/?status=datadelete");
+        exit;
+    } catch (Exception $e) {
+        echo "Error deleting user: " . $e->getMessage();
+    }
+} else {
+    echo "Error: Missing required parameter (id).";
 }
