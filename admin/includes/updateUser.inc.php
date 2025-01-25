@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'contact' => $_POST['contact'],
         'nic' => $_POST['nic'],
         'is_admin' => isset($_POST['isAdmin']) ? true : false,
+        'outlet_id' => $_POST['outlet_id'], // New
     ];
 
     if (!empty($_POST['password'])) {
@@ -30,4 +31,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Error updating user: " . $e->getMessage();
     }
 }
-?>

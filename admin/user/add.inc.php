@@ -44,6 +44,23 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Row for Outlet Selection -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="outlet_id" class="form-label">Outlet:</label>
+                            <select class="form-select form-control-lg" name="outlet_id" id="outlet_id">
+                                <option value="" disabled selected>Select Outlet</option>
+                                <?php
+                                $outlets = $database->getReference('outlets')->getValue();
+                                if ($outlets) {
+                                    foreach ($outlets as $outletId => $outlet) {
+                                        echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '">' . htmlspecialchars($outlet['name']) . ' - ' . htmlspecialchars($outlet['district']) . '</option>';
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
 
                     <!-- Submit Button -->
                     <div class="row">

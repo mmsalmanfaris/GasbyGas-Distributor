@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contact = $_POST['contact'];
     $nic = $_POST['nic'];
     $isAdmin = isset($_POST['isAdmin']) ? true : false;
+    $outlet_id = $_POST['outlet_id']; // New
 
     try {
         // Register user in Firebase Authentication
@@ -27,13 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'is_admin' => $isAdmin,
             'name' => $name,
             'nic' => $nic,
-            'user_id' => $userId
+            'user_id' => $userId,
+            'outlet_id' => $outlet_id //New
         ]);
 
         header("Location: ../user/?status=datasuccess");
-
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
     }
 }
-?>
