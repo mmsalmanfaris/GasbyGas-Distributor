@@ -61,12 +61,12 @@ include_once '../components/header-links.php';
                         </li>
                         <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2" href="./user/">
-                                <i class="bi bi-clock pe-2"></i> Users Manage
+                                <i class="bi bi-clock pe-2"></i> Manage Users
                             </a>
                         </li>
                         <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2" href="./outlet/">
-                                <i class="bi bi-shop pe-2"></i> Outlet Manage
+                                <i class="bi bi-shop pe-2"></i> Manage Outlets
                             </a>
                         </li>
                         <li class="nav-item mb-3">
