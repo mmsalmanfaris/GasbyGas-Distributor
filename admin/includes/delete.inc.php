@@ -2,8 +2,8 @@
 
 include_once 'firebase.php';
 
-if (isset($_GET['id'])) {
-    $id = $_GET['id']; // User ID
+if (isset($_GET['user_id'])) {
+    $id = $_GET['user_id']; // User ID
 
     try {
         // Remove user data from Firebase

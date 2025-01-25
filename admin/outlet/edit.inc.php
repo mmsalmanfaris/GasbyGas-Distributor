@@ -1,79 +1,69 @@
 <?php
 
 include_once '../includes/firebase.php';
-include_once '../components/manager-dashboard-top.php';
+include_once '../../components/header-links.php';
+
 
 if (isset($_GET['outlet_id'])) {
     $outletId = $_GET['outlet_id'];
     $outlet = $database->getReference("outlets/{$outletId}")->getValue();
     if ($outlet) {
-        ?>
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Edit Outlet</title>
-            <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        </head>
-        <body>
-            <div class="container mt-5">
-                <div class="modal fade bd-example-modal-lg show" id="editOutletModal" tabindex="-1" role="dialog"
-                    aria-labelledby="editOutletModalLabel" aria-hidden="true" style="display:block;">
-                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body text-black p-5">
-                                <form action="../includes/outletregister.inc.php" method="POST">
-                                    <!-- Hidden input for type -->
-                                    <input type="hidden" name="type" value="outlet">
+        echo '<div class="modal fade bd-example-modal-lg" id="editUserModal" tabindex="-1" role="dialog"
+                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body text-black p-5">
+                                    <form action="../includes/updateUser.inc.php" method="post" class="row g-3 needs-validation"
+                                        novalidate>
+                                        <input type="hidden" name="user_id" value="' . htmlspecialchars($outletId) . '">
+                                        <!-- Row for Name and Email -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="name" class="form-label">Name:</label>
+                                                <input type="text" class="form-control form-control-lg" name="name" id="name" value="' . htmlspecialchars($outlet['district']) . '" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="email" class="form-label">Email:</label>
+                                                <input type="email" class="form-control form-control-lg" name="email" id="email" value="' . htmlspecialchars($outlet['name']) . '" required>
+                                            </div>
+                                        </div>
 
-                                    <!-- Hidden input for ID -->
-                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($outletId); ?>">
+                                        <!-- Row for Password and Contact -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="password" class="form-label">Password:</label>
+                                                <input type="password" class="form-control form-control-lg" name="password" id="password">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="contact" class="form-label">Contact:</label>
+                                                <input type="text" class="form-control form-control-lg" name="contact" id="contact" value="' . htmlspecialchars($outlet['stock']) . '" required>
+                                            </div>
+                                        </div>
 
-                                    <!-- Outlet fields -->
-                                    <div class="form-group">
-                                        <label for="district">District</label>
-                                        <input type="text" class="form-control" name="district" id="district" value="<?php echo htmlspecialchars($outlet['district']); ?>" required>
-                                    </div>
+                                        <!-- Row for NIC and Admin -->
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <label for="nic" class="form-label">NIC:</label>
+                                                <input type="text" class="form-control form-control-lg" name="nic" id="nic" value="' . htmlspecialchars($outlet['town']) . '" required>
+                                            </div>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label for="town">Town</label>
-                                        <input type="text" class="form-control" name="town" id="town" value="<?php echo htmlspecialchars($outlet['town']); ?>" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="name">Name</label>
-                                        <input type="text" class="form-control" name="name" id="name" value="<?php echo htmlspecialchars($outlet['name']); ?>" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="stock">Stock</label>
-                                        <input type="number" class="form-control" name="stock" id="stock" value="<?php echo htmlspecialchars($outlet['stock']); ?>" required>
-                                    </div>
-
-                                    <!-- Submit Button -->
-                                    <button type="submit" class="btn btn-primary">Update</button>
-                                </form>
+                                        <!-- Submit Button -->
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary btn-lg w-100">Update</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <script>
-                // Automatically show the modal
-                $(document).ready(function() {
-                    $('#editOutletModal').modal('show');
-                });
-            </script>
-        </body>
-        </html>
-        <?php
-    } else {
-        echo "Outlet not found.";
+                    </div>';
     }
-} else {
-    echo "No outlet ID provided.";
 }
+
 ?>
+
+
+
+<!-- The Modal End -->
