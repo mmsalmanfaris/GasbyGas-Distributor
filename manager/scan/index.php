@@ -26,7 +26,27 @@
             <div class="col-md-5 col-md-offset-3">
                 <video id="preview" class="img-thumbnail"></video>
             </div>
+            <?php
+            $crequest = $database->getReference('crequests')->getValue();
+            if ($crequest) {
+                foreach ($crequest as $key => $value) {
+                    echo '<div class="card mb-3">';
+                    echo '<div class="card-body">';
+                    // echo '<h5 class="card-title">' . $value['name'] . '</h5>';
+                    // echo '<p class="card-text">Category: ' . $value['outlet_id'] . '</p>';
+                    echo '<p class="card-text">Total: ' . $value['quantity'] . '</p>';
+                    echo '<p class="card-text">Delivery: ' . $value['panel'] . '</p>';
+                    echo '<p class="card-text">Empty: ' . $value['empty'] . '</p>';
+                    echo '<p class="card-text">Payment: ' . $value['payment_status'] . '</p>';
+                    // echo '<p class="card-text">Issue: ' . $value['issue'] . '</p>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<p>No data found.</p>';
+            }
 
+            ?>
 
         </div>
         <div class="col-md-12 col-md-offset-3 px-3 mt-5">
