@@ -70,7 +70,7 @@ include_once '../components/header-links.php';
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./consumer/">
+                            <a class="nav-link fs-5 rounded-2" href="./consumers/">
                                 <i class="bi bi-check-circle pe-2"></i> Consumer
                             </a>
                         <li class="nav-item mb-3">
