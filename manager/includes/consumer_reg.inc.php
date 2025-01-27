@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $database->getReference('consumers/' . $consumer_id)->set($consumerData);
 
         // Redirect to consumers page with success message
-        header("Location: ../consumers/index.php?success=consumeradded");
+        header("Location: ../consumers/?status=datasuccess");
         exit();
     } catch (Exception $e) {
         // Log the error and redirect with failure message

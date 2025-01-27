@@ -77,12 +77,12 @@ include_once '../../output/message.php';
     </div>
 
     <!-- Filter Dropdown -->
-    <div class="mt-4 mb-3">
-        <label for="consumerFilter" class="form-label">Filter Consumers:</label>
-        <select id="consumerFilter" class="form-select w-auto" onchange="filterConsumers(this.value)">
-            <option value="all">All</option>
-            <option value="individual">Individual</option>
-            <option value="business">Business</option>
+    <div class="mt-4 mb-3 ">
+        <label for="consumerFilter" class="form-label ">Filter Consumers:</label>
+        <select id="consumerFilter" class="form-select w-50" onchange="filterConsumers(this.value)">
+            <option value="all">All Consumers</option>
+            <option value="individual">Individual Consumers</option>
+            <option value="business">Business Consumers</option>
         </select>
     </div>
 
