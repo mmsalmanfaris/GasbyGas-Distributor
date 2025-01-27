@@ -63,13 +63,13 @@
             <table style="width:100%" class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">Id</th>
-                        <th scope="col">Count</th>
-                        <th scope="col">Requested Date</th>
-                        <th scope="col">Scheduled Date</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Home</th>
-                        <th scope="col">Industry</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">outlet_id</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Panel</th>
+                        <th scope="col">paymentStatus</th>
+                        <th scope="col">Edelivery</th>
+                        <th scope="col">S delivery</th>
                     </tr>
                 </thead>
                 <tbody>
