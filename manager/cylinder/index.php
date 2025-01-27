@@ -28,7 +28,6 @@
     // Fetch consumers data
     $consumers = $database->getReference('consumers')->getValue();
 
-
     // Fetch outlets data
     $outlets = $database->getReference('outlets')->getValue();
 
@@ -41,37 +40,50 @@
         }
     }
 
-    // Function to calculate request counts
-    function calculateRequestCounts($filteredCrequests, $panel, $consumers)
+    // Function to calculate request counts and quantities
+    function calculateRequestDetails($filteredCrequests, $panel, $consumers)
     {
-        $total = 0;
-        $home = 0;
-        $industrial = 0;
-        $quantity = 0;
+        $totalRequests = 0;
+        $homeRequests = 0;
+        $industrialRequests = 0;
+        $totalQuantity = 0;
+        $homeQuantity = 0;
+        $industrialQuantity = 0;
+
         if ($filteredCrequests) {
             foreach ($filteredCrequests as $request) {
                 if ($request['panel'] === $panel) {
-                    $total++;
-                    $quantity += intval($request['quantity']);
+                    $totalRequests++;
+                    $totalQuantity += intval($request['quantity']);
                     if (isset($consumers[$request['consumer_id']])) {
                         if ($consumers[$request['consumer_id']]['category'] === 'home') {
-                            $home++;
-                        } else if ($consumers[$request['consumer_id']]['category'] === 'industry') {
-                            $industrial++;
+                            $homeRequests++;
+                            $homeQuantity += intval($request['quantity']);
+                        } elseif ($consumers[$request['consumer_id']]['category'] === 'industry') {
+                            $industrialRequests++;
+                            $industrialQuantity += intval($request['quantity']);
                         }
                     }
                 }
             }
         }
 
-        return ['total' => $total, 'home' => $home, 'industrial' => $industrial, 'quantity' => $quantity];
+
+        return [
+            'totalRequests' => $totalRequests,
+            'homeRequests' => $homeRequests,
+            'industrialRequests' => $industrialRequests,
+            'totalQuantity' => $totalQuantity,
+            'homeQuantity' => $homeQuantity,
+            'industrialQuantity' => $industrialQuantity,
+        ];
     }
 
-    // Calculate counts for Panel A
-    $dispatchA = calculateRequestCounts($filteredCrequests, 'A', $consumers);
 
+    // Calculate counts for Panel A
+    $dispatchA = calculateRequestDetails($filteredCrequests, 'A', $consumers);
     // Calculate counts for Panel B
-    $dispatchB = calculateRequestCounts($filteredCrequests, 'B', $consumers);
+    $dispatchB = calculateRequestDetails($filteredCrequests, 'B', $consumers);
 
     // Get current month and year
     $currentMonth = date('m');
@@ -88,7 +100,6 @@
     // Determine if the buttons should be enabled
     $firstDispatchButtonEnabled = ($currentDay >= 1 && $currentDay <= 14);
     $secondDispatchButtonEnabled = ($currentDay >= 15 && $currentDay <= 31);
-
     ?>
 
     <!-- Main Content -->
@@ -97,8 +108,12 @@
             <div class="col-4 border p-4 rounded-4 me-5">
                 <h3 class="mb-3">1st Dispatch</h3>
                 <div class="d-flex justify-content-between">
-                    <h5>Total Request</h5>
-                    <h5><?php echo $dispatchA['total']; ?></h5>
+                    <h5>Total Requests</h5>
+                    <h5><?php echo $dispatchA['totalRequests']; ?></h5>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5>Total Quantities</h5>
+                    <h5><?php echo $dispatchA['totalQuantity']; ?></h5>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h5>Delivery Date</h5>
@@ -107,19 +122,33 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                     <h5>Home Requests</h5>
-                    <h5><?php echo $dispatchA['home']; ?></h5>
+                    <h5><?php echo $dispatchA['homeRequests']; ?></h5>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h5>Industrial Requests</h5>
-                    <h5><?php echo $dispatchA['industrial']; ?></h5>
+                    <h5><?php echo $dispatchA['industrialRequests']; ?></h5>
                 </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h5>Home Quantities</h5>
+                    <h5><?php echo $dispatchA['homeQuantity']; ?></h5>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5>Industrial Quantities</h5>
+                    <h5><?php echo $dispatchA['industrialQuantity']; ?></h5>
+                </div>
+
                 <button class="btn btn-primary w-100 mt-3" onclick="requestDispatch('A')" <?php echo $firstDispatchButtonEnabled ? '' : 'disabled'; ?>>Request to Head Office</button>
             </div>
             <div class="col-4 border p-4 rounded-4 me-5">
                 <h3 class="mb-3">2nd Dispatch</h3>
                 <div class="d-flex justify-content-between">
-                    <h5>Total Request</h5>
-                    <h5><?php echo $dispatchB['total']; ?></h5>
+                    <h5>Total Requests</h5>
+                    <h5><?php echo $dispatchB['totalRequests']; ?></h5>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5>Total Quantities</h5>
+                    <h5><?php echo $dispatchB['totalQuantity']; ?></h5>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h5>Delivery Date</h5>
@@ -128,12 +157,22 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                     <h5>Home Requests</h5>
-                    <h5><?php echo $dispatchB['home']; ?></h5>
+                    <h5><?php echo $dispatchB['homeRequests']; ?></h5>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h5>Industrial Requests</h5>
-                    <h5><?php echo $dispatchB['industrial']; ?></h5>
+                    <h5><?php echo $dispatchB['industrialRequests']; ?></h5>
                 </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h5>Home Quantities</h5>
+                    <h5><?php echo $dispatchB['homeQuantity']; ?></h5>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5>Industrial Quantities</h5>
+                    <h5><?php echo $dispatchB['industrialQuantity']; ?></h5>
+                </div>
+
                 <button class="btn btn-primary w-100 mt-3" onclick="requestDispatch('B')" <?php echo $secondDispatchButtonEnabled ? '' : 'disabled'; ?>>Request to Head Office</button>
             </div>
         </div>
@@ -208,12 +247,13 @@
             };
 
             if (panel === 'A') {
-                dispatchData.quantity = <?php echo $dispatchA['quantity']; ?>;
+                dispatchData.quantity = <?php echo $dispatchA['totalQuantity']; ?>;
                 dispatchData.edelivery = "<?php echo date('Y-m-d', strtotime($firstDispatchDate)); ?>";
             } else if (panel === 'B') {
-                dispatchData.quantity = <?php echo $dispatchB['quantity']; ?>;
+                dispatchData.quantity = <?php echo $dispatchB['totalQuantity']; ?>;
                 dispatchData.edelivery = "<?php echo date('Y-m-d', strtotime($secondDispatchDate)); ?>";
             }
+
 
             fetch('../includes/addDispatchRequest.inc.php', {
                     method: 'POST',
@@ -237,6 +277,8 @@
                 });
         }
     </script>
+
+
     <?php
     include_once '../components/manager-dashboard-down.php';
     message_success();
