@@ -176,16 +176,13 @@
             <table id="example" class=" p-2 display nowrap" style="width:100%" class="table table-striped table-sm">
                 <thead>
                     <tr>
-                        <th>Consumer Name</th>
-                        <th>Outlet Name</th>
-                        <th>Quantity</th>
+                        <th>Consumer</th>
+                        <th>Qty</th>
                         <th>Panel</th>
-                        <th>Empty Cylinder</th>
+                        <th>Empty</th>
                         <th>Payment Status</th>
-                        <th>Expected Delivery</th>
-                        <th>Scheduled Delivery</th>
-                        <th>Delivery Status</th>
-                        <th>Created At</th>
+                        <th>S-Delivery</th>
+                        <th>Delivery</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -197,30 +194,18 @@
                                 $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
                             }
 
-                            $outletName = 'N/A';
-                            if ($outlets) {
-                                foreach ($outlets as $outletKey => $outlet) {
-                                    if ($outlet['outlet_id'] === $request['outlet_id']) {
-                                        $outletName = htmlspecialchars($outlet['name']);
-                                        break;
-                                    }
-                                }
-                            }
 
                             $emptyCylinder = $request['empty_cylinder'] ? 'Yes' : 'No';
                             $createdAtDate = isset($request['created_at']) ? date('Y-m-d', strtotime($request['created_at'])) : 'N/A';
 
                             echo '<tr>';
                             echo '<td>' . $consumerName . '</td>';
-                            echo '<td>' . $outletName . '</td>';
                             echo '<td>' . htmlspecialchars($request['quantity']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
                             echo '<td>' . $emptyCylinder . '</td>';
                             echo '<td>' . htmlspecialchars($request['payment_status']) . '</td>';
-                            echo '<td>' . htmlspecialchars($request['edelivery']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['sdelivery']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['delivery_status']) . '</td>';
-                            echo '<td>' . $createdAtDate . '</td>';
                             echo '</tr>';
                         }
                     } else {
