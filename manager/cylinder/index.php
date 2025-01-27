@@ -7,16 +7,11 @@
     <title>Cylinder Requests</title>
 
     <?php
-    session_start();
 
-    if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
-        header('Location: ../login.php');
-        exit;
-    }
-
-    $user_id = $_SESSION['user_id'];
     include_once '../components/manager-dashboard-top.php';
     include_once '../../output/message.php';
+
+    require '../includes/firebase.php';
 
     // Fetch user data to get the user's outlet_id
     $userRecord = $database->getReference("users/{$user_id}")->getValue();
@@ -256,12 +251,12 @@
 
 
             fetch('../includes/addDispatchRequest.inc.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dispatchData),
-                })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dispatchData),
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {

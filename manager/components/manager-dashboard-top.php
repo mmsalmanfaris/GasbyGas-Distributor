@@ -2,13 +2,12 @@
 include_once '../../components/header-links.php';
 
 
-// session_start();
+session_start();
 
 // if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
 //     header('Location: ../../login.php'); // Redirect to login if not manager
 //     exit;
 // }
-// $user_id = $_SESSION['user_id'];
 
 ?>
 
@@ -75,7 +74,7 @@ include_once '../../components/header-links.php';
                             <a class="nav-link fs-5 rounded-2" href="../consumers/">
                                 <i class="bi bi-check-circle pe-2"></i> Consumer
                             </a>
-                                
+
                         <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2" href="../not-issued/">
                                 <i class="bi bi-x-circle pe-2"></i> Not Issued
