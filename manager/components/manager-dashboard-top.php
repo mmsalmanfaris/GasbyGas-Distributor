@@ -4,10 +4,11 @@ include_once '../../components/header-links.php';
 
 session_start();
 
-// if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
-//     header('Location: ../../login.php'); // Redirect to login if not manager
-//     exit;
-// }
+if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
+    header('Location: ../../login.php'); // Redirect to login if not manager
+    exit;
+}
+$user_id = $_SESSION['user_id'];
 
 ?>
 
