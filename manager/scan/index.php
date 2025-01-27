@@ -4,103 +4,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap Dashboard</title>
-
+    <title>QR Code Scanner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.3.3/adapter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <style>
+        .scanner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
 
+        #output {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
 
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    <?php
-    include_once '../components/manager-dashboard-top.php';
-    ?>
+        .btn {
+            margin-top: 15px;
+        }
+    </style>
+</head>
 
-    <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <div
-            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Scanner Token</h1>
-        </div>
-        <div class="container d-flex">
-            <div class="col-md-5 col-md-offset-3">
-                <video id="preview" class="img-thumbnail"></video>
-            </div>
-            <?php
-            $crequest = $database->getReference('crequests')->getValue();
-            if ($crequest) {
-                foreach ($crequest as $key => $value) {
-                    echo '<div class="card mb-3">';
-                    echo '<div class="card-body">';
-                    // echo '<h5 class="card-title">' . $value['name'] . '</h5>';
-                    // echo '<p class="card-text">Category: ' . $value['outlet_id'] . '</p>';
-                    echo '<p class="card-text">Total: ' . $value['quantity'] . '</p>';
-                    echo '<p class="card-text">Delivery: ' . $value['panel'] . '</p>';
-                    echo '<p class="card-text">Empty: ' . $value['empty'] . '</p>';
-                    echo '<p class="card-text">Payment: ' . $value['payment_status'] . '</p>';
-                    // echo '<p class="card-text">Issue: ' . $value['issue'] . '</p>';
-                    echo '</div>';
-                    echo '</div>';
-                }
-            } else {
-                echo '<p>No data found.</p>';
-            }
+<body>
+    <main class="scanner-container">
+        <h1>QR Code Scanner</h1>
+        <video id="preview" class="img-thumbnail" style="width: 100%; max-width: 400px;"></video>
 
-            ?>
-
-        </div>
-        <div class="col-md-12 col-md-offset-3 px-3 mt-5">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Total</th>
-                        <th>Delivery</th>
-                        <th>Empty</th>
-                        <th>Payment</th>
-                        <th>Issue</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                        <td><input type="text" id="scan-result" class="form-control" readonly></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="d-flex justify-content-end mt-4">
-                <div class="btn btn-lg btn-primary me-3">Empty & Payment Recived</div>
-                <div class="btn btn-lg btn-success">Cylinder Issued</div>
-            </div>
-        </div>
+        <!-- Output Section -->
+        <div id="output"></div>
 
         <script>
+            // Initialize the scanner
             let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+
+            // Add listener to handle scanned content
             scanner.addListener('scan', function (content) {
-                document.getElementById('scan-result').value = content;
+                console.log('Scanned content:', content); // Debugging log
+                fetch('fetch_crequest.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ consumer_id: content }) // Send scanned consumer_id
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response from server:', data); // Debugging log
+                        let outputDiv = document.getElementById('output');
+                        if (data.success) {
+                            // Display fetched data
+                            outputDiv.innerHTML = `
+                                <div class="card">
+                                    <p><strong>Outlet Id:</strong> ${data.crequest.outlet_id}</p>
+                                    <p><strong>Quantity:</strong> ${data.crequest.quantity}</p>
+                                    <p><strong>Panel:</strong> ${data.crequest.panel}</p>
+                                    <p><strong>Empty:</strong> ${data.crequest.empty_cylinder}</p>
+                                    <p><strong>Payment:</strong> ${data.crequest.payment_status}</p>
+                                </div>
+                            `;
+                        } else {
+                            outputDiv.innerHTML = `<p>No data found for the scanned ID.</p>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('output').innerHTML = `<p>Error fetching data.</p>`;
+                    });
             });
-            Instascan.Camera.getCameras().then(function (cameras) {
-                if (cameras.length > 0) {
-                    scanner.start(cameras[0]);
-                } else {
-                    alert('No cameras found.');
-                }
-            }).catch(function (e) {
-                console.error(e);
-            });
+
+            // Start the scanner
+            Instascan.Camera.getCameras()
+                .then(function (cameras) {
+                    if (cameras.length > 0) {
+                        scanner.start(cameras[0]); // Start the first available camera
+                    } else {
+                        alert('No cameras found.');
+                    }
+                })
+                .catch(function (e) {
+                    console.error(e);
+                });
         </script>
-
     </main>
+</body>
 
-
-    <?php
-    include_once '../components/manager-dashboard-down.php';
-    ?>
+</html>
