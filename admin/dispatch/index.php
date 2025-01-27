@@ -86,7 +86,7 @@
                             echo '<td>' . htmlspecialchars($scheduleId) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['outlet_id']) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['request_date']) . '</td>';
-                            echo '<td>' . htmlspecialchars($schedule['sdelivery']) . '</td>';
+                            echo '<td>' . (isset($schedule['sdelivery']) ? htmlspecialchars($schedule['sdelivery']) : '') . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['edelivery']) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['quantity']) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['status']) . '</td>';
@@ -139,12 +139,12 @@
     </main>
 
     <script>
-        document.querySelector('.btn-primary').addEventListener('click', function () {
+        document.querySelector('.btn-primary').addEventListener('click', function() {
             var myModal = new bootstrap.Modal(document.getElementById('addDispatchModal'));
             myModal.show();
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Check if the URL contains the `schedule_id` parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('schedule_id')) {
@@ -156,7 +156,7 @@
             const districtSelect = document.getElementById('districtSelect');
             const totalQuantityInput = document.getElementById('totalQuantity');
 
-            districtSelect.addEventListener('change', function () {
+            districtSelect.addEventListener('change', function() {
                 const selectedDistrict = districtSelect.value;
                 let totalQuantity = 0;
 
