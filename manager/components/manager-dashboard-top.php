@@ -4,12 +4,10 @@ include_once '../../components/header-links.php';
 
 session_start();
 
-if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
-    header('Location: ../../login.php'); // Redirect to login if not manager
-    exit;
-}
-
-$user_id = $_SESSION['user_id'];
+// if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
+//     header('Location: ../../login.php'); // Redirect to login if not manager
+//     exit;
+// }
 
 ?>
 
@@ -18,7 +16,7 @@ $user_id = $_SESSION['user_id'];
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
         <div class="container-fluid">
-            <!-- <p class="navbar-brand fs-3 pt-3">Outlet Dashboard, <?php echo $_SESSION['name'] ?></p> -->
+            <p class="navbar-brand fs-3 pt-3">Outlet Dashboard, <?php echo $_SESSION['name'] ?></p>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -73,7 +71,7 @@ $user_id = $_SESSION['user_id'];
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="../consumer/">
+                            <a class="nav-link fs-5 rounded-2" href="../consumers/">
                                 <i class="bi bi-check-circle pe-2"></i> Consumer
                             </a>
 
