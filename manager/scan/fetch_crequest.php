@@ -4,28 +4,52 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-require '../../gasbygas-97e19-firebase-adminsdk-fbsvc-21d66d3153.json'; // Include Firebase SDK
+require '../includes/firebase.php';
 
-use Kreait\Firebase\Factory;
+// Get POST data
+$request = json_decode(file_get_contents('php://input'), true);
 
-// Initialize Firebase
-$firebase = (new Factory())->withServiceAccount('../includes/firebase.php');
-$database = $firebase->createDatabase();
-
-// Decode JSON input
-$input = json_decode(file_get_contents('php://input'), true);
-
-if (isset($input['consumer_id'])) {
-    $consumer_id = $input['consumer_id'];
-
-    // Fetch data from Firebase
-    $crequest = $database->getReference("crequests/{$consumer_id}")->getValue();
-
-    if ($crequest) {
-        echo json_encode(['success' => true, 'crequest' => $crequest]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No data found for the given ID.']);
-    }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid input.']);
+if (!isset($request['consumer_id'])) {
+    echo json_encode(['success' => false, 'message' => 'consumer_id is required']);
+    exit;
 }
+
+$consumer_id = $request['consumer_id'];
+
+try {
+    // Fetch all crequest nodes
+    $crequests = $database->getReference('crequests')->getValue();
+
+    $matchedCrequest = null;
+
+    if ($crequests) {
+        // Loop through each crequest to find the matching consumer_id
+        foreach ($crequests as $crequest_id => $crequest) {
+            if (isset($crequest['consumer_id']) && $crequest['consumer_id'] === $consumer_id) {
+                $matchedCrequest = [
+                    'id' => $crequest_id,
+                    'data' => $crequest
+                ];
+                break;
+            }
+        }
+    }
+
+    if ($matchedCrequest) {
+        echo json_encode([
+            'success' => true,
+            'crequest' => $matchedCrequest
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No data found for the given consumer_id.'
+        ]);
+    }
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'An error occurred: ' . $e->getMessage()
+    ]);
+}
+?>
