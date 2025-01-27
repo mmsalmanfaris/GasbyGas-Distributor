@@ -22,32 +22,41 @@
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">Scanner Token</h1>
         </div>
-        <div class="container d-flex">
-            <div class="col-md-5 col-md-offset-3">
+        <div class="container d-flex mt-5">
+            <div class="col-md-5 col-md-offset-3 me-5">
                 <video id="preview" class="img-thumbnail"></video>
             </div>
-
-
+            <!-- Output Section -->
+            <div class="">
+                <div id="output" class="w-100"></div>
+                <div class="d-flex justify-content-end mt-5">
+                    <div class="btn btn-lg btn-primary me-3" id="empty-payment-btn">Empty & Payment Received</div>
+                    <div class="btn btn-lg btn-success" id="cylinder-issued-btn">Cylinder Issued</div>
+                </div>
+            </div>
         </div>
+
         <div class="col-md-12 col-md-offset-3 px-3 mt-5">
 
-            <!-- Output Section -->
-            <div id="output"></div>
 
-            <div class="d-flex justify-content-end mt-4">
-                <div class="btn btn-lg btn-primary me-3">Empty & Payment Recived</div>
-                <div class="btn btn-lg btn-success">Cylinder Issued</div>
-            </div>
+
         </div>
 
         <script>
-
             // Initialize the scanner
             let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+
+            // Variable to store the last scanned consumer_id
+            let currentConsumerId = '';
 
             // Add listener to handle scanned content
             scanner.addListener('scan', function (content) {
                 console.log('Scanned content:', content); // Debugging log
+
+                // Store the scanned consumer ID
+                currentConsumerId = content;
+
+                // Fetch data for the scanned ID
                 fetch('fetch_crequest.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -59,37 +68,39 @@
                         let outputDiv = document.getElementById('output');
                         if (data.success) {
                             outputDiv.innerHTML = `
-                    <div class="card">
-                        <h3>Consumer Request</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Consumer ID</th>
-                                    <th>Gas Type</th>
-                                    <th>Quantity</th>
-                                    <th>Address</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>${data.crequest.data.consumer_id}</td>
-                                    <td>${data.crequest.data.gas_type}</td>
-                                    <td>${data.crequest.data.quantity}</td>
-                                    <td>${data.crequest.data.address}</td>
-                                    <td>${data.crequest.data.status}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                `;
+                        <div>
+                            <h3>Consumer Request</h3>
+                            <table class="table table-bordered mt-4">
+                                <thead>
+                                    <tr>
+                                        <th>Consumer</th>
+                                        <th>Quantity</th>
+                                        <th>Cylinder</th>
+                                        <th>Payment</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>${data.crequest.data.consumer_id}</td>
+                                        <td>${data.crequest.data.quantity}</td>
+                                        <td>${data.crequest.data.empty_cylinder}</td>
+                                        <td>${data.crequest.data.payment_status}</td>
+                                        <td>${data.crequest.data.sdelivery}</td>
+                                        <td>${data.crequest.data.delivery_status}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
                         } else {
-                            outputDiv.innerHTML = `<p>No data found for the scanned ID.</p>`;
+                            outputDiv.innerHTML = `<p class="alert alert-danger""> Wrong QR Code. Please check your QR Code.</p>`;
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        document.getElementById('output').innerHTML = `<p>Error fetching data.</p>`;
+                        document.getElementById('output').innerHTML = `<p class="alert alert-danger">Error: System functional error.</p>`;
                     });
             });
 
@@ -105,7 +116,55 @@
                 .catch(function (e) {
                     console.error(e);
                 });
+
+            // Button: Empty & Payment Received
+            document.getElementById('empty-payment-btn').addEventListener('click', function () {
+                if (currentConsumerId) {
+                    fetch('update_empty_payment.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ consumer_id: currentConsumerId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Optionally, refresh the output
+                                document.getElementById('output').innerHTML = `<p class="alert alert-success">Cylinder & Payment status updated successfully!</p>`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                } else {
+                    document.getElementById('output').innerHTML = `<p class="alert alert-danger">Please scan QR Code and update data.</p>`;
+                }
+            });
+
+            // Button: Cylinder Issued
+            document.getElementById('cylinder-issued-btn').addEventListener('click', function () {
+                if (currentConsumerId) {
+                    fetch('update_cylinder_issued.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ consumer_id: currentConsumerId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Optionally, refresh the output
+                                document.getElementById('output').innerHTML = `<p class="alert alert-success">Cylinder issued status updated successfully!</p>`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                } else {
+                    alert('No Consumer ID available. Scan a QR code first.');
+                }
+            });
+
         </script>
+
 
     </main>
 
