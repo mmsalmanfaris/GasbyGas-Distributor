@@ -3,7 +3,7 @@
 include_once '../includes/firebase.php';
 include_once '../../components/header-links.php';
 
-// <!-- Edit Model -->
+
 if (isset($_GET['user_id'])) {
     $userId = $_GET['user_id'];
     $user = $database->getReference("users/{$userId}")->getValue();

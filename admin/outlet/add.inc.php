@@ -7,7 +7,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="../includes/outletregister.inc.php" method="post" class="row g-3 needs-validation" novalidate>
+                <form action="../includes/outletRegister.inc.php" method="post" class="row g-3 needs-validation"
+                    novalidate>
                     <!-- District Selection -->
                     <div class="mb-3">
                         <label for="district" class="form-label">District:</label>
@@ -59,7 +60,8 @@
                     <!-- Stock -->
                     <div class="mb-3">
                         <label for="stock" class="form-label">Stock:</label>
-                        <input type="number" class="form-control form-control-lg" name="stock" id="stock" min="0" required>
+                        <input type="number" class="form-control form-control-lg" name="stock" id="stock" min="0"
+                            required>
                         <div class="invalid-feedback">Please enter the stock quantity.</div>
                     </div>
 

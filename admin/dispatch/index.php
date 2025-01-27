@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dispatch Schedule Management - Admin</title>
+    <title>Dispatch Schedule - Admin</title>
 
     <?php
     include_once '../components/manager-dashboard-top.php';
@@ -91,7 +91,7 @@
                             echo '<td>' . htmlspecialchars($schedule['quantity']) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['status']) . '</td>';
                             echo "<td>
-                                  <a href='?schedule_id={$scheduleId}' class='btn btn-sm btn-warning'>Edit</a>
+                                  <a href='?schedule_id={$scheduleId}' class='btn btn-sm btn-success'>Update</a>
                                   <a href='../includes/deleteDispatch.inc.php?schedule_id={$scheduleId}' class='btn btn-sm btn-danger'>Delete</a>
                                   </td>";
                             echo '</tr>';
@@ -128,7 +128,8 @@
                     </div>
                     <div class="col-md-4">
                         <label for="deliveryDate" class="form-label">Scheduled Delivery Date:</label>
-                        <input type="date" class="form-control form-control-lg" name="delivery_date" id="deliveryDate" required>
+                        <input type="date" class="form-control form-control-lg" name="delivery_date" id="deliveryDate"
+                            required>
                     </div>
                 </div>
 
@@ -138,12 +139,12 @@
     </main>
 
     <script>
-        document.querySelector('.btn-primary').addEventListener('click', function() {
+        document.querySelector('.btn-primary').addEventListener('click', function () {
             var myModal = new bootstrap.Modal(document.getElementById('addDispatchModal'));
             myModal.show();
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Check if the URL contains the `schedule_id` parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('schedule_id')) {
@@ -155,7 +156,7 @@
             const districtSelect = document.getElementById('districtSelect');
             const totalQuantityInput = document.getElementById('totalQuantity');
 
-            districtSelect.addEventListener('change', function() {
+            districtSelect.addEventListener('change', function () {
                 const selectedDistrict = districtSelect.value;
                 let totalQuantity = 0;
 

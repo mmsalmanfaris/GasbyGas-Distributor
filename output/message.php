@@ -55,6 +55,24 @@ function message_success()
             ";
         }
 
+
+        if ($status === 'dataerror') {
+            echo "
+                <script>
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Submition Error',
+                    text: 'Check the data you have entered',
+                    showConfirmButton: false,
+                    timer: 2500
+                    });
+    
+                    // Clear the URL after the success message
+                    window.history.replaceState(null, null, window.location.pathname);
+                </script>
+            ";
+        }
+
     }
 }
 
