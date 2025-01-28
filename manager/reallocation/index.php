@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reallocation - Manager</title>
-
     <?php
     include_once '../components/manager-dashboard-top.php';
     include_once '../../output/message.php';
@@ -13,9 +12,7 @@
 
     $userRecord = $database->getReference("users/{$user_id}")->getValue();
     $user_outlet_id = $userRecord['outlet_id'] ?? null;
-
     $selectedPanel = isset($_GET['panel']) ? $_GET['panel'] : 'all';
-
     $filteredCrequests = [];
 
     if ($user_outlet_id) {
@@ -36,7 +33,6 @@
             }
         }
     }
-
     ?>
 </head>
 
@@ -48,7 +44,6 @@
                 <h5>Total Count</h5>
                 <h4><?php echo count($filteredCrequests); ?></h4>
             </div>
-
         </div>
         <div class="col-3 me-auto mt-4">
             <label for="panelSelect" class="form-label fw-bold">Filter by Panel:</label>
@@ -74,12 +69,12 @@
                 <tbody>
                     <?php
                     if ($filteredCrequests) {
-                        foreach ($filteredCrequests as $request) {
+                        foreach ($filteredCrequests as $requestId => $request) {
                             $consumerName = 'N/A';
                             if (isset($consumers[$request['consumer_id']])) {
                                 $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
                             }
-                            echo '<tr data-outlet-id="' . htmlspecialchars($request['outlet_id']) . '" data-consumer-id="' . htmlspecialchars($request['consumer_id']) . '" data-quantity="' . htmlspecialchars($request['quantity']) . '" data-panel="' . htmlspecialchars($request['panel']) . '">';
+                            echo '<tr data-request-id="' . htmlspecialchars($requestId) . '" data-outlet-id="' . htmlspecialchars($request['outlet_id']) . '" data-consumer-id="' . htmlspecialchars($request['consumer_id']) . '" data-quantity="' . htmlspecialchars($request['quantity']) . '" data-panel="' . htmlspecialchars($request['panel']) . '">';
                             echo '<td>' . $consumerName . '</td>';
                             echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['quantity']) . '</td>';
@@ -96,7 +91,7 @@
                 </tbody>
             </table>
         </div>
-        <button id="reallocateBtn" class="btn btn-primary mt-5">
+        <button id="reallocateBtn" class="btn btn-primary mt-5" <?php if ($selectedPanel === 'all' || empty($filteredCrequests)) echo 'disabled'; ?>>
             Reallocate Tokens
         </button>
     </main>
@@ -112,7 +107,6 @@
                 const cancellations = [];
                 const today = new Date().toISOString().slice(0, 10);
                 const selectedPanel = document.getElementById('panelSelect').value;
-
 
                 tableRows.forEach(row => {
                     const outlet_id = row.getAttribute('data-outlet-id');
@@ -139,7 +133,8 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            cancellations: cancellations
+                            cancellations: cancellations,
+                            selectedPanel: selectedPanel
                         })
                     })
                     .then(response => {
@@ -154,14 +149,17 @@
                         if (data.status === 'success') {
                             window.location.href = '?status=datasuccess';
                         } else {
-                            console.error('Error adding cancellations to the database:', data.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Reallocation Failed',
+                                text: data.message,
+                            });
                         }
                     })
                     .catch(error => {
                         console.error('Fetch error:', error);
                     });
             });
-
         });
     </script>
 
