@@ -11,7 +11,6 @@
     include_once '../../output/message.php';
     require '../includes/firebase.php';
 
-
     $userRecord = $database->getReference("users/{$user_id}")->getValue();
     $user_outlet_id = $userRecord['outlet_id'] ?? null;
 
@@ -34,10 +33,10 @@
             }
         }
     }
-
-
     ?>
+</head>
 
+<body>
     <!-- Main Content -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-5">
         <div class="d-flex mt-5">
@@ -45,7 +44,6 @@
                 <h5>Total Count</h5>
                 <h4><?php echo count($filteredCrequests); ?></h4>
             </div>
-
         </div>
         <div class="table-responsive p-3 border mt-5">
             <table id="example" style="width:100%" class="table table-striped">
@@ -68,7 +66,7 @@
                             if (isset($consumers[$request['consumer_id']])) {
                                 $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
                             }
-                            echo '<tr>';
+                            echo '<tr data-outlet-id="' . htmlspecialchars($request['outlet_id']) . '" data-consumer-id="' . htmlspecialchars($request['consumer_id']) . '" data-quantity="' . htmlspecialchars($request['quantity']) . '">';
                             echo '<td>' . $consumerName . '</td>';
                             echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['quantity']) . '</td>';
@@ -85,19 +83,74 @@
                 </tbody>
             </table>
         </div>
-        <div class="btn btn-primary mt-5">
+        <button id="reallocateBtn" class="btn btn-primary mt-5">
             Reallocate Tokens
-        </div>
-
+        </button>
     </main>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#example').DataTable();
+
+            document.getElementById('reallocateBtn').addEventListener('click', function() {
+                console.log("Reallocate button clicked!");
+                const tableRows = document.querySelectorAll('#example tbody tr');
+                const cancellations = [];
+                const today = new Date().toISOString().slice(0, 10);
+
+                tableRows.forEach(row => {
+                    const outlet_id = row.getAttribute('data-outlet-id');
+                    const consumer_id = row.getAttribute('data-consumer-id');
+                    const quantity = row.getAttribute('data-quantity');
+                    if (outlet_id && consumer_id && quantity) {
+                        cancellations.push({
+                            outlet_id: outlet_id,
+                            consumer_id: consumer_id,
+                            quantity: quantity,
+                            date: today,
+                        });
+                    } else {
+                        console.log("Missing required attributes in row:", row);
+                    }
+                });
+                console.log("Data to send:", cancellations);
+
+                fetch('../includes/addCancellations.inc.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            cancellations: cancellations
+                        })
+                    })
+                    .then(response => {
+                        console.log("Raw Response:", response);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Response data:", data);
+                        if (data.status === 'success') {
+                            window.location.href = '?status=datasuccess';
+                        } else {
+                            console.error('Error adding cancellations to the database:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                    });
+            });
+
         });
     </script>
-
-
     <?php
     include_once '../components/manager-dashboard-down.php';
     message_success();
     ?>
+</body>
+
+</html>
