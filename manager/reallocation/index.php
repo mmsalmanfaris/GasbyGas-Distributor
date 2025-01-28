@@ -4,64 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap Dashboard</title>
-
-
+    <title>Reallocation - Manager</title>
 
     <?php
     include_once '../components/manager-dashboard-top.php';
+    include_once '../../output/message.php';
+    require '../includes/firebase.php';
+
+
+    $userRecord = $database->getReference("users/{$user_id}")->getValue();
+    $user_outlet_id = $userRecord['outlet_id'] ?? null;
+
+    $filteredCrequests = [];
+
+    if ($user_outlet_id) {
+        $crequests = $database->getReference('crequests')->getValue();
+        $consumers = $database->getReference('consumers')->getValue();
+        if ($crequests) {
+            foreach ($crequests as $requestId => $request) {
+                if (
+                    $request['outlet_id'] == $user_outlet_id &&
+                    $request['type'] === 'home' &&
+                    $request['empty_cylinder'] === 'pending' &&
+                    $request['payment_status'] === 'pending' &&
+                    $request['delivery_status'] === 'pending'
+                ) {
+                    $filteredCrequests[] = $request;
+                }
+            }
+        }
+    }
+
+
     ?>
 
     <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-5">
         <div class="d-flex mt-5">
             <div class="col-3 border p-4 me-3">
                 <h5>Total Count</h5>
-                <h4>10</h4>
+                <h4><?php echo count($filteredCrequests); ?></h4>
             </div>
-            <div class="col-3 border p-4 me-3">
-                <h5>Issue Date</h5>
-                <h4>15-01-2025</h4>
-            </div>
-            <div class="col-3 border p-4 me-3">
-                <h5>Delivery Date</h5>
-                <h4>15-01-2025</h4>
-            </div>
+
         </div>
         <div class="table-responsive p-3 border mt-5">
-            <table style="width:100%" class="table table-striped">
+            <table id="example" style="width:100%" class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">Id</th>
-                        <th scope="col">User Id</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Delivery Date</th>
-                        <th scope="col">Total</th>
-                        <th scope="col">Empty</th>
-                        <th scope="col">Issue Date</th>
+                        <th scope="col">Consumer Name</th>
+                        <th scope="col">Panel</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Empty Cylinder</th>
+                        <th scope="col">Payment Status</th>
+                        <th scope="col">Delivery Status</th>
+                        <th scope="col">Scheduled Delivery</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    // Example data, replace with your actual data retrieval logic
-                    $crequests = [
-                        ['id' => 1, 'user_id' => 101, 'category' => 'Home', 'delivery_date' => '2025-01-01', 'total' => 1, 'empty' => 'Null', 'issue_date' => '2025-01-01'],
-                        ['id' => 2, 'user_id' => 102, 'category' => 'Industry', 'delivery_date' => '2025-01-02', 'total' => 3, 'empty' => 'Null', 'issue_date' => '2025-01-02'],
-                        ['id' => 3, 'user_id' => 103, 'category' => 'Home', 'delivery_date' => '2025-01-03', 'total' => 2, 'empty' => 'Null', 'issue_date' => '2025-01-03'],
-                        ['id' => 4, 'user_id' => 104, 'category' => 'Industry', 'delivery_date' => '2025-01-04', 'total' => 4, 'empty' => 'Null', 'issue_date' => '2025-01-04'],
-                        ['id' => 5, 'user_id' => 105, 'category' => 'Home', 'delivery_date' => '2025-01-05', 'total' => 12, 'empty' => 'Null', 'issue_date' => '2025-01-05']
-                    ];
-
-                    foreach ($crequests as $request) {
-                        echo "<tr>";
-                        echo "<td>{$request['id']}</td>";
-                        echo "<td>{$request['user_id']}</td>";
-                        echo "<td>{$request['category']}</td>";
-                        echo "<td>{$request['delivery_date']}</td>";
-                        echo "<td>{$request['total']}</td>";
-                        echo "<td>{$request['empty']}</td>";
-                        echo "<td>{$request['issue_date']}</td>";
-                        echo "</tr>";
+                    if ($filteredCrequests) {
+                        foreach ($filteredCrequests as $request) {
+                            $consumerName = 'N/A';
+                            if (isset($consumers[$request['consumer_id']])) {
+                                $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
+                            }
+                            echo '<tr>';
+                            echo '<td>' . $consumerName . '</td>';
+                            echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
+                            echo '<td>' . htmlspecialchars($request['quantity']) . '</td>';
+                            echo '<td>' . ($request['empty_cylinder']) . '</td>';
+                            echo '<td>' . htmlspecialchars($request['payment_status']) . '</td>';
+                            echo '<td>' . htmlspecialchars($request['delivery_status']) . '</td>';
+                            echo '<td>' . htmlspecialchars($request['sdelivery']) . '</td>';
+                            echo '</tr>';
+                        }
+                    } else {
+                        echo '<tr><td colspan="7">No matching requests found for your outlet.</td></tr>';
                     }
                     ?>
                 </tbody>
@@ -72,8 +90,14 @@
         </div>
 
     </main>
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        });
+    </script>
 
 
     <?php
     include_once '../components/manager-dashboard-down.php';
+    message_success();
     ?>
