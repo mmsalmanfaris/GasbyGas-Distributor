@@ -14,6 +14,8 @@
     $userRecord = $database->getReference("users/{$user_id}")->getValue();
     $user_outlet_id = $userRecord['outlet_id'] ?? null;
 
+    $selectedPanel = isset($_GET['panel']) ? $_GET['panel'] : 'all';
+
     $filteredCrequests = [];
 
     if ($user_outlet_id) {
@@ -26,13 +28,15 @@
                     $request['type'] === 'home' &&
                     $request['empty_cylinder'] === 'pending' &&
                     $request['payment_status'] === 'pending' &&
-                    $request['delivery_status'] === 'pending'
+                    $request['delivery_status'] === 'pending' &&
+                    ($selectedPanel === 'all' || $request['panel'] === $selectedPanel)
                 ) {
                     $filteredCrequests[] = $request;
                 }
             }
         }
     }
+
     ?>
 </head>
 
@@ -44,6 +48,15 @@
                 <h5>Total Count</h5>
                 <h4><?php echo count($filteredCrequests); ?></h4>
             </div>
+
+        </div>
+        <div class="col-3 me-auto mt-4">
+            <label for="panelSelect" class="form-label fw-bold">Filter by Panel:</label>
+            <select class="form-select" id="panelSelect" onchange="window.location.href = '?panel=' + this.value;">
+                <option value="all" <?php echo ($selectedPanel === 'all' ? 'selected' : ''); ?>>All Panels</option>
+                <option value="A" <?php echo ($selectedPanel === 'A' ? 'selected' : ''); ?>>Panel A</option>
+                <option value="B" <?php echo ($selectedPanel === 'B' ? 'selected' : ''); ?>>Panel B</option>
+            </select>
         </div>
         <div class="table-responsive p-3 border mt-5">
             <table id="example" style="width:100%" class="table table-striped">
@@ -66,7 +79,7 @@
                             if (isset($consumers[$request['consumer_id']])) {
                                 $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
                             }
-                            echo '<tr data-outlet-id="' . htmlspecialchars($request['outlet_id']) . '" data-consumer-id="' . htmlspecialchars($request['consumer_id']) . '" data-quantity="' . htmlspecialchars($request['quantity']) . '">';
+                            echo '<tr data-outlet-id="' . htmlspecialchars($request['outlet_id']) . '" data-consumer-id="' . htmlspecialchars($request['consumer_id']) . '" data-quantity="' . htmlspecialchars($request['quantity']) . '" data-panel="' . htmlspecialchars($request['panel']) . '">';
                             echo '<td>' . $consumerName . '</td>';
                             echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['quantity']) . '</td>';
@@ -98,12 +111,15 @@
                 const tableRows = document.querySelectorAll('#example tbody tr');
                 const cancellations = [];
                 const today = new Date().toISOString().slice(0, 10);
+                const selectedPanel = document.getElementById('panelSelect').value;
+
 
                 tableRows.forEach(row => {
                     const outlet_id = row.getAttribute('data-outlet-id');
                     const consumer_id = row.getAttribute('data-consumer-id');
                     const quantity = row.getAttribute('data-quantity');
-                    if (outlet_id && consumer_id && quantity) {
+                    const panel = row.getAttribute('data-panel');
+                    if (outlet_id && consumer_id && quantity && (selectedPanel === 'all' || panel === selectedPanel)) {
                         cancellations.push({
                             outlet_id: outlet_id,
                             consumer_id: consumer_id,
@@ -111,9 +127,10 @@
                             date: today,
                         });
                     } else {
-                        console.log("Missing required attributes in row:", row);
+                        console.log("Missing required attributes or panel mismatch in row:", row);
                     }
                 });
+
                 console.log("Data to send:", cancellations);
 
                 fetch('../includes/addCancellations.inc.php', {
@@ -147,6 +164,7 @@
 
         });
     </script>
+
     <?php
     include_once '../components/manager-dashboard-down.php';
     message_success();
