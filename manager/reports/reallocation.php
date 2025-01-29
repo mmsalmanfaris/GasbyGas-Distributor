@@ -16,6 +16,7 @@
 
   $selectedMonth = isset($_GET['month']) ? $_GET['month'] : date('Y-m');
   $dailyReallocations = [];
+  $dailyReallocatedQuantities = [];
 
 
   if ($user_outlet_id) {
@@ -30,8 +31,10 @@
           if ($cancellationDate >= $startDate && $cancellationDate <= $endDate) {
             if (!isset($dailyReallocations[$cancellationDate])) {
               $dailyReallocations[$cancellationDate] = 0;
+              $dailyReallocatedQuantities[$cancellationDate] = 0;
             }
             $dailyReallocations[$cancellationDate]++;
+            $dailyReallocatedQuantities[$cancellationDate] += intval($cancellation['quantity']);
           }
         }
       }
@@ -39,6 +42,8 @@
   }
   $labels = array_keys($dailyReallocations);
   $reallocationCounts = array_values($dailyReallocations);
+  $reallocationQuantities = array_values($dailyReallocatedQuantities);
+
   ?>
   <style>
     .chart-container {
@@ -75,6 +80,7 @@
           <tr>
             <th scope="col">Date</th>
             <th scope="col">Total Reallocation Count</th>
+            <th scope="col">Total Reallocated Quantity</th>
           </tr>
         </thead>
         <tbody>
@@ -84,10 +90,11 @@
               echo '<tr>';
               echo '<td>' . htmlspecialchars($date) . '</td>';
               echo '<td>' . $count . '</td>';
+              echo '<td>' . (isset($dailyReallocatedQuantities[$date]) ? $dailyReallocatedQuantities[$date] : 0) . '</td>';
               echo '</tr>';
             }
           } else {
-            echo '<tr><td colspan="2">No reallocation data found for this month.</td></tr>';
+            echo '<tr><td colspan="3">No reallocation data found for this month.</td></tr>';
           }
           ?>
         </tbody>
@@ -98,19 +105,29 @@
   <script>
     const labels = <?php echo json_encode($labels); ?>;
     const reallocationCounts = <?php echo json_encode($reallocationCounts); ?>;
+    const reallocationQuantities = <?php echo json_encode($reallocationQuantities); ?>;
     const ctx = document.getElementById('reallocationChart').getContext('2d');
     const myChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: labels,
         datasets: [{
-          label: 'Total Reallocations Per Day',
-          data: reallocationCounts,
-          backgroundColor: 'rgba(75, 192, 192, 0.7)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgba(75, 192, 192, 0.9)'
-        }]
+            label: 'Total Reallocations Per Day',
+            data: reallocationCounts,
+            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(75, 192, 192, 0.9)'
+          },
+          {
+            label: 'Total Reallocated Quantity Per Day',
+            data: reallocationQuantities,
+            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(255, 99, 132, 0.9)'
+          }
+        ]
       },
       options: {
         responsive: true,
@@ -124,18 +141,18 @@
         plugins: {
           title: {
             display: true,
-            text: 'Total Reallocations Per Day',
+            text: 'Total Reallocations Per Day and Total Reallocated Quantity Per Day',
             font: {
               size: 18
             }
           },
           legend: {
-            display: false
+            display: true,
+            position: 'bottom'
           }
         }
       }
     });
-
     document.getElementById('printBtn').addEventListener('click', function() {
       window.print();
     });
