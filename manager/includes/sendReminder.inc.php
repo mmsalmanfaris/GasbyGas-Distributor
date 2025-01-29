@@ -48,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Consumer $consumerId: " . $e->getMessage();
         }
     }
+
+    echo json_encode(['success' => true, 'message' => 'Reminders sent successfully!']);
 }
 
 function sendNotification($phone, $message)

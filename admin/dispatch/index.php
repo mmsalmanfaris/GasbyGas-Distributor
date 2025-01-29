@@ -20,11 +20,11 @@
         ?>
 
         <div class="d-flex mt-5">
-            <div class="col-3 border p-4 me-3">
+            <div class="col-3 border p-4 me-3 bg-light">
                 <h5>Total Dispatch Schedules</h5>
                 <h4><?php echo count($dispatchSchedules); ?></h4>
             </div>
-            <div class="col-3 border p-4 me-3">
+            <div class="col-3 border p-4 me-3 bg-light">
                 <h5>Pending Schedules</h5>
                 <h4>
                     <?php
@@ -40,7 +40,7 @@
                     ?>
                 </h4>
             </div>
-            <div class="col-3 border p-4 me-3">
+            <div class="col-3 border p-4 me-3 bg-light">
                 <h5>Dispatched Schedules</h5>
                 <h4>
                     <?php
@@ -56,12 +56,45 @@
                     ?>
                 </h4>
             </div>
-            <div class="col-2 d-flex align-items-center justify-content-center"><button
-                    class="btn btn-primary btn-sm h-100 w-100 fs-5" data-bs-toggle="modal"
-                    data-bs-target="#addDispatchModal">
-                    Add New Schedule</button>
-            </div>
         </div>
+
+        <div class="mt-5 p-4 border bg-light">
+            <form id="deliveryScheduleForm" action="../includes/updateDispatchStatus.inc.php" method="post">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-25">
+                        <label for="districtSelect" class="form-label">Select District:</label>
+                        <select class="form-select form-control-lg" name="district" id="districtSelect" required>
+                            <option value="" disabled selected>Select a District</option>
+                            <?php
+                            if ($outlets) {
+                                $districts = array_unique(array_column($outlets, 'district'));
+                                foreach ($districts as $district) {
+                                    echo '<option value="' . htmlspecialchars($district) . '">' . htmlspecialchars($district) . '</option>';
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="totalQuantity" class="form-label">Total Quantity:</label>
+                        <input type="text" class="form-control form-control-lg" id="totalQuantity" value="0" readonly>
+                    </div>
+
+                    <div class="w-25">
+                        <label for="deliveryDate" class="form-label">Scheduled Delivery Date:</label>
+                        <input type="date" class="form-control form-control-lg" name="delivery_date" id="deliveryDate"
+                            required>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary mt-4" style="height: 45px;">Schedule
+                            Delivery</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
 
 
         <div class="table-responsive mt-5 px-2 border">
@@ -75,7 +108,6 @@
                         <th>Expected Delivery</th>
                         <th>Quantity</th>
                         <th>Status</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,10 +122,6 @@
                             echo '<td>' . htmlspecialchars($schedule['edelivery']) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['quantity']) . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['status']) . '</td>';
-                            echo "<td>
-                                  <a href='?schedule_id={$scheduleId}' class='btn btn-sm btn-success'>Update</a>
-                                  <a href='../includes/deleteDispatch.inc.php?schedule_id={$scheduleId}' class='btn btn-sm btn-danger'>Delete</a>
-                                  </td>";
                             echo '</tr>';
                         }
                     } else {
@@ -103,48 +131,11 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="mt-5 p-4 border">
-            <h4>Delivery Schedule</h4>
-            <form id="deliveryScheduleForm" action="../includes/updateDispatchStatus.inc.php" method="post">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="districtSelect" class="form-label">Select District:</label>
-                        <select class="form-select form-control-lg" name="district" id="districtSelect" required>
-                            <option value="" disabled selected>Select a District</option>
-                            <?php
-                            if ($outlets) {
-                                $districts = array_unique(array_column($outlets, 'district'));
-                                foreach ($districts as $district) {
-                                    echo '<option value="' . htmlspecialchars($district) . '">' . htmlspecialchars($district) . '</option>';
-                                }
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="totalQuantity" class="form-label">Total Quantity:</label>
-                        <input type="text" class="form-control form-control-lg" id="totalQuantity" value="0" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="deliveryDate" class="form-label">Scheduled Delivery Date:</label>
-                        <input type="date" class="form-control form-control-lg" name="delivery_date" id="deliveryDate"
-                            required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Mark as Dispatched</button>
-            </form>
-        </div>
     </main>
 
     <script>
-        document.querySelector('.btn-primary').addEventListener('click', function() {
-            var myModal = new bootstrap.Modal(document.getElementById('addDispatchModal'));
-            myModal.show();
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Check if the URL contains the `schedule_id` parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('schedule_id')) {
@@ -156,7 +147,7 @@
             const districtSelect = document.getElementById('districtSelect');
             const totalQuantityInput = document.getElementById('totalQuantity');
 
-            districtSelect.addEventListener('change', function() {
+            districtSelect.addEventListener('change', function () {
                 const selectedDistrict = districtSelect.value;
                 let totalQuantity = 0;
 
@@ -183,8 +174,7 @@
     </script>
 
     <?php
-    include_once 'edit.inc.php';
-    include_once 'add.inc.php';
+
     message_success();
     include_once '../components/manager-dashboard-down.php';
     ?>

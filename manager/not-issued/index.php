@@ -137,7 +137,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showMessage('success', 'Bulk reminders sent successfully!');
+                        window.location.href = window.location.pathname + '?status=smssuccess';
                     } else {
                         showMessage('danger', 'Error: ' + data.message);
                     }

@@ -73,6 +73,23 @@ function message_success()
             ";
         }
 
+        if ($status === 'smssuccess') {
+            echo "
+                <script>
+                    Swal.fire({
+                    icon: 'success',
+                    title: 'Success SMS',
+                    text: 'Reminders sent successfully!',
+                    showConfirmButton: false,
+                    timer: 2500
+                    });
+    
+                    // Clear the URL after the success message
+                    window.history.replaceState(null, null, window.location.pathname);
+                </script>
+            ";
+        }
+
     }
 }
 
