@@ -18,6 +18,7 @@
 
   $monthlySalesData = [];
   $labels = [];
+  $totalCylindersSold = 0;
 
   if ($user_outlet_id) {
     $crequests = $database->getReference('crequests')->getValue();
@@ -40,9 +41,11 @@
               $monthlySalesData[$dayOfMonth] = 0;
             }
             $monthlySalesData[$dayOfMonth] += intval($request['quantity']);
+            $totalCylindersSold += intval($request['quantity']);
           }
         }
       }
+
       $daysInMonth = cal_days_in_month(CAL_GREGORIAN, date('m', strtotime($selectedMonth)), date('Y', strtotime($selectedMonth)));
       for ($day = 1; $day <= $daysInMonth; $day++) {
         $labels[] = $day;
@@ -50,6 +53,7 @@
       }
     }
   }
+
 
   ?>
   <style>
@@ -73,12 +77,21 @@
         <input type="month" class="form-control" id="monthSelect" value="<?php echo $selectedMonth; ?>"
           onchange="window.location.href = '?month=' + this.value;">
       </div>
-
       <div class="col-3 d-flex justify-content-end">
         <button id="printBtn" class="btn btn-primary me-2">Print Report</button>
         <button id="exportJpgBtn" class="btn btn-primary">Export as JPG</button>
       </div>
     </div>
+    <?php if ($totalCylindersSold > 0) { ?>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Monthly Sales Summary</h5>
+          <p class="card-text">
+            <strong>Total Cylinders Sold:</strong> <?php echo $totalCylindersSold; ?>
+          </p>
+        </div>
+      </div>
+    <?php } ?>
 
     <canvas id="monthlySalesChart" width="400" height="200"></canvas>
 
@@ -115,7 +128,6 @@
           legend: {
             display: false // Hide the legend
           },
-
           // Add background to the chart
         }
       },
