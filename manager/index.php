@@ -50,38 +50,63 @@ include_once '../components/header-links.php';
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item mb-3">
-                            <a class="nav-link active fs-5 rounded-2" aria-current="page" href="./">
+                            <a class="nav-link active fs-5 rounded-2 d-flex align-items-center" aria-current="page" href="../">
                                 <i class="bi bi-speedometer2 pe-2 "></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./scan/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./scan/">
                                 <i class="bi bi-upc-scan pe-2"></i> Scan Token
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./cylinder/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./cylinder/">
                                 <i class="bi bi-box-seam pe-2"></i> Cylinder Request
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./reallocation/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./reallocation/">
                                 <i class="bi bi-arrow-repeat pe-2"></i> Reallocation
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./consumers/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./consumers/">
                                 <i class="bi bi-check-circle pe-2"></i> Consumer
                             </a>
+                        </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./not-issued/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./not-issued/">
                                 <i class="bi bi-x-circle pe-2"></i> Not Issued
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./report/">
-                                <i class="bi bi-file-earmark-text pe-2"></i> Report
+                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center" href="#">
+                                <span><i class="bi bi-file-earmark-text pe-2"></i> Reports</span>
                             </a>
+
+                            <ul class="nav flex-column ms-3" id="reportsSubMenu">
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly Sales</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/payment.php"><i class="bi bi-credit-card-2-front-fill pe-1"></i>Payment Status</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/consumer.php"><i class="bi bi-person-lines-fill pe-1"></i>Consumer Request</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch Schedule</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/reallocation.php"><i class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="../reports/not-issued.php"><i class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
