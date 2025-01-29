@@ -22,12 +22,14 @@
     $pendingRequests = [];
     if ($crequests && $user_outlet_id) {
         foreach ($crequests as $requestId => $request) {
-            // Filter by outlet and pending status
-            if ($request['outlet_id'] === $user_outlet_id && 
-                ($request['empty_cylinder'] === 'pending' || 
-                 $request['payment_status'] === 'pending') &&
-                $request['delivery_status'] === 'pending') {
-                
+            // Filter by outlet and received status
+            if (
+                $request['outlet_id'] === $user_outlet_id &&
+                $request['empty_cylinder'] === 'received' &&
+                $request['payment_status'] === 'received' &&
+                $request['delivery_status'] === 'pending'
+            ) {
+
                 // Add consumer details
                 if (isset($consumers[$request['consumer_id']])) {
                     $request['consumer'] = $consumers[$request['consumer_id']];
@@ -43,7 +45,7 @@
     <!-- Main Content -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Not- issued Lists</h1>
+            <h1 class="h2">Pending Handovers</h1>
             <button class="btn btn-primary" onclick="sendBulkReminders()" data-bs-toggle="modal" data-bs-target="#bulkReminderModal">
                 Send Reminders
             </button>
@@ -60,50 +62,41 @@
                         <th scope="col">Empty Cylinder</th>
                         <th scope="col">Payment</th>
                         <th scope="col">Issue Date</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col">Delivery Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($pendingRequests as $requestId => $request): ?>
-                        <tr>
+                        <tr data-consumer-id="<?= htmlspecialchars($request['consumer_id']) ?>">
                             <td><?= htmlspecialchars(substr($requestId, 0, 8)) ?></td>
                             <td><?= htmlspecialchars($request['consumer']['name'] ?? 'N/A') ?></td>
                             <td><?= htmlspecialchars($request['consumer']['contact'] ?? 'N/A') ?></td>
                             <td><?= htmlspecialchars($request['consumer']['category'] ?? 'N/A') ?></td>
                             <td>
-                                <span class="badge <?= $request['empty_cylinder'] === 'received' ? 'bg-success' : 'bg-danger' ?>">
+                                <span class="badge bg-success <?= $request['empty_cylinder'] === 'received' ?>">
                                     <?= ucfirst($request['empty_cylinder']) ?>
                                 </span>
                             </td>
                             <td>
-                                <span class="badge <?= $request['payment_status'] === 'completed' ? 'bg-success' : 'bg-danger' ?>">
+                                <span class="badge bg-success <?= $request['payment_status'] === 'received' ?>">
                                     <?= ucfirst($request['payment_status']) ?>
                                 </span>
                             </td>
                             <td><?= date('d M Y', strtotime($request['sdelivery'])) ?></td>
-                            <td>
-                                <button class="btn btn-sm btn-warning" 
-                                        onclick="sendReminder('<?= $request['consumer_id'] ?>')">
-                                    <i class="bi bi-bell"></i> Remind
-                                </button>
-                            </td>
+                            <td><span class="badge bg-danger">
+                                    <?= ucfirst($request['delivery_status']) ?>
+                                </span></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-            </table>
-        </div>
 
-        <!-- Message Box Below the Table -->
-        <div class="mt-5">
-            <h3>Send Custom Message</h3>
-            <textarea id="customMessage" class="form-control mb-3" rows="4" placeholder="Write your message here..."></textarea>
-            <button class="btn btn-success" onclick="sendCustomMessage()">Send Message</button>
+            </table>
         </div>
     </main>
 
     <script>
         // Initialize DataTable
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#pendingTable').DataTable({
                 responsive: true,
                 columnDefs: [
@@ -113,66 +106,49 @@
             });
         });
 
-        function sendReminder(consumerId) {
-            const message = `Dear Customer,\n\nThis is a reminder to submit your empty cylinder and complete payment for your gas request. Please visit our outlet before ${new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()} to ensure continuous service.\n\nThank you,\nGasByGas Team`;
+        function sendBulkReminders() {
+            let consumerIds = [];
 
-            fetch('../includes/sendReminder.inc.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    consumer_id: consumerId,
-                    message: message
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    showMessage('success', 'Reminder sent successfully!');
-                } else {
-                    showMessage('danger', 'Error: ' + data.message);
+            // Collect all consumers with pending delivery status
+            document.querySelectorAll("#pendingTable tbody tr").forEach(row => {
+                let deliveryStatus = row.querySelector("td:nth-child(8").innerText.trim().toLowerCase();
+                let consumerId = row.dataset.consumerId;
+
+                if (deliveryStatus === "pending" && consumerId) {
+                    consumerIds.push(consumerId);
                 }
-            })
-            .catch(error => {
-                showMessage('danger', 'Failed to send reminder: ' + error.message);
             });
-        }
 
-        function sendCustomMessage() {
-            const message = document.getElementById('customMessage').value;
-            if (!message.trim()) {
-                alert('Please enter a message before sending.');
+            if (consumerIds.length === 0) {
+                showMessage('warning', 'No consumers with pending delivery status.');
                 return;
             }
 
-            fetch('../includes/sendBulkReminder.inc.php', {
+            // Prepare the message template
+            const message = `Dear Consumer, \n\nThis is a reminder to collect your Cylinder. Please visit our outlet before ${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()} to ensure continuous service.\n\nThank you.`;
+
+            // Send request to backend
+            fetch('../includes/sendReminder.inc.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    consumer_ids: [<?php echo implode(',', array_map(fn($req) => "'" . $req['consumer_id'] . "'", $pendingRequests)); ?>],
-                    message: message
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ consumer_ids: consumerIds, message: message })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = window.location.pathname + '?status=smssuccess';
+                    } else {
+                        showMessage('danger', 'Error: ' + data.message);
+                    }
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('success', 'Message sent successfully!');
-                } else {
-                    showMessage('danger', 'Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                showMessage('danger', 'Failed to send message: ' + error.message);
-            });
+                .catch(error => {
+                    showMessage('danger', 'Failed to send reminders: ' + error.message);
+                });
         }
 
-        function showMessage(type, message) {
-            alert(`[${type.toUpperCase()}] ${message}`);
-        }
     </script>
+
+
 
     <?php
     include_once '../components/manager-dashboard-down.php';

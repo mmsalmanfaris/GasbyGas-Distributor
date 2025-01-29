@@ -1,62 +1,90 @@
 <?php
 require_once 'firebase.php';
+include '../../includes/sms_credentials.php';
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
-    $consumerId = $input['consumer_id'] ?? null;
-    $message = $input['message'] ?? '';
+    $data = json_decode(file_get_contents('php://input'), true);
+    $consumerIds = $data['consumer_ids'] ?? [];
+    $message = $data['message'] ?? '';
 
-    try {
-        if (!$consumerId) {
-            throw new Exception('Consumer ID is required');
-        }
-
-        // Get consumer details
-        $consumerRef = $database->getReference("consumers/$consumerId");
-        $consumer = $consumerRef->getValue();
-
-        if (!$consumer) {
-            throw new Exception('Consumer not found');
-        }
-
-        // Personalize message
-        $personalizedMessage = str_replace(
-            '[NAME]',
-            $consumer['name'] ?? 'Customer',
-            $message
-        );
-
-        // Send notifications
-        $smsSent = sendSMS($consumer['contact'], $personalizedMessage);
-        $emailSent = sendEmail($consumer['email'], 'GasByGas Reminder', $personalizedMessage);
-
-        if ($smsSent || $emailSent) {
-            echo json_encode(['success' => true]);
-        } else {
-            throw new Exception('Failed to send both SMS and email');
-        }
-
-    } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'message' => $e->getMessage()
-        ]);
+    if (empty($consumerIds)) {
+        echo json_encode(['success' => false, 'message' => 'No consumers found']);
+        exit;
     }
-}
 
-function sendSMS($phone, $message) {
-    // Implement actual SMS gateway integration here
-    error_log("SMS to $phone: $message");
-    return true; // Simulate success
-}
+    $successCount = 0;
+    $errorCount = 0;
+    $errors = [];
 
-function sendEmail($email, $subject, $body) {
-    // Implement actual email sending logic here
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return false;
+    foreach ($consumerIds as $consumerId) {
+        try {
+            $consumer = $database->getReference("consumers/$consumerId")->getValue();
+
+            if (!$consumer || empty($consumer['contact'])) {
+                $errorCount++;
+                continue;
+            }
+
+            $personalizedMessage = str_replace(
+                ['[NAME]', '[DATE]'],
+                [$consumer['name'], date('Y-m-d', strtotime('+3 days'))],
+                $message
+            );
+
+            $response = sendNotification($consumer['contact'], $personalizedMessage);
+
+            if ($response['status'] === 'success') {
+                $successCount++;
+            } else {
+                $errorCount++;
+                $errors[] = "Consumer $consumerId: " . ($response['message'] ?? 'Unknown error');
+            }
+        } catch (Exception $e) {
+            $errorCount++;
+            $errors[] = "Consumer $consumerId: " . $e->getMessage();
+        }
     }
-    error_log("Email to $email: $subject - $body");
-    return true; // Simulate success
+
+    echo json_encode(['success' => true, 'message' => 'Reminders sent successfully!']);
 }
+
+function sendNotification($phone, $message)
+{
+    global $apiToken, $senderId, $smsGatewayUrl;
+
+    // Validate phone number format
+    if (!preg_match('/^\+?\d{10,15}$/', $phone)) {
+        return ['status' => 'error', 'message' => 'Invalid phone number'];
+    }
+
+    $postData = [
+        'recipient' => $phone,
+        'sender_id' => $senderId,
+        'type' => 'plain',
+        'message' => $message,
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $smsGatewayUrl);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));  // Use JSON format
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $apiToken,
+        'Content-Type: application/json',
+        'Accept: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    if (curl_errno($ch)) {
+        return ['status' => 'error', 'message' => 'Curl error: ' . curl_error($ch)];
+    }
+    curl_close($ch);
+
+    return json_decode($response, true);
+}
+?>

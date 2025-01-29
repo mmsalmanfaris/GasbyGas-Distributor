@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($outlet['district'] == $selectedDistrict && $outlet['outlet_id'] == $schedule['outlet_id']) {
           $updates = [
             'sdelivery' => $deliveryDate,
-            'status' => 'dispatched'
+            'status' => 'scheduled'
           ];
           $database->getReference("dispatch_schedules/{$scheduleId}")->update($updates);
         }
