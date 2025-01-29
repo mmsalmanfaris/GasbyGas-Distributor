@@ -35,7 +35,7 @@ require_once './includes/login_view.inc.php';
                             <form action="./includes/login.inc.php" method="post">
 
                                 <div class="mb-5 text-center">
-                                    <img src="./images/brand/logo.png" alt="Esai Studio Logo" style="height: 50px;">
+                                    <img src="./images/brand/logo.png" alt="gasbygas" style="height: 50px;">
                                 </div>
 
                                 <div class="form-outline mb-4">
@@ -73,13 +73,3 @@ require_once './includes/login_view.inc.php';
 </html>
 
 
-
-<form action="login.php" method="post">
-    <label for="email">Email:</label><br>
-    <input type="email" id="email" name="email" required><br><br>
-
-    <label for="password">Password:</label><br>
-    <input type="password" id="password" name="password" required><br><br>
-
-    <input type="submit" value="Login">
-</form>

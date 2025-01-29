@@ -37,7 +37,7 @@ require_once './includes/login_view.inc.php';
                             <form action="./includes/login.inc.php" method="post">
 
                                 <div class="mb-5 text-center">
-                                    <img src="./images/brand/logo.png" alt="Esai Studio Logo" style="height: 50px;">
+                                    <img src="./images/brand/logo.png" alt="GasbyGas" style="height: 50px;">
                                 </div>
 
                                 <div class="form-outline mb-4">
