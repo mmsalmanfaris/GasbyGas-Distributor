@@ -15,7 +15,7 @@ if ($user_id) {
     try {
         $userRecord = $database->getReference("users/{$user_id}")->getValue();
         $user_outlet_id = (string)($userRecord['outlet_id'] ?? null);
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         die("Firebase error: " . $e->getMessage());
     }
 }
@@ -30,7 +30,7 @@ if ($user_outlet_id) {
         $crequests = $database->getReference('crequests')->getValue() ?? [];
         $consumers = $database->getReference('consumers')->getValue() ?? [];
         $outlets = $database->getReference('outlets')->getValue() ?? [];
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         die("Firebase error: " . $e->getMessage());
     }
 }
@@ -56,24 +56,27 @@ if ($user_outlet_id) {
         if ((string)($request['outlet_id'] ?? '') === $user_outlet_id) {
             // Handle timestamps
             $createdAt = $request['created_at'] ?? null;
-            $timestamp = is_numeric($createdAt) ? $createdAt/1000 : strtotime($createdAt);
-            
+            $timestamp = is_numeric($createdAt) ? $createdAt / 1000 : strtotime($createdAt);
+
             // Metrics calculations
-            if (($request['empty_cylinder'] ?? '') === 'received' && 
-                ($request['payment_status'] ?? '') === 'received') {
+            if (($request['empty_cylinder'] ?? '') === 'received' &&
+                ($request['payment_status'] ?? '') === 'received'
+            ) {
                 $quantity = (int)($request['quantity'] ?? 0);
                 $metrics['handedOver'] += $quantity;
                 $metrics['totalSales'] += $quantity * 1000;
             }
 
-            if (($request['empty_cylinder'] ?? '') === 'pending' || 
-                ($request['payment_status'] ?? '') === 'pending') {
+            if (($request['empty_cylinder'] ?? '') === 'pending' ||
+                ($request['payment_status'] ?? '') === 'pending'
+            ) {
                 $metrics['pendingRequests'] += (int)($request['quantity'] ?? 0);
             }
 
-            if (($request['delivery_status'] ?? '') === 'pending' && 
-               (($request['empty_cylinder'] ?? '') === 'pending' || 
-                ($request['payment_status'] ?? '') === 'pending')) {
+            if (($request['delivery_status'] ?? '') === 'pending' &&
+                (($request['empty_cylinder'] ?? '') === 'pending' ||
+                    ($request['payment_status'] ?? '') === 'pending')
+            ) {
                 $metrics['notIssued']++;
             }
 
@@ -87,12 +90,11 @@ if ($user_outlet_id) {
             if (isset($request['consumer_id'], $consumers[$request['consumer_id']])) {
                 $category = $consumers[$request['consumer_id']]['category'] ?? 'home';
                 $quantity = (int)($request['quantity'] ?? 1);
-                
+
                 if (($request['panel'] ?? '') === 'A') {
                     $panelARequests[] = $request;
                     $category === 'home' ? $metrics['homeA'] += $quantity : $metrics['industryA'] += $quantity;
-                } 
-                elseif (($request['panel'] ?? '') === 'B') {
+                } elseif (($request['panel'] ?? '') === 'B') {
                     $panelBRequests[] = $request;
                     $category === 'home' ? $metrics['homeB'] += $quantity : $metrics['industryB'] += $quantity;
                 }
@@ -110,6 +112,7 @@ $scheduleDates = [
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -119,16 +122,19 @@ $scheduleDates = [
     <style>
         .sidebar {
             background: #f8f9fa;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
+
         .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
+
         .chart-container {
             height: 300px;
         }
     </style>
 </head>
+
 <body class="bg-light">
     <div class="container-fluid">
         <div class="row">
@@ -165,34 +171,63 @@ $scheduleDates = [
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item mb-3">
-                            <a class="nav-link active fs-5 rounded-2" href="./">
-                                <i class="bi bi-speedometer2 pe-2"></i> Dashboard
+                            <a class="nav-link active fs-5 rounded-2 d-flex align-items-center" aria-current="page" href="../">
+                                <i class="bi bi-speedometer2 pe-2 "></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./scan/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./scan/">
                                 <i class="bi bi-upc-scan pe-2"></i> Scan Token
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./cylinder/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./cylinder/">
                                 <i class="bi bi-box-seam pe-2"></i> Cylinder Request
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./reallocation/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./reallocation/">
                                 <i class="bi bi-arrow-repeat pe-2"></i> Reallocation
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./not-issued/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./consumers/">
+                                <i class="bi bi-check-circle pe-2"></i> Consumer
+                            </a>
+                        </li>
+                        <li class="nav-item mb-3">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./not-issued/">
                                 <i class="bi bi-x-circle pe-2"></i> Not Issued
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2" href="./report/">
-                                <i class="bi bi-file-earmark-text pe-2"></i> Report
+                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center" href="#">
+                                <span><i class="bi bi-file-earmark-text pe-2"></i> Reports</span>
                             </a>
+
+                            <ul class="nav flex-column ms-3" id="reportsSubMenu">
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly Sales</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/payment.php"><i class="bi bi-credit-card-2-front-fill pe-1"></i>Payment Status</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/consumer.php"><i class="bi bi-person-lines-fill pe-1"></i>Consumer Request</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch Schedule</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/reallocation.php"><i class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
+                                </li>
+                                <li class="nav-item mb-1">
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="../reports/not-issued.php"><i class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -344,13 +379,23 @@ $scheduleDates = [
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top' }
+                    legend: {
+                        position: 'top'
+                    }
                 },
                 scales: {
-                    x: { title: { display: true, text: 'Month' } },
-                    y: { 
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Units' }
+                        title: {
+                            display: true,
+                            text: 'Units'
+                        }
                     }
                 }
             }
@@ -374,7 +419,9 @@ $scheduleDates = [
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
             }
         });
@@ -382,4 +429,5 @@ $scheduleDates = [
 
     <?php include_once '../components/footer-links.php'; ?>
 </body>
+
 </html>

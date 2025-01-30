@@ -15,7 +15,23 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
         <?php
-        $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue();
+
+        $dispatch = $database->getReference('dispatch_schedules')->getValue();
+
+        $dispatchSchedules = [];
+        $today = date('Y-m-d'); // Get today's date
+        
+        foreach ($dispatch as $scheduleId => $schedule) {
+            // Load schedules with request_date first
+            if (isset($schedule['request_date']) && $schedule['request_date'] <= $today) {
+                // If sdelivery exists, ensure it's within the range
+                if (!isset($schedule['sdelivery']) || $schedule['sdelivery'] >= $today) {
+                    $dispatchSchedules[$scheduleId] = $schedule;
+                }
+            }
+        }
+
+
         $outlets = $database->getReference('outlets')->getValue();
         ?>
 
@@ -96,7 +112,6 @@
         </div>
 
 
-
         <div class="table-responsive mt-5 px-2 border">
             <table id="example" class=" p-2 display nowrap" style="width:100%" class="table table-striped table-sm">
                 <thead>
@@ -132,6 +147,7 @@
             </table>
         </div>
     </main>
+
 
     <script>
 
