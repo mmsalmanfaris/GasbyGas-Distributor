@@ -19,7 +19,7 @@ const OTPScreen: React.FC = () => {
     updatedOtp[index] = value;
     setOtp(updatedOtp);
 
-    // Automatically focus next input
+    
     if (value && index < otp.length - 1) {
       inputs.current[index + 1]?.focus();
     }
