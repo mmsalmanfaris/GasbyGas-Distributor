@@ -10,17 +10,9 @@ header('Content-Type: application/json');
 $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue();
 $crequests = $database->getReference('crequests')->getValue();
 $consumers = $database->getReference('consumers')->getValue();
-$selectedOutlets = $database->getReference('outlets')->getValue(); // Ensure this is properly fetched
 
-$outletId = null;
-if (!empty($selectedOutlets)) {
-    foreach ($selectedOutlets as $id => $outlet) {
-        $outletId = $id;  // Get the first outlet ID
-        break;
-    }
-}
 
-if (!$dispatchSchedules || !$crequests || !$consumers || !$outletId) {
+if (!$dispatchSchedules || !$crequests || !$consumers || !$outlet) {
     echo json_encode([
         'success' => false,
         'message' => 'No valid data found',
@@ -31,15 +23,18 @@ if (!$dispatchSchedules || !$crequests || !$consumers || !$outletId) {
             'consumers' => $consumers,
             'selectedOutlets' => $selectedOutlets
         ]
+
     ]);
     exit;
 }
 
 // Find delivery date
 $edelivery = null;
+$sdelivery = null;
 foreach ($dispatchSchedules as $scheduleId => $schedule) {
-    if (isset($schedule['outlet_id']) && $schedule['outlet_id'] === $outletId) {
+    if (isset($schedule['outlet_id']) && $schedule['outlet_id'] === $outlet) {
         $edelivery = $schedule['edelivery'];
+        $sdelivery = $schedule['sdelivery'];
         break;
     }
 }
@@ -54,7 +49,7 @@ $consumerContacts = [];
 foreach ($crequests as $request) {
     if (
         isset($request['outlet_id'], $request['edelivery'], $request['consumer_id']) &&
-        $request['outlet_id'] === $outletId &&
+        $request['outlet_id'] === $outlet &&
         $request['edelivery'] === $edelivery
     ) {
         $consumerId = $request['consumer_id'];
@@ -70,7 +65,7 @@ if (empty($consumerContacts)) {
 }
 
 // Send Notifications
-$messageTemplate = "Dear [NAME], \n\n Your delivery is scheduled for [DATE]. Please return empty cylinder with payment on [RDATE].\n\nThank you.";
+$messageTemplate = "Dear [NAME], \n\nYour delivery is scheduled for [DATE]. Please return empty cylinder with payment on [RDATE].\n\nThank you.";
 $successCount = 0;
 $errorCount = 0;
 $errors = [];
@@ -80,7 +75,7 @@ foreach ($consumerContacts as $consumerId => $contact) {
         $consumer = $consumers[$consumerId];
         $personalizedMessage = str_replace(
             ['[NAME]', '[RDATE]', '[DATE]'],
-            [$consumer['name'], date('Y-m-d', strtotime($edelivery) - 2 * 24 * 60 * 60), date('Y-m-d', strtotime($edelivery))],
+            [$consumer['name'], date('Y-m-d', strtotime($sdelivery) - 2 * 24 * 60 * 60), date('Y-m-d', strtotime($sdelivery))],
             $messageTemplate
         );
 

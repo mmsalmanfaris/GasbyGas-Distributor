@@ -37,10 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Update the selected dispatch schedule
       $database->getReference("dispatch_schedules/{$latestScheduleId}")->update($updates);
 
+      include_once '../includes/sendReminder.inc.php';
+
       // Redirect after updating
       header("Location: ../dispatch/?status=dataupdate");
 
-      include_once '../includes/sendReminder.inc.php';
 
       exit();
     } else {

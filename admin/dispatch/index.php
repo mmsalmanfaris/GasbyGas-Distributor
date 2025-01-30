@@ -18,6 +18,8 @@
 
         $dispatch = $database->getReference('dispatch_schedules')->getValue();
 
+        $outletName = 'Unknown Outlet';
+
         $dispatchSchedules = [];
         $today = date('Y-m-d'); // Get today's date
         
@@ -79,17 +81,28 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="w-25">
                         <label for="outletSelect" class="form-label">Select Outlet:</label>
+                        <!-- Select Outlet Dropdown -->
                         <select class="form-select form-control-lg" name="outlet" id="outletSelect" required>
                             <option value="" disabled selected>Select an Outlet</option>
                             <?php
-                            if ($outlets) {
-                                foreach ($outlets as $outletId => $outletData) {
-                                    $outletName = isset($outletData['name']) ? $outletData['name'] : 'Unknown Outlet';
-                                    echo '<option value="' . htmlspecialchars($outletId) . '">' . htmlspecialchars($outletName) . '</option>';
+                            $scheduledOutlets = [];
+
+                            // Collect outlet IDs from dispatch schedules
+                            foreach ($dispatchSchedules as $schedule) {
+                                if (!empty($schedule['outlet_id'])) {
+                                    $scheduledOutlets[$schedule['outlet_id']] = true;
+                                }
+                            }
+
+                            // Display only outlets with dispatch schedules
+                            foreach ($outlets as $outletId => $outlet) {
+                                if (isset($scheduledOutlets[$outletId])) {
+                                    echo '<option value="' . htmlspecialchars($outletId) . '">' . htmlspecialchars($outlet['name']) . '</option>';
                                 }
                             }
                             ?>
                         </select>
+
 
                     </div>
 
@@ -126,9 +139,9 @@
                     <?php
                     if ($dispatchSchedules) {
                         foreach ($dispatchSchedules as $scheduleId => $schedule) {
+
                             // Fetch outlet data using the outlet key (outlet ID)
                             $outletId = isset($schedule['outlet_id']) ? $schedule['outlet_id'] : null;
-                            $outletName = 'Unknown Outlet';
 
                             if ($outletId && isset($outlets[$outletId])) {
                                 $outlet = $outlets[$outletId];
