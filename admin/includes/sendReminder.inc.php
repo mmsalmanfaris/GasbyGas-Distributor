@@ -10,12 +10,12 @@ header('Content-Type: application/json');
 $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue();
 $crequests = $database->getReference('crequests')->getValue();
 $consumers = $database->getReference('consumers')->getValue();
-// $selectedOutlets = $database->getReference('outlets')->getValue(); 
+$selectedOutlets = $database->getReference('outlets')->getValue(); // Ensure this is properly fetched
 
 $outletId = null;
 if (!empty($selectedOutlets)) {
     foreach ($selectedOutlets as $id => $outlet) {
-        $outletId = $id;  // Get first outlet ID
+        $outletId = $id;  // Get the first outlet ID
         break;
     }
 }
@@ -84,6 +84,7 @@ foreach ($consumerContacts as $consumerId => $contact) {
             $messageTemplate
         );
 
+        // Send notification
         $response = sendNotification($contact, $personalizedMessage);
 
         if ($response['status'] === 'success') {
