@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import Icon from 'react-native-vector-icons/Ionicons';
 import RNPickerSelect from 'react-native-picker-select';
-import { ref, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import { database } from '../db/DBConfig';
 
 export default function CreateAccountScreen() {
@@ -82,7 +82,7 @@ export default function CreateAccountScreen() {
   };
 
   const validateInputs = () => {
-    if (!name || !email || !contact || !nic || !address || !district || !password) {
+    if (!name || !email || !contact || !nic || !address || !district || !password || !rnumber) {
       alert('All fields are required.');
       return false;
     }
@@ -102,10 +102,35 @@ export default function CreateAccountScreen() {
     return true;
   };
 
+  const checkUniqueFields = async () => {
+    const dbRef = ref(database, 'consumers');
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const consumers = snapshot.val();
+      for (let key in consumers) {
+        if (consumers[key].email === email) {
+          alert('Email already exists. Please use a different email.');
+          return false;
+        }
+        if (consumers[key].rnumber === rnumber) {
+          alert('Registration number already exists. Please use a different one.');
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const addCustomer = async () => {
     if (!validateInputs()) return;
-
     setIsLoading(true);
+
+    const isUnique = await checkUniqueFields();
+    if (!isUnique) {
+      setIsLoading(false);
+      return;
+    }
+
     const customerData = { name, email, contact, nic, address, shopName, rnumber, district, outlet_id, password };
     const cusRef = ref(database, 'consumers/' + Date.now());
 
