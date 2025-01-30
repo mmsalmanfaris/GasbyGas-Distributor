@@ -14,32 +14,33 @@
                         <label for="district" class="form-label">District:</label>
                         <select class="form-select form-control-lg" name="district" id="district" required>
                             <option value="" disabled selected>Select District</option>
-                            <option value="ampara">Ampara</option>
-                            <option value="batticaloa">Batticaloa</option>
-                            <option value="trincomale">Trincomale</option>
-                            <option value="anuradhapura">Anuradhapura</option>
-                            <option value="badulla">Badulla</option>
-                            <option value="colombo">Colombo</option>
-                            <option value="galle">Galle</option>
-                            <option value="gampaha">Gampaha</option>
-                            <option value="hambantota">Hambantota</option>
-                            <option value="jaffna">Jaffna</option>
-                            <option value="kalutara">Kalutara</option>
-                            <option value="kandy">Kandy</option>
-                            <option value="kegalle">Kegalle</option>
-                            <option value="kilinochchi">Kilinochchi</option>
-                            <option value="kurunegala">Kurunegala</option>
-                            <option value="mannar">Mannar</option>
-                            <option value="matale">Matale</option>
-                            <option value="matara">Matara</option>
-                            <option value="monaragala">Monaragala</option>
-                            <option value="mullaitivu">Mullaitivu</option>
-                            <option value="nuwara-eliya">Nuwara Eliya</option>
-                            <option value="polonnaruwa">Polonnaruwa</option>
-                            <option value="puttalam">Puttalam</option>
-                            <option value="ratnapura">Ratnapura</option>
-                            <option value="vavuniya">Vavuniya</option>
+                            <option value="Ampara">Ampara</option>
+                            <option value="Anuradhapura">Anuradhapura</option>
+                            <option value="Badulla">Badulla</option>
+                            <option value="Batticaloa">Batticaloa</option>
+                            <option value="Colombo">Colombo</option>
+                            <option value="Galle">Galle</option>
+                            <option value="Gampaha">Gampaha</option>
+                            <option value="Hambantota">Hambantota</option>
+                            <option value="Jaffna">Jaffna</option>
+                            <option value="Kalutara">Kalutara</option>
+                            <option value="Kandy">Kandy</option>
+                            <option value="Kegalle">Kegalle</option>
+                            <option value="Kilinochchi">Kilinochchi</option>
+                            <option value="Kurunegala">Kurunegala</option>
+                            <option value="Mannar">Mannar</option>
+                            <option value="Matale">Matale</option>
+                            <option value="Matara">Matara</option>
+                            <option value="Monaragala">Monaragala</option>
+                            <option value="Mullaitivu">Mullaitivu</option>
+                            <option value="Nuwara-Eliya">Nuwara Eliya</option>
+                            <option value="Polonnaruwa">Polonnaruwa</option>
+                            <option value="Puttalam">Puttalam</option>
+                            <option value="Ratnapura">Ratnapura</option>
+                            <option value="Trincomalee">Trincomalee</option>
+                            <option value="Vavuniya">Vavuniya</option>
                         </select>
+
                         <div class="invalid-feedback">Please select a district.</div>
                     </div>
 
