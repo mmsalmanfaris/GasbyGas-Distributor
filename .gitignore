@@ -1,36 +1,38 @@
-# Ignore dependencies
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
 node_modules/
-vendor/
-package-lock.json
-composer.lock
 
-# Cache and logs
-/cache/
-/logs/
-/tmp/
- 
-# IDE and editor files
-.idea/
-.vscode/
-*.swp
-*~
-*.DS_Store
- 
-# OS-specific files
-Thumbs.db
- 
-# Deployment-related files (if applicable)
-/build/
-/dist/
- 
-# PHPUnit test results (if applicable)
-/phpunit.xml.dist
-/phpunit.xml
-/coverage/
- 
-# Other files you might want to ignore
-npm-debug.log
-yarn-error.log
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
 .DS_Store
-*.log
+*.pem
 
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
