@@ -21,7 +21,7 @@ const RequestPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const outletRef = ref(database, `users/${userId}/outlets`);
+    const outletRef = ref(database, `consumer/${userId}/outlets`);
     get(outletRef).then((snapshot) => {
       if (snapshot.exists()) {
         setOutlet(snapshot.val());

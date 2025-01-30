@@ -10,17 +10,23 @@ const RequestPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [outlets, setOutlet] = useState<string | null>(null);
+  const [selectedCylinder, setSelectedCylinder] = useState<keyof typeof cylinderPrices>('small_2kg');
   
-  const userId = "customer123"; // Replace this with actual user ID logic
+  const userId = "customer123"; // Replace with actual user ID logic
   
+  const cylinderPrices = {
+    small_2kg : 950.00,
+    medium_5kg: 1700.00,
+    large_12kg: 4000.00
+  };
+
   useEffect(() => {
-    // Fetch outlet from user profile
     const outletRef = ref(database, `users/${userId}/outlets`);
     get(outletRef).then((snapshot) => {
       if (snapshot.exists()) {
         setOutlet(snapshot.val());
       } else {
-        setOutlet("Unknown"); // Default if outlet is missing
+        setOutlet("Unknown");
       }
     });
   }, []);
@@ -40,13 +46,14 @@ const RequestPage: React.FC = () => {
     }
 
     setLoading(true);
-
     const requestData = {
       consumer_id: userId,
       type: "Industry",
       outlet_id: outlets || "Unknown",
       quantity,
       panel: selectedDate,
+      cylinder_type: selectedCylinder,
+      total_price: cylinderPrices[selectedCylinder] * quantity,
       created_at: Date.now(),
       empty_cylinder: "pending",
       payment_status: "pending",
@@ -62,19 +69,16 @@ const RequestPage: React.FC = () => {
 
     push(userRequestRef, requestData)
       .then(() => {
-        // Update the total requests count
         get(totalRequestsRef).then((snapshot) => {
           const currentTotal = snapshot.val() || 0;
           set(totalRequestsRef, currentTotal + quantity);
         });
-
-        // Update the recent request date
         set(recentRequestRef, new Date().toISOString());
 
         setLoading(false);
         Alert.alert(
           "Request Submitted",
-          `You have requested ${quantity} gas cylinders for delivery on ${selectedDate}.`,
+          `You have requested ${quantity} ${selectedCylinder} gas cylinders for delivery on ${selectedDate}.`,
           [{ text: "OK", onPress: () => router.push("/bsuccessmessage") }]
         );
       })
@@ -88,51 +92,38 @@ const RequestPage: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.modal}>
+        <Text style={styles.label}>Select Cylinder Type</Text>
+        <View style={styles.cylinderContainer}>
+          {Object.keys(cylinderPrices).map((key) => (
+            <TouchableOpacity
+              key={key}
+              style={[styles.cylinderButton, selectedCylinder === key && styles.selectedCylinder]}
+              onPress={() => setSelectedCylinder(key as keyof typeof cylinderPrices)}
+            >
+              <Text>{key.charAt(0).toUpperCase() + key.slice(1)} Cylinder - Rs.{cylinderPrices[key as keyof typeof cylinderPrices].toFixed(2)}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         <Text style={styles.label}>Quantity</Text>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => handleQuantityChange("decrement")}
-          >
+          <TouchableOpacity style={styles.quantityButton} onPress={() => handleQuantityChange("decrement")}>
             <Ionicons name="remove" size={24} color="#007BFF" />
           </TouchableOpacity>
-          <TextInput
-            style={styles.quantityInput}
-            value={String(quantity)}
-            editable={false}
-          />
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => handleQuantityChange("increment")}
-          >
+          <TextInput style={styles.quantityInput} value={String(quantity)} editable={false} />
+          <TouchableOpacity style={styles.quantityButton} onPress={() => handleQuantityChange("increment")}>
             <Ionicons name="add" size={24} color="#007BFF" />
           </TouchableOpacity>
         </View>
 
         <Text style={styles.label}>Delivery Date</Text>
         <View style={styles.dateContainer}>
-          <TouchableOpacity
-            style={styles.radioButtonContainer}
-            onPress={() => setSelectedDate("Panel A")}
-          >
-            <View
-              style={[
-                styles.radioButton,
-                selectedDate === "Panel A" && styles.radioButtonSelected,
-              ]}
-            />
+          <TouchableOpacity style={styles.radioButtonContainer} onPress={() => setSelectedDate("A")}>
+            <View style={[styles.radioButton, selectedDate === "A" && styles.radioButtonSelected]} />
             <Text style={styles.dateText}>First Half of month</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.radioButtonContainer}
-            onPress={() => setSelectedDate("Panel B")}
-          >
-            <View
-              style={[
-                styles.radioButton,
-                selectedDate === "Panel B" && styles.radioButtonSelected,
-              ]}
-            />
+          <TouchableOpacity style={styles.radioButtonContainer} onPress={() => setSelectedDate("B")}>
+            <View style={[styles.radioButton, selectedDate === "B" && styles.radioButtonSelected]} />
             <Text style={styles.dateText}>Second Half of month</Text>
           </TouchableOpacity>
         </View>
@@ -165,6 +156,23 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 5,
+  },
+  cylinderContainer: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  cylinderButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginHorizontal: 5,
+    alignItems: "center",
+  },
+  selectedCylinder: {
+    borderColor: "#007BFF",
+    borderWidth: 2,
   },
   dateContainer: {
     alignItems: "flex-start",

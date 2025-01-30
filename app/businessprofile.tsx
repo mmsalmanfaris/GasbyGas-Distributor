@@ -19,7 +19,7 @@ const PersonalSettingsPage: React.FC = () => {
   const [district, setDistrict] = useState('');
   const [shopName, setShopName] = useState('');  
   const [rnumber, setrnumber] = useState('');
-  const [outlet, setOutlet] = useState('');
+  const [outlet_id, setOutlet] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
@@ -148,7 +148,7 @@ const PersonalSettingsPage: React.FC = () => {
           />          
           <TextInput
             style={styles.input}
-            value={outlet}
+            value={outlet_id}
             onChangeText={setOutlet}
             placeholder="outlet"
           />

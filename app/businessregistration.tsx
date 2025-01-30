@@ -116,6 +116,10 @@ export default function CreateAccountScreen() {
           alert('Registration number already exists. Please use a different one.');
           return false;
         }
+        if (consumers[key].nic === nic) {
+          alert('NIC number already exists. Please use your own NIC number.');
+          return false;
+        }
       }
     }
     return true;

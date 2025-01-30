@@ -79,7 +79,7 @@ export default function BusinessLoginScreen() {
           );
           await AsyncStorage.setItem(
             "outlet",
-            _user.outlet
+            _user.outlet_id
           );
 
         }
