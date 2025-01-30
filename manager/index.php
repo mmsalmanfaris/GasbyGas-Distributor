@@ -132,6 +132,34 @@ $scheduleDates = [
 <body class="bg-light">
     <div class="container-fluid">
         <div class="row">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+        <div class="container-fluid">
+            <p class="navbar-brand fs-3 pt-3">Outlet Dashboard, <?php echo $_SESSION['name'] ?? 'Guest' ?></p>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <a class="nav-link bg-primary fs-5 rounded-2 px-3 text-white" href="#">
+                            <i class="bi bi-person"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link bg-primary fs-5 rounded-2 px-3 text-white" href="#">
+                            <i class="bi bi-gear"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white"
+                            href="../../includes/logout.inc.php">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
             <!-- Sidebar -->
             <nav class="col-md-2 d-none d-md-block sidebar vh-100">
                 <div class="position-sticky pt-3">

@@ -204,7 +204,7 @@
                             echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
                             echo '<td>' . $emptyCylinder . '</td>';
                             echo '<td>' . htmlspecialchars($request['payment_status']) . '</td>';
-                            echo '<td>' . htmlspecialchars($request['sdelivery']) . '</td>';
+                            echo '<td>' . htmlspecialchars($request['edelivery']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['delivery_status']) . '</td>';
                             echo '</tr>';
                         }
