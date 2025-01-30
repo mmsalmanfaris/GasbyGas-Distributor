@@ -173,11 +173,12 @@ $scheduleDates = [
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center" href="#">
+                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubMenu" aria-expanded="false">
                                 <span><i class="bi bi-file-earmark-text pe-2"></i> Reports</span>
+                                <span class="rotate-icon"><i class="bi bi-caret-down-fill reports-icon"></i></span>
                             </a>
 
-                            <ul class="nav flex-column ms-3" id="reportsSubMenu">
+                            <ul class="nav flex-column ms-3 collapse" id="reportsSubMenu">
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly Sales</a>
                                 </li>
@@ -197,7 +198,7 @@ $scheduleDates = [
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/reallocation.php"><i class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="../reports/not-issued.php"><i class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/not-issued.php"><i class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
                                 </li>
                             </ul>
                         </li>
@@ -396,6 +397,18 @@ $scheduleDates = [
                     }
                 }
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportsMenuLink = document.querySelector('[data-bs-target="#reportsSubMenu"]');
+            const reportsIcon = document.querySelector('.reports-icon');
+            const reportsSubMenu = document.getElementById('reportsSubMenu');
+
+            reportsMenuLink.addEventListener('click', function() {
+                reportsIcon.classList.toggle('bi-caret-down-fill');
+                reportsIcon.classList.toggle('bi-caret-up-fill');
+                reportsIcon.classList.toggle('rotated');
+            });
         });
     </script>
 
