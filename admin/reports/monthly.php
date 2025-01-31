@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monthly Breakdown Report - Admin</title>
+  <title>Monthly Sales Report - Admin</title>
 
   <?php
   include_once '../components/manager-dashboard-top.php';
