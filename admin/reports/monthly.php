@@ -80,7 +80,7 @@
           onchange="window.location.href = '?year=' + this.value;" min="2020" max="<?php echo date('Y'); ?>">
       </div>
       <div class="col-3 d-flex justify-content-end">
-        <button id="printBtn" class="btn btn-primary me-2">Print Report</button>
+        <button id="printBtn" class="btn btn-primary me-2" onclick="window.print()">Print Report</button>
         <!-- <button id="exportJpgBtn" class="btn btn-primary">Export as JPG</button> -->
       </div>
     </div>
@@ -148,9 +148,6 @@
       a.href = chartImage;
       a.download = 'monthly_sales_report.jpg';
       a.click();
-    });
-    document.getElementById('printBtn').addEventListener('click', function() {
-      window.print();
     });
   </script>
   <?php
