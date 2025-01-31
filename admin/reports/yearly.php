@@ -12,6 +12,10 @@
   require '../includes/firebase.php';
 
   $selectedYear = isset($_GET['year']) ? $_GET['year'] : date('Y');
+  $selectedOutlet = isset($_GET['outlet']) ? $_GET['outlet'] : 'all';
+
+  $outlets = $database->getReference('outlets')->getValue();
+
 
   $monthlySalesData = [];
   $labels = [];
@@ -45,27 +49,29 @@
       ) {
         $requestDate = new DateTime($request['created_at']);
         if ($requestDate->format('Y') == $selectedYear) {
-          $month = $requestDate->format('F');
-          if (!isset($monthlySalesData[$month])) {
-            $monthlySalesData[$month] = 0;
-          }
-          $monthlySalesData[$month] += intval($request['total_price']);
-          $totalCylindersSold += intval($request['quantity']);
-          $totalSalesAmount += intval($request['total_price']);
-
-          // Aggregate sales by cylinder type
-          if (isset($request['cylinder_type'])) {
-            $type = $request['cylinder_type'];
-            $salesByType[$type] += intval($request['total_price']);
-          }
-
-          // Aggregate sales by customer type
-          if (isset($request['type'])) {
-            $type = $request['type'];
-            if (!isset($salesByCustomerType[$type])) {
-              $salesByCustomerType[$type] = 0;
+          if ($selectedOutlet === 'all' || $request['outlet_id'] === $selectedOutlet) {
+            $month = $requestDate->format('F');
+            if (!isset($monthlySalesData[$month])) {
+              $monthlySalesData[$month] = 0;
             }
-            $salesByCustomerType[$type] += intval($request['total_price']);
+            $monthlySalesData[$month] += intval($request['total_price']);
+            $totalCylindersSold += intval($request['quantity']);
+            $totalSalesAmount += intval($request['total_price']);
+
+            // Aggregate sales by cylinder type
+            if (isset($request['cylinder_type'])) {
+              $type = $request['cylinder_type'];
+              $salesByType[$type] += intval($request['total_price']);
+            }
+
+            // Aggregate sales by customer type
+            if (isset($request['type'])) {
+              $type = $request['type'];
+              if (!isset($salesByCustomerType[$type])) {
+                $salesByCustomerType[$type] = 0;
+              }
+              $salesByCustomerType[$type] += intval($request['total_price']);
+            }
           }
         }
       }
@@ -95,7 +101,22 @@
       <div class="col-3">
         <label for="yearSelect" class="form-label fw-bold">Select Year:</label>
         <input type="number" class="form-control" id="yearSelect" value="<?php echo $selectedYear; ?>"
-          onchange="window.location.href = '?year=' + this.value;" min="2020" max="<?php echo date('Y'); ?>">
+          onchange="window.location.href = '?year=' + this.value + '&outlet=' + document.getElementById('outletSelect').value;" min="2020" max="<?php echo date('Y'); ?>">
+      </div>
+      <div class="col-3">
+        <label for="outletSelect" class="form-label fw-bold">Select Outlet:</label>
+        <select class="form-select" id="outletSelect"
+          onchange="window.location.href = '?outlet=' + this.value + '&year=' + document.getElementById('yearSelect').value;">
+          <option value="all" <?php echo ($selectedOutlet === 'all' ? 'selected' : ''); ?>>All Outlets</option>
+          <?php
+          if (is_array($outlets)) {
+            foreach ($outlets as $outlet) {
+              $selected = ($outlet['outlet_id'] === $selectedOutlet) ? 'selected' : '';
+              echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
+            }
+          }
+          ?>
+        </select>
       </div>
       <div class="col-3 d-flex justify-content-end">
         <button id="printBtn" class="btn btn-primary me-2" onclick="window.print()">Print Report</button>
@@ -142,10 +163,10 @@
         datasets: [{
           label: 'Total Revenue',
           data: monthlySales,
-          backgroundColor: 'rgba(54, 162, 235, 0.7)', // Blue with opacity
-          borderColor: 'rgba(54, 162, 235, 1)', // Blue border
+          backgroundColor: 'rgba(54, 162, 235, 0.7)',
+          borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1,
-          hoverBackgroundColor: 'rgba(54, 162, 235, 0.9)' // Darker blue on hover
+          hoverBackgroundColor: 'rgba(54, 162, 235, 0.9)'
         }]
       },
       options: {
@@ -203,7 +224,6 @@
         }
       }
     });
-
     const salesByCustomerType = <?php echo json_encode($salesByCustomerType); ?>;
     const customerTypeLabels = Object.keys(salesByCustomerType);
     const customerTypeData = Object.values(salesByCustomerType);
