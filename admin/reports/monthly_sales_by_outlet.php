@@ -81,10 +81,10 @@
         <input type="month" class="form-control" id="monthSelect" value="<?php echo $selectedMonth; ?>"
           onchange="window.location.href = '?month=' + this.value;">
       </div>
-      <div class="col-3 d-flex justify-content-end">
+      <!-- <div class="col-3 d-flex justify-content-end">
         <button id="printBtn" class="btn btn-primary me-2" onclick="window.print()">Print Report</button>
-        <!-- <button id="exportJpgBtn" class="btn btn-primary">Export as JPG</button> -->
-      </div>
+        <button id="exportJpgBtn" class="btn btn-primary">Export as JPG</button>
+      </div> -->
     </div>
     <?php if ($totalSalesAmount > 0) { ?>
       <div class="card mb-4">
