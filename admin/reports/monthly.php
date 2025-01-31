@@ -31,6 +31,9 @@
   ];
   $totalCylindersSold = 0;
   $totalSalesAmount = 0;
+  $allCylinderTypes = ['small_2kg', 'medium_5kg', 'large_12kg'];
+  $salesByType = array_fill_keys($allCylinderTypes, 0);
+  $salesByCustomerType = [];
 
 
   if ($crequests = $database->getReference('crequests')->getValue()) {
@@ -49,6 +52,21 @@
           $monthlySalesData[$month] += intval($request['total_price']);
           $totalCylindersSold += intval($request['quantity']);
           $totalSalesAmount += intval($request['total_price']);
+
+          // Aggregate sales by cylinder type
+          if (isset($request['cylinder_type'])) {
+            $type = $request['cylinder_type'];
+            $salesByType[$type] += intval($request['total_price']);
+          }
+
+          // Aggregate sales by customer type
+          if (isset($request['type'])) {
+            $type = $request['type'];
+            if (!isset($salesByCustomerType[$type])) {
+              $salesByCustomerType[$type] = 0;
+            }
+            $salesByCustomerType[$type] += intval($request['total_price']);
+          }
         }
       }
     }
@@ -98,6 +116,17 @@
 
     <canvas id="monthlySalesChart" width="400" height="200"></canvas>
 
+    <div class="d-flex mt-5">
+      <div class="col-6">
+        <h3>Sales by Cylinder Type</h3>
+        <canvas id="salesByTypeChart" width="400" height="200"></canvas>
+      </div>
+      <div class="col-6">
+        <h3>Sales by Customer Type</h3>
+        <canvas id="salesByCustomerTypeChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
   </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -141,6 +170,70 @@
         }
       }]
     });
+
+    const salesByType = <?php echo json_encode($salesByType); ?>;
+    const typeLabels = Object.keys(salesByType);
+    const typeData = Object.values(salesByType);
+    const typeCtx = document.getElementById('salesByTypeChart').getContext('2d');
+    const salesByTypeChart = new Chart(typeCtx, {
+      type: 'doughnut',
+      data: {
+        labels: typeLabels,
+        datasets: [{
+          label: 'Sales by Cylinder Type',
+          data: typeData,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'right',
+          }
+        }
+      }
+    });
+
+    const salesByCustomerType = <?php echo json_encode($salesByCustomerType); ?>;
+    const customerTypeLabels = Object.keys(salesByCustomerType);
+    const customerTypeData = Object.values(salesByCustomerType);
+    const customerCtx = document.getElementById('salesByCustomerTypeChart').getContext('2d');
+    const customerTypeChart = new Chart(customerCtx, {
+      type: 'doughnut',
+      data: {
+        labels: customerTypeLabels,
+        datasets: [{
+          label: 'Sales by Customer Type',
+          data: customerTypeData,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'right',
+          }
+        }
+      }
+    });
     document.getElementById('exportJpgBtn').addEventListener('click', function() {
       const chartCanvas = document.getElementById('monthlySalesChart');
       const chartImage = chartCanvas.toDataURL('image/jpeg', 1.0);
@@ -148,6 +241,9 @@
       a.href = chartImage;
       a.download = 'monthly_sales_report.jpg';
       a.click();
+    });
+    document.getElementById('printBtn').addEventListener('click', function() {
+      window.print();
     });
   </script>
   <?php
