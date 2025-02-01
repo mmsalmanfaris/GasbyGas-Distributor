@@ -20,58 +20,126 @@
         ?>
 
         <!-- Stock Overview -->
-        <div
-            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">Stock Management</h1>
         </div>
 
-        <div class="d-flex mt-4">
-            <div class="col-3 border p-4 me-3 bg-light rounded shadow-sm">
-                <h5>Current Stock Level</h5>
-                <h4><?php echo $currentStock; ?> units</h4>
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-box fa-2x mb-3 text-primary"></i>
+                        <h5 class="card-title fw-bold">Current Stock Level</h5>
+                        <h2 class="card-text mt-3 display-6 fw-bold text-primary"><?php echo $currentStock; ?></h2>
+                        <p class="text-muted">Available Units</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-3 border p-4 me-3 bg-light rounded shadow-sm">
-                <h5>Pending Requests</h5>
-                <h4>
-                    <?php
-                    $totalPendingRequests = 0;
-                    if ($dispatchSchedules) {
-                        foreach ($dispatchSchedules as $schedule) {
-                            if ($schedule['status'] === 'pending') {
-                                $totalPendingRequests++;
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-clock fa-2x mb-3 text-warning"></i>
+                        <h5 class="card-title fw-bold">Pending Requests</h5>
+                        <h2 class="card-text mt-3 display-6 fw-bold text-warning">
+                            <?php
+                            $totalPendingRequests = 0;
+                            if ($dispatchSchedules) {
+                                foreach ($dispatchSchedules as $schedule) {
+                                    if ($schedule['status'] === 'pending') {
+                                        $totalPendingRequests++;
+                                    }
+                                }
                             }
-                        }
-                    }
-                    echo $totalPendingRequests;
-                    ?>
-                </h4>
+                            echo $totalPendingRequests;
+                            ?>
+                        </h2>
+                        <p class="text-muted">Active Requests</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-3 border p-4 me-3 bg-light rounded shadow-sm">
-                <h5>Total Requested Units</h5>
-                <h4>
-                    <?php
-                    $totalRequestedUnits = 0;
-                    if ($dispatchSchedules) {
-                        foreach ($dispatchSchedules as $schedule) {
-                            if ($schedule['status'] === 'pending') {
-                                $totalRequestedUnits += intval($schedule['quantity']);
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-gas-pump fa-2x mb-3 text-info"></i>
+                        <h5 class="card-title fw-bold">Total Requested Units</h5>
+                        <h2 class="card-text mt-3 display-6 fw-bold text-info">
+                            <?php
+                            $totalRequestedUnits = 0;
+                            if ($dispatchSchedules) {
+                                foreach ($dispatchSchedules as $schedule) {
+                                    if ($schedule['status'] === 'pending') {
+                                        $totalRequestedUnits += intval($schedule['quantity']);
+                                    }
+                                }
                             }
-                        }
-                    }
-                    echo $totalRequestedUnits;
-                    ?>
-                </h4>
+                            echo $totalRequestedUnits;
+                            ?>
+                        </h2>
+                        <p class="text-muted">Units Requested</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-3 border p-4 bg-light rounded shadow-sm">
-                <h5>Stock Status</h5>
-                <h4>
-                    <?php
-                    $stockStatus = $currentStock >= $totalRequestedUnits ?
-                        '<span class="text-success">Sufficient</span>' :
-                        '<span class="text-danger">Insufficient</span>';
-                    echo $stockStatus;
-                    ?>
-                </h4>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-chart-line fa-2x mb-3 <?php echo $currentStock >= $totalRequestedUnits ? 'text-success' : 'text-danger'; ?>"></i>
+                        <h5 class="card-title fw-bold">Stock Status</h5>
+                        <h2 class="card-text mt-3 display-6 fw-bold">
+                            <?php
+                            $stockStatus = $currentStock >= $totalRequestedUnits ?
+                                '<span class="text-success">Sufficient</span>' :
+                                '<span class="text-danger">Insufficient</span>';
+                            echo $stockStatus;
+                            ?>
+                        </h2>
+                        <p class="text-muted">Current Status</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Controls -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8 text-center">
+                <div class="card shadow border-0">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">Stock Management Controls</h4>
+                        <div class="d-flex justify-content-center gap-3">
+                            <select class="form-select form-select-lg w-50" id="stockStatus" style="max-width: 300px;">
+                                <option value="true">Available</option>
+                                <option value="false">Unavailable</option>
+                            </select>
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                                <i class="fas fa-plus-circle me-2"></i>Add Stock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Stock Modal -->
+        <div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addStockModalLabel">Add Stock</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="../includes/add_stock.php" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="stockQuantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="stockQuantity" name="quantity" required min="1">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add Stock</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </main>
