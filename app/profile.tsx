@@ -14,7 +14,6 @@ import { ref, get } from 'firebase/database';
 import { database } from "../db/DBConfig";
 import { getAuth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const auth = getAuth();
 
 export { auth, database };
@@ -30,22 +29,28 @@ const PersonalSettingsPage: React.FC = () => {
     const [outlet, setOutlet] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setPasswordVisible] = useState(false);
+    const [consumerId, setConsumerId] = useState<string | null>(null);
+
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
+              const _consumerId = await AsyncStorage.getItem("consumer_id");
+              setConsumerId(_consumerId);
                 const _email = await AsyncStorage.getItem('email');
-                 const _outlet_name = await AsyncStorage.getItem('outlet_name');
+                const _outlet_name = await AsyncStorage.getItem('outlet_name');
                 const _address = await AsyncStorage.getItem('address');
+                const _city = await AsyncStorage.getItem('city');
                 const _name = await AsyncStorage.getItem('name');
                 const _password = await AsyncStorage.getItem('password');
                 const _contact = await AsyncStorage.getItem('contact');
                 const _nic = await AsyncStorage.getItem('nic');
-                 const _district = await AsyncStorage.getItem('district');
+                const _district = await AsyncStorage.getItem('district');
 
                 setFullName(_name || '');
                 setEmailAddress(_email || '');
                 setAddress(_address || '');
+                setCity(_city || '');
                 setPassword(_password || '');
                 setNICnumber(_nic || '');
                 setDistrict(_district || '');
@@ -53,27 +58,24 @@ const PersonalSettingsPage: React.FC = () => {
                 setContact(_contact || '');
 
 
-                const user = auth.currentUser;
-                if (user) {
-                    // Fetch the user data from the 'consumers' node
-                    const consumersRef = ref(database, 'consumers');
-                    const snapshot = await get(consumersRef);
-                    if (snapshot.exists()) {
-                        const consumersData = snapshot.val();
-                        // Iterate through the consumers to find the matching user by email
-                        for (const consumerId in consumersData) {
-                            if (consumersData[consumerId].email === user.email) {
-                                const userData = consumersData[consumerId];
-                                break;
-                            }
-                        }
-                    } else {
-                        console.log("User data not found.");
-                    }
-                } else {
-                    console.log("No user is logged in.");
-                    router.push("/profile");
-                }
+                if(_consumerId){
+                     const userRef = ref(database, 'consumers/${_consumerId}');
+                     const snapshot = await get(userRef);
+                        if (snapshot.exists()) {
+                          const userData = snapshot.val();
+                          setFullName(userData.name || '');
+                          setEmailAddress(userData.email || '');
+                          setContact(userData.contact || '');
+                          setNICnumber(userData.nic || '');
+                          setAddress(userData.address || '');
+                          setCity(userData.city || '');
+                          setDistrict(userData.district || '');
+                          setOutlet(userData.outlet_id || '');
+                           setPassword(userData.password || '');
+                        } else {
+                          console.log("User data not found.");
+                       }
+                  }
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -109,6 +111,13 @@ const PersonalSettingsPage: React.FC = () => {
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.input}
+                        value={consumerId || ''}
+                        onChangeText={setConsumerId}
+                        placeholder="Consumer ID"
+                        editable={false}
+                    />
+                    <TextInput
+                        style={styles.input}
                         value={name}
                         onChangeText={setFullName}
                         placeholder="Full Name"
@@ -139,11 +148,17 @@ const PersonalSettingsPage: React.FC = () => {
                     />
                     <TextInput
                         style={styles.input}
-                        value={district}
-                        onChangeText={setDistrict}
-                         placeholder="District"
+                        value={city}
+                        onChangeText={setCity}
+                         placeholder="City"
                     />
                     <TextInput
+                        style={styles.input}
+                        value={district}
+                        onChangeText={setDistrict}
+                        placeholder="District"
+                    />
+                     <TextInput
                         style={styles.input}
                         value={outlet}
                          placeholder="Outlet"

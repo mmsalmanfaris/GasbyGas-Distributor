@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Platform, Button, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons as Icon } from "@expo/vector-icons";
 import { ref, get, child } from 'firebase/database';
 import { database } from "../db/DBConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';

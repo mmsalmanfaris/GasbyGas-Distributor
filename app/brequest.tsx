@@ -12,7 +12,7 @@ const RequestPage: React.FC = () => {
   const [outlets, setOutlet] = useState<string | null>(null);
   const [selectedCylinder, setSelectedCylinder] = useState<keyof typeof cylinderPrices>('small_2kg');
   
-  const userId = "customer123"; // Replace with actual user ID logic
+  const userId = "customer123"; // want to replace with actual user ID logic
   
   const cylinderPrices = {
     small_2kg : 950.00,
@@ -33,7 +33,7 @@ const RequestPage: React.FC = () => {
 
   const handleQuantityChange = (type: "increment" | "decrement") => {
     setQuantity((prev) => {
-      if (type === "increment" && prev < 3) return prev + 1;
+      if (type === "increment" && prev < 25) return prev + 1;
       if (type === "decrement" && prev > 1) return prev - 1;
       return prev;
     });

@@ -34,7 +34,7 @@ const HomePageCustomer: React.FC = () => {
       {/* Upcoming Delivery */}
       <View style={styles.upcomingDeliveryContainer}>
         <Text style={styles.upcomingDeliveryTitle}>Upcoming Delivery</Text>
-        <Text style={styles.upcomingDeliveryDate}>2025.01.11</Text>
+        <Text style={styles.upcomingDeliveryDate}>2025.02.15</Text>
       </View>
 
       {/* Request Info */}

@@ -1,12 +1,6 @@
 import { router } from 'expo-router';
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image,} from 'react-native';
 
 const SuccessMessage: React.FC = () => {
   const handleClose = () => {
@@ -24,8 +18,6 @@ const SuccessMessage: React.FC = () => {
           }}
           style={styles.icon}
         />
-
-        {/* Success Message */}
         <Text style={styles.message}>
           Your request has been successfull. Scan your QR
         </Text>
