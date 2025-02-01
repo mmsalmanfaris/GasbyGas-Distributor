@@ -92,9 +92,11 @@
     $todayDate = date('Y-m-d');
 
 
-    // Determine if the buttons should be enabled
-    
+    // Fetch head office data
+    $hoffice = $database->getReference('headoffice')->getValue();
+
     $headOffice = $hoffice['head_office_id_1'] ?? null;
+
 
     if ($headOffice && isset($headOffice['is_available']) && $headOffice['is_available'] == true) {
         $firstDispatchButtonEnabled = $currentDay >= 1 && $currentDay <= 10;
@@ -102,10 +104,7 @@
     } else {
         $firstDispatchButtonEnabled = false;
         $secondDispatchButtonEnabled = false;
-        echo "<p style='color: red;'>Out of Stock</p>";
     }
-
-
 
     ?>
 
@@ -145,7 +144,17 @@
                     <h5><?php echo $dispatchA['industrialQuantity']; ?></h5>
                 </div>
 
-                <button class="btn btn-primary w-100 mt-3" onclick="requestDispatch('A')" <?php echo $firstDispatchButtonEnabled ? '' : 'disabled'; ?>>Request to Head Office</button>
+                <?php if ($firstDispatchButtonEnabled): ?>
+                    <button class="btn btn-primary w-100 mt-3" onclick="requestDispatch('A')">
+                        Request to Head Office
+                    </button>
+                <?php else: ?>
+                    <button class="btn btn-danger w-100 mt-3" disabled>
+                        Out of Stock, Request Later
+                    </button>
+                <?php endif; ?>
+
+
             </div>
             <div class="col-4 border p-4 rounded-4 me-5">
                 <h3 class="mb-3">2nd Dispatch</h3>
@@ -180,7 +189,15 @@
                     <h5><?php echo $dispatchB['industrialQuantity']; ?></h5>
                 </div>
 
-                <button class="btn btn-primary w-100 mt-3" onclick="requestDispatch('B')" <?php echo $secondDispatchButtonEnabled ? '' : 'disabled'; ?>>Request to Head Office</button>
+                <?php if ($secondDispatchButtonEnabled): ?>
+                    <button class="btn btn-primary w-100 mt-3" onclick="requestDispatch('B')">
+                        Request to Head Office
+                    </button>
+                <?php else: ?>
+                    <button class="btn btn-danger w-100 mt-3" disabled>
+                        Out of Stock, Request Later
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
 

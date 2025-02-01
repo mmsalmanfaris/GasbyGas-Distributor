@@ -15,8 +15,6 @@ require_once './includes/login_view.inc.php';
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"
         integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./css/style.css">
 
     <title>Login GasbyGas</title>
 
@@ -37,13 +35,12 @@ require_once './includes/login_view.inc.php';
                             <form action="./includes/login.inc.php" method="post">
 
                                 <div class="mb-5 text-center">
-                                    <img src="./images/brand/logo.png" alt="GasbyGas" style="height: 50px;">
+                                    <img src="./images/brand/logo.png" alt="gasbygas" style="height: 50px;">
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="username">Username</label>
-                                    <input type="text" id="username" name="username"
-                                        class="form-control form-control-lg" />
+                                    <label class="form-label" for="email">Email</label>
+                                    <input type="text" id="email" name="email" class="form-control form-control-lg" />
                                 </div>
 
                                 <div class="form-outline mb-4">
@@ -60,11 +57,6 @@ require_once './includes/login_view.inc.php';
                                 check_login_errors();
                                 ?>
                             </form>
-                            <ul>
-                                <li><a href="register.php">Register User</a></li>
-                                <li><a href="login.php">Login User</a></li>
-                                <li><a href="fetch_users.php">Fetch Users</a></li>
-                            </ul>
                         </div>
                     </div>
                 </div>

@@ -37,11 +37,11 @@
         ?>
 
         <div class="d-flex mt-5">
-            <div class="col-3 border p-4 me-3 bg-light">
+            <div class="col-3 card border p-4 me-3 bg-light">
                 <h5>Total Dispatch Schedules</h5>
                 <h4><?php echo count($dispatchSchedules); ?></h4>
             </div>
-            <div class="col-3 border p-4 me-3 bg-light">
+            <div class="col-3 card border p-4 me-3 bg-light">
                 <h5>Pending Schedules</h5>
                 <h4>
                     <?php
@@ -57,7 +57,7 @@
                     ?>
                 </h4>
             </div>
-            <div class="col-3 border p-4 me-3 bg-light">
+            <div class="col-3 card border p-4 me-3 bg-light">
                 <h5>Dispatched Schedules</h5>
                 <h4>
                     <?php
@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <div class="mt-5 p-4 border bg-light">
+        <div class="mt-5 p-4 card border bg-light">
             <form id="deliveryScheduleForm" action="../includes/updateDispatchStatus.inc.php" method="post">
                 <!-- Replace 'your-script.php' with the actual path -->
                 <div class="d-flex align-items-center gap-3">

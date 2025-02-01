@@ -6,6 +6,11 @@ ini_set('display_errors', 1);
 include_once '../components/header-links.php';
 require '../includes/firebase.php';
 
+if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== false) {
+    header('Location: ../'); // Redirect to login if not manager
+    exit;
+}
+
 // User session handling
 $user_id = $_SESSION['user_id'] ?? null;
 $userRecord = [];
@@ -14,7 +19,7 @@ $user_outlet_id = null;
 if ($user_id) {
     try {
         $userRecord = $database->getReference("users/{$user_id}")->getValue();
-        $user_outlet_id = (string)($userRecord['outlet_id'] ?? null);
+        $user_outlet_id = (string) ($userRecord['outlet_id'] ?? null);
     } catch (Exception $e) {
         die("Firebase error: " . $e->getMessage());
     }
@@ -53,27 +58,30 @@ $panelBRequests = [];
 
 if ($user_outlet_id) {
     foreach ($crequests as $requestId => $request) {
-        if ((string)($request['outlet_id'] ?? '') === $user_outlet_id) {
+        if ((string) ($request['outlet_id'] ?? '') === $user_outlet_id) {
             // Handle timestamps
             $createdAt = $request['created_at'] ?? null;
             $timestamp = is_numeric($createdAt) ? $createdAt / 1000 : strtotime($createdAt);
 
             // Metrics calculations
-            if (($request['empty_cylinder'] ?? '') === 'received' &&
+            if (
+                ($request['empty_cylinder'] ?? '') === 'received' &&
                 ($request['payment_status'] ?? '') === 'received'
             ) {
-                $quantity = (int)($request['quantity'] ?? 0);
+                $quantity = (int) ($request['quantity'] ?? 0);
                 $metrics['handedOver'] += $quantity;
                 $metrics['totalSales'] += $quantity * 1000;
             }
 
-            if (($request['empty_cylinder'] ?? '') === 'pending' ||
+            if (
+                ($request['empty_cylinder'] ?? '') === 'pending' ||
                 ($request['payment_status'] ?? '') === 'pending'
             ) {
-                $metrics['pendingRequests'] += (int)($request['quantity'] ?? 0);
+                $metrics['pendingRequests'] += (int) ($request['quantity'] ?? 0);
             }
 
-            if (($request['delivery_status'] ?? '') === 'pending' &&
+            if (
+                ($request['delivery_status'] ?? '') === 'pending' &&
                 (($request['empty_cylinder'] ?? '') === 'pending' ||
                     ($request['payment_status'] ?? '') === 'pending')
             ) {
@@ -83,13 +91,13 @@ if ($user_outlet_id) {
             // Monthly data
             if ($timestamp) {
                 $monthYear = date('Y-m', $timestamp);
-                $monthlyIssued[$monthYear] = ($monthlyIssued[$monthYear] ?? 0) + (int)($request['quantity'] ?? 0);
+                $monthlyIssued[$monthYear] = ($monthlyIssued[$monthYear] ?? 0) + (int) ($request['quantity'] ?? 0);
             }
 
             // Panel categorization
             if (isset($request['consumer_id'], $consumers[$request['consumer_id']])) {
                 $category = $consumers[$request['consumer_id']]['category'] ?? 'home';
-                $quantity = (int)($request['quantity'] ?? 1);
+                $quantity = (int) ($request['quantity'] ?? 1);
 
                 if (($request['panel'] ?? '') === 'A') {
                     $panelARequests[] = $request;
@@ -138,40 +146,41 @@ $scheduleDates = [
 <body class="bg-light">
     <div class="container-fluid">
         <div class="row">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-        <div class="container-fluid">
-            <p class="navbar-brand fs-3 pt-3">Outlet Dashboard, <?php echo $_SESSION['name'] ?? 'Guest' ?></p>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item me-3">
-                        <a class="nav-link bg-primary fs-5 rounded-2 px-3 text-white" href="#">
-                            <i class="bi bi-person"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item me-3">
-                        <a class="nav-link bg-primary fs-5 rounded-2 px-3 text-white" href="#">
-                            <i class="bi bi-gear"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white"
-                            href="../../includes/logout.inc.php">
-                            <i class="bi bi-box-arrow-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+                <div class="container-fluid">
+                    <p class="navbar-brand fs-3 pt-3">Outlet Dashboard, <?php echo $_SESSION['name'] ?? 'Guest' ?></p>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item me-3">
+                                <a class="nav-link bg-primary fs-5 rounded-2 px-3 text-white" href="#">
+                                    <i class="bi bi-person"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link bg-primary fs-5 rounded-2 px-3 text-white" href="#">
+                                    <i class="bi bi-gear"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white"
+                                    href="../includes/logout.inc.php">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
             <!-- Sidebar -->
             <nav class="col-md-2 d-none d-md-block sidebar vh-100">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item mb-3">
-                            <a class="nav-link active fs-5 rounded-2 d-flex align-items-center" aria-current="page" href="../">
+                            <a class="nav-link active fs-5 rounded-2 d-flex align-items-center" aria-current="page"
+                                href="../">
                                 <i class="bi bi-speedometer2 pe-2 "></i> Dashboard
                             </a>
                         </li>
@@ -201,32 +210,47 @@ $scheduleDates = [
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubMenu" aria-expanded="false">
+                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center"
+                                href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubMenu"
+                                aria-expanded="false">
                                 <span><i class="bi bi-file-earmark-text pe-2"></i> Reports</span>
                                 <span class="rotate-icon"><i class="bi bi-caret-down-fill reports-icon"></i></span>
                             </a>
 
                             <ul class="nav flex-column ms-3 collapse" id="reportsSubMenu">
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly Sales</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly
+                                        Sales</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/payment.php"><i class="bi bi-credit-card-2-front-fill pe-1"></i>Payment Status</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/payment.php"><i
+                                            class="bi bi-credit-card-2-front-fill pe-1"></i>Payment Status</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/consumer.php"><i class="bi bi-person-lines-fill pe-1"></i>Consumer Request</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/consumer.php"><i
+                                            class="bi bi-person-lines-fill pe-1"></i>Consumer Request</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch Schedule</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch
+                                        Schedule</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/reallocation.php"><i class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/reallocation.php"><i
+                                            class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center" href="./reports/not-issued.php"><i class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                        href="./reports/not-issued.php"><i
+                                            class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
                                 </li>
                             </ul>
                         </li>
@@ -236,7 +260,8 @@ $scheduleDates = [
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Gas Distribution Dashboard</h1>
                 </div>
 
@@ -427,12 +452,12 @@ $scheduleDates = [
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const reportsMenuLink = document.querySelector('[data-bs-target="#reportsSubMenu"]');
             const reportsIcon = document.querySelector('.reports-icon');
             const reportsSubMenu = document.getElementById('reportsSubMenu');
 
-            reportsMenuLink.addEventListener('click', function() {
+            reportsMenuLink.addEventListener('click', function () {
                 reportsIcon.classList.toggle('bi-caret-down-fill');
                 reportsIcon.classList.toggle('bi-caret-up-fill');
                 reportsIcon.classList.toggle('rotated');
