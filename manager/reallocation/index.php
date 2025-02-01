@@ -91,17 +91,18 @@
                 </tbody>
             </table>
         </div>
-        <button id="reallocateBtn" class="btn btn-primary mt-5" <?php if ($selectedPanel === 'all' || empty($filteredCrequests)) echo 'disabled'; ?>>
+        <button id="reallocateBtn" class="btn btn-primary mt-5" <?php if ($selectedPanel === 'all' || empty($filteredCrequests))
+            echo 'disabled'; ?>>
             Reallocate Tokens
         </button>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#example').DataTable();
 
-            document.getElementById('reallocateBtn').addEventListener('click', function() {
+            document.getElementById('reallocateBtn').addEventListener('click', function () {
                 console.log("Reallocate button clicked!");
                 const tableRows = document.querySelectorAll('#example tbody tr');
                 const cancellations = [];
@@ -128,15 +129,15 @@
                 console.log("Data to send:", cancellations);
 
                 fetch('../includes/addCancellations.inc.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            cancellations: cancellations,
-                            selectedPanel: selectedPanel
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        cancellations: cancellations,
+                        selectedPanel: selectedPanel
                     })
+                })
                     .then(response => {
                         console.log("Raw Response:", response);
                         if (!response.ok) {

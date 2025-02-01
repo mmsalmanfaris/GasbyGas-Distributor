@@ -26,6 +26,7 @@
     // Fetch outlets data
     $outlets = $database->getReference('outlets')->getValue();
 
+
     $filteredCrequests = [];
     if ($crequests && $user_outlet_id) {
         foreach ($crequests as $request) {
@@ -92,8 +93,20 @@
 
 
     // Determine if the buttons should be enabled
-    $firstDispatchButtonEnabled = ($currentDay >= 1 && $currentDay <= 31);
-    $secondDispatchButtonEnabled = ($currentDay >= 1 && $currentDay <= 31);
+    
+    $headOffice = $hoffice['head_office_id_1'] ?? null;
+
+    if ($headOffice && isset($headOffice['is_available']) && $headOffice['is_available'] == true) {
+        $firstDispatchButtonEnabled = $currentDay >= 1 && $currentDay <= 10;
+        $secondDispatchButtonEnabled = $currentDay >= 15 && $currentDay <= 24;
+    } else {
+        $firstDispatchButtonEnabled = false;
+        $secondDispatchButtonEnabled = false;
+        echo "<p style='color: red;'>Out of Stock</p>";
+    }
+
+
+
     ?>
 
     <!-- Main Content -->
