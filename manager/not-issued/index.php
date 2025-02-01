@@ -82,7 +82,8 @@
                                     <?= ucfirst($request['payment_status']) ?>
                                 </span>
                             </td>
-                            <td><?= date('d M Y', strtotime($request['sdelivery'])) ?></td>
+                            
+                            <td><?= date('d M Y', strtotime($request['edelivery'])) ?></td>
                             <td><span class="badge bg-danger">
                                     <?= ucfirst($request['delivery_status']) ?>
                                 </span></td>

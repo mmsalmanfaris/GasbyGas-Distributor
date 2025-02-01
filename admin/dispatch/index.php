@@ -15,7 +15,24 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
         <?php
-        $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue();
+
+        $dispatch = $database->getReference('dispatch_schedules')->getValue();
+
+        $outletName = 'Unknown Outlet';
+
+        $dispatchSchedules = [];
+        $today = date('Y-m-d'); // Get today's date
+        
+        foreach ($dispatch as $scheduleId => $schedule) {
+            // Load schedules with request_date first
+            if (isset($schedule['request_date']) && $schedule['request_date'] <= $today) {
+                // If sdelivery exists, ensure it's within the range
+                if (!isset($schedule['sdelivery']) || $schedule['sdelivery'] >= $today) {
+                    $dispatchSchedules[$scheduleId] = $schedule;
+                }
+            }
+        }
+
         $outlets = $database->getReference('outlets')->getValue();
         ?>
 
@@ -60,25 +77,33 @@
 
         <div class="mt-5 p-4 border bg-light">
             <form id="deliveryScheduleForm" action="../includes/updateDispatchStatus.inc.php" method="post">
+                <!-- Replace 'your-script.php' with the actual path -->
                 <div class="d-flex align-items-center gap-3">
                     <div class="w-25">
-                        <label for="districtSelect" class="form-label">Select District:</label>
-                        <select class="form-select form-control-lg" name="district" id="districtSelect" required>
-                            <option value="" disabled selected>Select a District</option>
+                        <label for="outletSelect" class="form-label">Select Outlet:</label>
+                        <!-- Select Outlet Dropdown -->
+                        <select class="form-select form-control-lg" name="outlet" id="outletSelect" required>
+                            <option value="" disabled selected>Select an Outlet</option>
                             <?php
-                            if ($outlets) {
-                                $districts = array_unique(array_column($outlets, 'district'));
-                                foreach ($districts as $district) {
-                                    echo '<option value="' . htmlspecialchars($district) . '">' . htmlspecialchars($district) . '</option>';
+                            $scheduledOutlets = [];
+
+                            // Collect outlet IDs from dispatch schedules
+                            foreach ($dispatchSchedules as $schedule) {
+                                if (!empty($schedule['outlet_id'])) {
+                                    $scheduledOutlets[$schedule['outlet_id']] = true;
+                                }
+                            }
+
+                            // Display only outlets with dispatch schedules
+                            foreach ($outlets as $outletId => $outlet) {
+                                if (isset($scheduledOutlets[$outletId])) {
+                                    echo '<option value="' . htmlspecialchars($outletId) . '">' . htmlspecialchars($outlet['name']) . '</option>';
                                 }
                             }
                             ?>
                         </select>
-                    </div>
 
-                    <div>
-                        <label for="totalQuantity" class="form-label">Total Quantity:</label>
-                        <input type="text" class="form-control form-control-lg" id="totalQuantity" value="0" readonly>
+
                     </div>
 
                     <div class="w-25">
@@ -93,8 +118,8 @@
                     </div>
                 </div>
             </form>
-        </div>
 
+        </div>
 
 
         <div class="table-responsive mt-5 px-2 border">
@@ -102,7 +127,7 @@
                 <thead>
                     <tr>
                         <th>Schedule ID</th>
-                        <th>Outlet ID</th>
+                        <th>Outlet</th>
                         <th>Request Date</th>
                         <th>Scheduled Delivery</th>
                         <th>Expected Delivery</th>
@@ -114,9 +139,18 @@
                     <?php
                     if ($dispatchSchedules) {
                         foreach ($dispatchSchedules as $scheduleId => $schedule) {
+
+                            // Fetch outlet data using the outlet key (outlet ID)
+                            $outletId = isset($schedule['outlet_id']) ? $schedule['outlet_id'] : null;
+
+                            if ($outletId && isset($outlets[$outletId])) {
+                                $outlet = $outlets[$outletId];
+                                $outletName = isset($outlet['name']) ? htmlspecialchars($outlet['name']) : 'Unknown Outlet';
+                            }
+
                             echo '<tr>';
                             echo '<td>' . htmlspecialchars($scheduleId) . '</td>';
-                            echo '<td>' . htmlspecialchars($schedule['outlet_id']) . '</td>';
+                            echo '<td>' . $outletName . '</td>'; // Correctly display outlet name
                             echo '<td>' . htmlspecialchars($schedule['request_date']) . '</td>';
                             echo '<td>' . (isset($schedule['sdelivery']) ? htmlspecialchars($schedule['sdelivery']) : '') . '</td>';
                             echo '<td>' . htmlspecialchars($schedule['edelivery']) . '</td>';
@@ -125,7 +159,7 @@
                             echo '</tr>';
                         }
                     } else {
-                        echo 'No dispatch schedules found.';
+                        echo '<tr><td colspan="7">No dispatch schedules found.</td></tr>';
                     }
                     ?>
                 </tbody>
@@ -133,48 +167,10 @@
         </div>
     </main>
 
-    <script>
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Check if the URL contains the `schedule_id` parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('schedule_id')) {
-                // Trigger the modal
-                const editModal = new bootstrap.Modal(document.getElementById('editDispatchModal'));
-                editModal.show();
-            }
-
-            const districtSelect = document.getElementById('districtSelect');
-            const totalQuantityInput = document.getElementById('totalQuantity');
-
-            districtSelect.addEventListener('change', function () {
-                const selectedDistrict = districtSelect.value;
-                let totalQuantity = 0;
-
-                if (selectedDistrict) {
-                    <?php
-                    if ($dispatchSchedules) { ?>
-                        const schedules = <?php echo json_encode($dispatchSchedules); ?>;
-                        Object.values(schedules).forEach(schedule => {
-                            <?php
-                            if ($outlets) { ?>
-                                const outlets = <?php echo json_encode($outlets); ?>;
-                                Object.values(outlets).forEach(outlet => {
-                                    if (outlet.district == selectedDistrict && outlet.outlet_id == schedule.outlet_id) {
-                                        totalQuantity += parseInt(schedule.quantity);
-                                    }
-                                });
-                            <?php } ?>
-                        });
-                    <?php } ?>
-                }
-                totalQuantityInput.value = totalQuantity;
-            });
-        });
-    </script>
-
     <?php
 
     message_success();
     include_once '../components/manager-dashboard-down.php';
     ?>
+
+</html>

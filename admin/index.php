@@ -1,14 +1,45 @@
 <?php
 include_once '../components/header-links.php';
+require '../includes/firebase.php';
 
+// Fetch data from Firebase
+$outlets = $database->getReference('outlets')->getValue() ?? [];
+$dispatchSchedules = $database->getReference('dispatch_schedules')->getValue() ?? [];
+$stockRef = $database->getReference('stock')->getValue();
+$currentStock = isset($stockRef['available']) ? $stockRef['available'] : 0;
 
-// session_start();
+// Calculate metrics
+$totalOutlets = count($outlets);
+$pendingRequests = 0;
+$branchRequests = 0;
+$totalSales = 0;
+$monthlyIssuedByDistrict = [];
 
-// if (!isset($_SESSION['user_id']) || $_SESSION['is_admin'] !== true) {
-//     header('Location: ../login.php'); // Redirect to login if not admin
-//     exit;
-// }
+foreach ($dispatchSchedules as $schedule) {
+    if ($schedule['status'] === 'pending') {
+        $pendingRequests++;
+        $branchRequests += intval($schedule['quantity']);
+    }
+    
+    // Calculate monthly issued by district
+    if (isset($schedule['outlet_id'], $outlets[$schedule['outlet_id']])) {
+        $district = $outlets[$schedule['outlet_id']]['district'];
+        $month = date('Y-m', strtotime($schedule['request_date']));
+        
+        if (!isset($monthlyIssuedByDistrict[$district][$month])) {
+            $monthlyIssuedByDistrict[$district][$month] = 0;
+        }
+        $monthlyIssuedByDistrict[$district][$month] += intval($schedule['quantity']);
+    }
+}
 
+// Calculate upcoming dispatch dates
+$currentMonth = date('m');
+$currentYear = date('Y');
+$upcomingDates = [
+    'first' => date('d-m-Y', strtotime("{$currentYear}-{$currentMonth}-14")),
+    'second' => date('d-m-Y', strtotime("{$currentYear}-{$currentMonth}-28"))
+];
 ?>
 
 </head>
@@ -61,12 +92,17 @@ include_once '../components/header-links.php';
                         </li>
                         <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2" href="./user/">
-                                <i class="bi bi-clock pe-2"></i> Users Manage
+                                <i class="bi bi-clock pe-2"></i> Manage Users
                             </a>
                         </li>
                         <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2" href="./outlet/">
-                                <i class="bi bi-shop pe-2"></i> Outlet Manage
+                                <i class="bi bi-shop pe-2"></i> Manage Outlets
+                            </a>
+                        </li>
+                        <li class="nav-item mb-3">
+                            <a class="nav-link fs-5 rounded-2" href="./stock/">
+                                <i class="bi bi-box-seam pe-2"></i> Stock Management
                             </a>
                         </li>
                         <li class="nav-item mb-3">
@@ -110,31 +146,75 @@ include_once '../components/header-links.php';
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
+                    <h1 class="h2">Admin Dashboard</h1>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card text-white bg-primary mb-3">
-                            <div class="card-header">Total Sales</div>
+                <!-- Metrics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
                             <div class="card-body">
-                                <h5 class="card-title">$12,345</h5>
+                                <h5 class="card-title">Available Stock</h5>
+                                <h2 class="card-text"><?= number_format($currentStock) ?></h2>
+                                <p class="mb-0">Cylinders in stock</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">Pending Requests</h5>
+                                <h2 class="card-text"><?= $pendingRequests ?></h2>
+                                <p class="mb-0">Awaiting approval</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Branch Requests</h5>
+                                <h2 class="card-text"><?= number_format($branchRequests) ?></h2>
+                                <p class="mb-0">Total requested units</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Registered Outlets</h5>
+                                <h2 class="card-text"><?= $totalOutlets ?></h2>
+                                <p class="mb-0">Active branches</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">District-wise Monthly Distribution</h5>
+                                <div style="height: 300px;">
+                                    <canvas id="districtChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card text-white bg-success mb-3">
-                            <div class="card-header">New Orders</div>
-                            <div class="card-body">
-                                <h5 class="card-title">120</h5>
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Upcoming Dispatch Dates</h5>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-warning mb-3">
-                            <div class="card-header">Pending Requests</div>
                             <div class="card-body">
-                                <h5 class="card-title">15</h5>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>First Dispatch:</strong>
+                                    <span><?= $upcomingDates['first'] ?></span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Second Dispatch:</strong>
+                                    <span><?= $upcomingDates['second'] ?></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -153,6 +233,54 @@ include_once '../components/header-links.php';
                 reportsIcon.classList.toggle('bi-caret-up-fill');
                 reportsIcon.classList.toggle('rotated');
             });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // District-wise Monthly Distribution Chart
+        const districtData = <?= json_encode($monthlyIssuedByDistrict) ?>;
+        const districts = Object.keys(districtData);
+        const months = [...new Set(Object.values(districtData).flatMap(d => Object.keys(d)))].sort();
+        
+        const datasets = districts.map((district, index) => ({
+            label: district,
+            data: months.map(month => districtData[district][month] || 0),
+            backgroundColor: `hsl(${index * 360 / districts.length}, 70%, 50%, 0.2)`,
+            borderColor: `hsl(${index * 360 / districts.length}, 70%, 50%)`,
+            borderWidth: 2
+        }));
+
+        new Chart(document.getElementById('districtChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Units Distributed'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
         });
     </script>
 
