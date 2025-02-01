@@ -72,7 +72,7 @@ $database = $factory->createDatabase();
                         </li>
                         <li class="nav-item mb-3">
                             <a class="nav-link fs-5 rounded-2 text-white" href="../user/">
-                                <i class="bi bi-clock pe-2"></i> Manage Users
+                                <i class="bi bi-person pe-2"></i> Manage Users
                             </a>
                         </li>
                         <li class="nav-item mb-3">

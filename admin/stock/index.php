@@ -19,29 +19,22 @@
         $currentStock = isset($stockRef['available']) ? $stockRef['available'] : 0;
         ?>
 
-        <!-- Stock Overview -->
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Stock Management</h1>
-        </div>
-
         <!-- Statistics Cards -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow border-0">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-box fa-2x mb-3 text-primary"></i>
+        <div class="row g-4 mb-5 mt-4">
+            <div class="col-md-6 col-lg-3 bg-light">
+                <div class="card h-100 ">
+                    <div class="card-body">
                         <h5 class="card-title fw-bold">Current Stock Level</h5>
-                        <h2 class="card-text mt-3 display-6 fw-bold text-primary"><?php echo $currentStock; ?></h2>
+                        <h2 class="card-text mt-3 display-6 fw-bold "><?php echo $currentStock; ?></h2>
                         <p class="text-muted">Available Units</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow border-0">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-clock fa-2x mb-3 text-warning"></i>
+            <div class="col-md-6 col-lg-3 bg-light">
+                <div class="card h-100">
+                    <div class="card-body  p-4">
                         <h5 class="card-title fw-bold">Pending Requests</h5>
-                        <h2 class="card-text mt-3 display-6 fw-bold text-warning">
+                        <h2 class="card-text mt-3 display-6 fw-bold">
                             <?php
                             $totalPendingRequests = 0;
                             if ($dispatchSchedules) {
@@ -58,12 +51,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow border-0">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-gas-pump fa-2x mb-3 text-info"></i>
+            <div class="col-md-6 col-lg-3 bg-light">
+                <div class="card h-100">
+                    <div class="card-body p-4">
                         <h5 class="card-title fw-bold">Total Requested Units</h5>
-                        <h2 class="card-text mt-3 display-6 fw-bold text-info">
+                        <h2 class="card-text mt-3 display-6 fw-bold">
                             <?php
                             $totalRequestedUnits = 0;
                             if ($dispatchSchedules) {
@@ -80,21 +72,18 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow border-0">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-chart-line fa-2x mb-3 <?php echo $currentStock >= $totalRequestedUnits ? 'text-success' : 'text-danger'; ?>"></i>
-                        <h5 class="card-title fw-bold">Stock Status</h5>
-                        <h2 class="card-text mt-3 display-6 fw-bold">
-                            <?php
-                            $stockStatus = $currentStock >= $totalRequestedUnits ?
-                                '<span class="text-success">Sufficient</span>' :
-                                '<span class="text-danger">Insufficient</span>';
-                            echo $stockStatus;
-                            ?>
-                        </h2>
-                        <p class="text-muted">Current Status</p>
-                    </div>
+            <div class="col-md-6 col-lg-3 ">
+                <div class="card h-100 bg-light">
+                    <h5 class="card-title fw-bold">Stock Status</h5>
+                    <h2 class="card-text mt-3 display-6 fw-bold">
+                        <?php
+                        $stockStatus = $currentStock >= $totalRequestedUnits ?
+                            '<span class="text-success">Sufficient</span>' :
+                            '<span class="text-danger">Insufficient</span>';
+                        echo $stockStatus;
+                        ?>
+                    </h2>
+                    <p class="text-muted">Current Status</p>
                 </div>
             </div>
         </div>
@@ -110,7 +99,8 @@
                                 <option value="true">Available</option>
                                 <option value="false">Unavailable</option>
                             </select>
-                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal"
+                                data-bs-target="#addStockModal">
                                 <i class="fas fa-plus-circle me-2"></i>Add Stock
                             </button>
                         </div>
@@ -120,7 +110,8 @@
         </div>
 
         <!-- Add Stock Modal -->
-        <div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel" aria-hidden="true">
+        <div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -131,7 +122,8 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="stockQuantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="stockQuantity" name="quantity" required min="1">
+                                <input type="number" class="form-control" id="stockQuantity" name="quantity" required
+                                    min="1">
                             </div>
                         </div>
                         <div class="modal-footer">

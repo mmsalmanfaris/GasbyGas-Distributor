@@ -113,7 +113,7 @@
                     </div>
 
                     <div>
-                        <button type="submit" class="btn btn-primary mt-4" style="height: 45px;">Schedule
+                        <button type="submit" class="btn btn-primary mt-4" style="height: 47px;">Schedule
                             Delivery</button>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
         </div>
 
 
-        <div class="table-responsive mt-5 px-2 border">
+        <div class="table-responsive card mt-5 px-2 border p-2">
             <table id="example" class=" p-2 display nowrap" style="width:100%" class="table table-striped table-sm">
                 <thead>
                     <tr>

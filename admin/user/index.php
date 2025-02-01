@@ -22,12 +22,12 @@
         ?>
 
         <div class="d-flex mt-5">
-            <div class="col-3 border p-4 me-3">
+            <div class="col-3 border p-4 me-3 card bg-light">
                 <h5>Total Users</h5>
 
                 <h4><?php echo count($users); ?></h4>
             </div>
-            <div class="col-3 border p-4 me-3">
+            <div class="col-3 border p-4 me-3 card bg-light">
                 <h5>Admin Counts</h5>
                 <h4>
                     <?php
@@ -41,7 +41,7 @@
                     ?>
                 </h4>
             </div>
-            <div class="col-3 border p-4 me-3">
+            <div class="col-3 border p-4 me-3 card bg-light">
                 <h5>Manager Counts</h5>
                 <h4><?php
                 $adminCount = 0;
@@ -53,7 +53,7 @@
                 echo $adminCount;
                 ?></h4>
             </div>
-            <div class="col-2 d-flex align-items-center justify-content-center"><button
+            <div class="col-2 d-flex align-items-center justify-content-center card"><button
                     class="btn btn-primary btn-sm h-100 w-100 fs-5" data-bs-toggle="modal"
                     data-bs-target="#addUserModel">
                     Add
@@ -61,11 +61,11 @@
         </div>
 
 
-        <div class="table-responsive mt-5 px-2 border">
+        <div class="table-responsive mt-5 px-2 border card p-2">
             <table id="example" class=" p-2 display nowrap" style="width:100%" class="table table-striped table-sm">
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                        <th>No</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Contact</th>
@@ -77,11 +77,12 @@
                 <tbody>
                     <?php
 
-
+                    $no = null;
                     if ($users) {
                         foreach ($users as $userId => $user) {
+                            $no++;
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars($userId) . '</td>';
+                            echo '<td>' . htmlspecialchars($no) . '</td>';
                             echo '<td>' . htmlspecialchars($user['name']) . '</td>';
                             echo '<td>' . htmlspecialchars($user['email']) . '</td>';
                             echo '<td>' . htmlspecialchars($user['contact']) . '</td>';
@@ -130,9 +131,6 @@
     include_once 'edit.inc.php';
     include_once 'add.inc.php';
 
-
-    // Output Message
-    // message_delete();
     message_success();
 
 

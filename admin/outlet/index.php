@@ -18,6 +18,7 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <?php
         $outlets = $database->getReference('outlets')->getValue();
+        $users = $database->getReference('users')->getValue();
         if (!is_array($outlets)) {
             $outlets = [];
         }
@@ -25,17 +26,17 @@
 
         <!-- Dashboard Summary -->
         <div class="d-flex mt-5">
-            <div class="col-3 border p-4 me-3">
-                <h5>Total Outlets</h5>
+            <div class="col-3 border p-4 me-3 card bg-light">
+                <h5>Registered Outlets</h5>
                 <h4><?php echo count($outlets); ?></h4>
             </div>
-            <div class="col-3 border p-4 me-3">
-                <h5>Outlet Managers Count</h5>
+            <div class="col-3 border p-4 me-3 card bg-light">
+                <h5>Outlet Managers</h5>
                 <h4>
                     <?php
                     $managerCount = 0;
-                    foreach ($outlets as $outlet) {
-                        if (isset($outlet['manager_id'])) {
+                    foreach ($users as $user) {
+                        if ($user['is_admin'] == false) {
                             $managerCount++;
                         }
                     }
@@ -43,11 +44,21 @@
                     ?>
                 </h4>
             </div>
-            <div class="col-3 border p-4 me-3">
-                <h5>Registered Outlets Count</h5>
-                <h4><?php echo count($outlets); ?></h4>
+            <div class="col-3 border p-4 me-3 card bg-light">
+                <h5>Total Stocks</h5>
+                <h4>
+                    <?php
+                    $totalStock = 0;
+                    foreach ($outlets as $outlet) {
+                        if (isset($outlet['stock'])) {
+                            $totalStock += (int) $outlet['stock'];
+                        }
+                    }
+                    echo $totalStock;
+                    ?>
+                </h4>
             </div>
-            <div class="col-2 d-flex align-items-center justify-content-center">
+            <div class="col-2 d-flex align-items-center justify-content-center card">
                 <button class="btn btn-primary btn-sm h-100 w-100 fs-5" data-bs-toggle="modal"
                     data-bs-target="#addOutletModal">
                     Add New Outlet
@@ -56,15 +67,15 @@
         </div>
 
         <!-- Outlets Table -->
-        <div class="table-responsive mt-5 px-2 border">
+        <div class="table-responsive mt-5 px-2 border card p-2">
             <table id="example" class="table table-striped table-bordered table-sm">
                 <thead>
                     <tr>
                         <th scope="col">No</th>
-                        <th scope="col">District</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Stock</th>
+                        <th scope="col">District</th>
                         <th scope="col">Town</th>
+                        <th scope="col">Stock</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -76,10 +87,10 @@
                             if (is_array($outlet)) {
                                 echo '<tr>';
                                 echo '<td>' . $index++ . '</td>';
-                                echo '<td>' . htmlspecialchars($outlet['district']) . '</td>';
                                 echo '<td>' . htmlspecialchars($outlet['name']) . '</td>';
-                                echo '<td>' . htmlspecialchars($outlet['stock']) . '</td>';
+                                echo '<td>' . htmlspecialchars($outlet['district']) . '</td>';
                                 echo '<td>' . htmlspecialchars($outlet['town']) . '</td>';
+                                echo '<td>' . htmlspecialchars($outlet['stock']) . '</td>';
                                 echo '<td>
                     <a href="?outlet_id=' . urlencode($outletId) . '" class="btn btn-warning btn-sm">Edit</a>
                    <a href="../includes/deleteOutlet.inc.php?outlet_id={$outlet_id}' . ' " class="btn btn-danger btn-sm">Delete</a>
