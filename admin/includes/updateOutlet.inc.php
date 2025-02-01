@@ -2,12 +2,7 @@
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require 'firebase.php';
 
-    // Ensure the required fields are available
-    $id = isset($_POST['id']) ? $_POST['id'] : (isset($_POST['outlet_id']) ? $_POST['outlet_id'] : null);
-
-    if (!$id) {
-        die("Error: Missing required field (id or outlet_id).");
-    }
+    $id = $_POST['outlet_id'];
 
     try {
         // Update outlet data

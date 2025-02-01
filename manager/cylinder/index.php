@@ -63,7 +63,6 @@
             }
         }
 
-
         return [
             'totalRequests' => $totalRequests,
             'homeRequests' => $homeRequests,
@@ -93,8 +92,8 @@
 
 
     // Determine if the buttons should be enabled
-    $firstDispatchButtonEnabled = ($currentDay >= 1 && $currentDay <= 14);
-    $secondDispatchButtonEnabled = ($currentDay >= 15 && $currentDay <= 31);
+    $firstDispatchButtonEnabled = ($currentDay >= 1 && $currentDay <= 31);
+    $secondDispatchButtonEnabled = ($currentDay >= 1 && $currentDay <= 31);
     ?>
 
     <!-- Main Content -->
@@ -181,7 +180,7 @@
                         <th>Panel</th>
                         <th>Empty</th>
                         <th>Payment Status</th>
-                        <th>S-Delivery</th>
+                        <th>Expected Delivery</th>
                         <th>Delivery</th>
                     </tr>
                 </thead>
@@ -204,7 +203,7 @@
                             echo '<td>' . htmlspecialchars($request['panel']) . '</td>';
                             echo '<td>' . $emptyCylinder . '</td>';
                             echo '<td>' . htmlspecialchars($request['payment_status']) . '</td>';
-                            echo '<td>' . htmlspecialchars($request['sdelivery']) . '</td>';
+                            echo '<td>' . htmlspecialchars($request['edelivery']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['delivery_status']) . '</td>';
                             echo '</tr>';
                         }
@@ -236,12 +235,12 @@
 
 
             fetch('../includes/addDispatchRequest.inc.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dispatchData),
-                })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dispatchData),
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
