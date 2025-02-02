@@ -46,7 +46,8 @@ $database = $factory->createDatabase();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white" href="../includes/logout.inc.php">
+                        <a class="nav-link bg-danger fs-5 rounded-2 px-3 text-white"
+                            href="../../includes/logout.inc.php">
                             <i class="bi bi-box-arrow-right"></i>
                         </a>
                     </li>

@@ -1,7 +1,5 @@
 <?php
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 include_once '../components/header-links.php';
 require '../includes/firebase.php';
@@ -133,17 +131,13 @@ $scheduleDates = [
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-
         .chart-container {
             height: 300px;
         }
     </style>
 </head>
 
-<body class="bg-light">
+<body class=" m-0 p-0">
     <div class="container-fluid">
         <div class="row">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
@@ -175,42 +169,45 @@ $scheduleDates = [
                 </div>
             </nav>
             <!-- Sidebar -->
-            <nav class="col-md-2 d-none d-md-block sidebar vh-100">
+            <nav class="col-md-2 d-none d-md-block sidebar vh-100" style="background-color: black;">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item mb-3">
-                            <a class="nav-link active fs-5 rounded-2 d-flex align-items-center" aria-current="page"
-                                href="../">
+                            <a class="nav-link active fs-5 rounded-2 d-flex align-items-center  text-white"
+                                aria-current="page" href="../">
                                 <i class="bi bi-speedometer2 pe-2 "></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./scan/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center  text-white" href="./scan/">
                                 <i class="bi bi-upc-scan pe-2"></i> Scan Token
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./cylinder/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center  text-white" href="./cylinder/">
                                 <i class="bi bi-box-seam pe-2"></i> Cylinder Request
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./reallocation/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center  text-white"
+                                href="./reallocation/">
                                 <i class="bi bi-arrow-repeat pe-2"></i> Reallocation
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./consumers/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center  text-white"
+                                href="./consumers/">
                                 <i class="bi bi-check-circle pe-2"></i> Consumer
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center" href="./not-issued/">
+                            <a class="nav-link fs-5 rounded-2 d-flex align-items-center  text-white"
+                                href="./not-issued/">
                                 <i class="bi bi-x-circle pe-2"></i> Not Issued
                             </a>
                         </li>
                         <li class="nav-item mb-3">
-                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center"
+                            <a class="nav-link fs-5 rounded-2 d-flex justify-content-between align-items-center text-white"
                                 href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubMenu"
                                 aria-expanded="false">
                                 <span><i class="bi bi-file-earmark-text pe-2"></i> Reports</span>
@@ -219,36 +216,36 @@ $scheduleDates = [
 
                             <ul class="nav flex-column ms-3 collapse" id="reportsSubMenu">
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly
                                         Sales</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/payment.php"><i
                                             class="bi bi-credit-card-2-front-fill pe-1"></i>Payment Status</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/consumer.php"><i
                                             class="bi bi-person-lines-fill pe-1"></i>Consumer Request</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch
                                         Schedule</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/reallocation.php"><i
                                             class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
                                 </li>
                                 <li class="nav-item mb-1">
-                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center"
+                                    <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
                                         href="./reports/not-issued.php"><i
                                             class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
                                 </li>
@@ -259,16 +256,12 @@ $scheduleDates = [
             </nav>
 
             <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Gas Distribution Dashboard</h1>
-                </div>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pb-5">
 
                 <!-- Metrics Cards -->
-                <div class="row row-cols-1 row-cols-md-4 g-4 mb-4">
+                <div class="row row-cols-1 row-cols-md-4 g-4 mb-4 mt-3">
                     <div class="col">
-                        <div class="card bg-success text-white bg-opacity-75 h-100">
+                        <div class="card bg-light h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Handed Over</h5>
                                 <h2 class="card-text"><?= $metrics['handedOver'] ?></h2>
@@ -276,7 +269,7 @@ $scheduleDates = [
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card bg-warning text-dark bg-opacity-75 h-100">
+                        <div class="card bg-light h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Pending Requests</h5>
                                 <h2 class="card-text"><?= $metrics['pendingRequests'] ?></h2>
@@ -284,7 +277,7 @@ $scheduleDates = [
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card bg-danger text-white bg-opacity-75 h-100">
+                        <div class="card bg-light h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Not Issued</h5>
                                 <h2 class="card-text"><?= $metrics['notIssued'] ?></h2>
@@ -292,7 +285,7 @@ $scheduleDates = [
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card bg-primary text-white bg-opacity-75 h-100">
+                        <div class="card bg-light h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Total Sales</h5>
                                 <h2 class="card-text">Rs.<?= number_format($metrics['totalSales']) ?></h2>
@@ -325,7 +318,7 @@ $scheduleDates = [
                 <div class="row g-4">
                     <div class="col-md-6">
                         <div class="card h-100">
-                            <div class="card-header bg-info text-white">
+                            <div class="card-header bg-dark text-white">
                                 Panel A Schedule (<?= $scheduleDates['A'] ?>)
                             </div>
                             <div class="card-body d-flex flex-column">
@@ -354,7 +347,7 @@ $scheduleDates = [
 
                     <div class="col-md-6">
                         <div class="card h-100">
-                            <div class="card-header bg-primary text-white">
+                            <div class="card-header bg-dark text-white">
                                 Panel B Schedule (<?= $scheduleDates['B'] ?>)
                             </div>
                             <div class="card-body d-flex flex-column">

@@ -16,22 +16,29 @@
         $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue();
         $outlets = $database->getReference('outlets')->getValue();
         $stockRef = $database->getReference('stock')->getValue();
-        $currentStock = isset($stockRef['available']) ? $stockRef['available'] : 0;
+        $dispatch = $database->getReference('dispatch_schedules')->getValue();
+
+        $totalStock = 0;
+        if ($stockRef) {
+            foreach ($stockRef as $stock) {
+                $totalStock += intval($stock['available']);
+            }
+        }
+
         ?>
 
         <!-- Statistics Cards -->
         <div class="row g-4 mb-5 mt-4">
             <div class="col-md-6 col-lg-3 bg-light">
-                <div class="card h-100 ">
-                    <div class="card-body">
+                <div class="card h-100 bg-light">
+                    <div class="card-body  p-4">
                         <h5 class="card-title fw-bold">Current Stock Level</h5>
-                        <h2 class="card-text mt-3 display-6 fw-bold "><?php echo $currentStock; ?></h2>
-                        <p class="text-muted">Available Units</p>
+                        <h2 class="card-text mt-3 display-6 fw-bold" id="currentStock"><?php echo $totalStock; ?></h2>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3 bg-light">
-                <div class="card h-100">
+                <div class="card h-100 bg-light">
                     <div class="card-body  p-4">
                         <h5 class="card-title fw-bold">Pending Requests</h5>
                         <h2 class="card-text mt-3 display-6 fw-bold">
@@ -47,12 +54,11 @@
                             echo $totalPendingRequests;
                             ?>
                         </h2>
-                        <p class="text-muted">Active Requests</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3 bg-light">
-                <div class="card h-100">
+                <div class="card h-100 bg-light">
                     <div class="card-body p-4">
                         <h5 class="card-title fw-bold">Total Requested Units</h5>
                         <h2 class="card-text mt-3 display-6 fw-bold">
@@ -68,75 +74,113 @@
                             echo $totalRequestedUnits;
                             ?>
                         </h2>
-                        <p class="text-muted">Units Requested</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3 ">
                 <div class="card h-100 bg-light">
-                    <h5 class="card-title fw-bold">Stock Status</h5>
-                    <h2 class="card-text mt-3 display-6 fw-bold">
-                        <?php
-                        $stockStatus = $currentStock >= $totalRequestedUnits ?
-                            '<span class="text-success">Sufficient</span>' :
-                            '<span class="text-danger">Insufficient</span>';
-                        echo $stockStatus;
-                        ?>
-                    </h2>
-                    <p class="text-muted">Current Status</p>
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold">Stock Status</h5>
+                        <h2 class="card-text mt-3 display-6 fw-bold">
+                            <?php
+                            $stockStatus = $totalStock >= $totalRequestedUnits ?
+                                '<span class="text-success">Sufficient</span>' :
+                                '<span class="text-danger">Insufficient</span>';
+                            echo $stockStatus;
+                            ?>
+                        </h2>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Stock Controls -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-8 text-center">
-                <div class="card shadow border-0">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="card">
                     <div class="card-body p-4">
-                        <h4 class="mb-4">Stock Management Controls</h4>
-                        <div class="d-flex justify-content-center gap-3">
-                            <select class="form-select form-select-lg w-50" id="stockStatus" style="max-width: 300px;">
+                        <h4 class="mb-4">Stock Status Control</h4>
+                        <div class="d-flex gap-3">
+                            <select class="form-select form-select-lg" id="stockStatus" style="max-width: 350px;">
                                 <option value="true">Available</option>
-                                <option value="false">Unavailable</option>
+                                <option value="false">Out of stock</option>
                             </select>
-                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal"
-                                data-bs-target="#addStockModal">
-                                <i class="fas fa-plus-circle me-2"></i>Add Stock
-                            </button>
+                            <button class="btn btn-primary btn-lg" id="updateStockStatus">Update Status</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Add Stock Modal -->
-        <div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addStockModalLabel">Add Stock</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">New Stock Management</h4>
+                        <div class="d-flex gap-3">
+                            <input type="number" style="max-width: 350px;" class="form-control form-control-lg"
+                                placeholder="Enter new stock" id="newStock">
+                            <button class="btn btn-primary btn-lg" id="updateStock">Update Stock</button>
+                        </div>
                     </div>
-                    <form action="../includes/add_stock.php" method="POST">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="stockQuantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="stockQuantity" name="quantity" required
-                                    min="1">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Add Stock</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </main>
 
+    <script>
+        document.getElementById("updateStockStatus").addEventListener("click", function () {
+            const selectedStatus = document.getElementById("stockStatus").value;
+
+            fetch("update_availability.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `is_available=${selectedStatus}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "./?status=dataupdate";
+                    } else {
+                        alert("Error updating stock: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("Error: " + error.message);
+                });
+        });
+
+
+        document.getElementById("updateStock").addEventListener("click", function () {
+            const newStock = document.getElementById("newStock").value;
+
+            if (!newStock || newStock <= 0) {
+                alert("Please enter a valid stock amount.");
+                return;
+            }
+
+            fetch("add_stock.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `newStock=${newStock}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "./?status=datasuccess";
+                    } else {
+                        alert("Error adding stock: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("Error: " + error.message);
+                });
+        });
+
+    </script>
+
+
+
     <?php
+
+    message_success();
     include_once '../components/manager-dashboard-down.php';
     ?>
     </body>
