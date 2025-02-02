@@ -11,7 +11,7 @@ export default function CreateAccountScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push("/businessregistration")}
+          onPress={() => router.push("/login")}
           accessible={true}
           accessibilityLabel="Register as a business"
         >
@@ -20,7 +20,7 @@ export default function CreateAccountScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push("/customerregister")}
+          onPress={() => router.push("/customerlogin")}
           accessible={true}
           accessibilityLabel="Register as an individual"
         >

@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { ref, push, set, get } from "firebase/database";
 import { database } from "../db/DBConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RequestPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
@@ -12,7 +13,7 @@ const RequestPage: React.FC = () => {
   const [outlets, setOutlet] = useState<string | null>(null);
   const [selectedCylinder, setSelectedCylinder] = useState<keyof typeof cylinderPrices>('small_2kg');
   
-  const userId = "customer123"; // want to replace with actual user ID logic
+  const userId = "customer123"; // Replace with actual user ID logic
   
   const cylinderPrices = {
     small_2kg : 950.00,
@@ -21,7 +22,7 @@ const RequestPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const outletRef = ref(database, `users/${userId}/outlets`);
+    const outletRef = ref(database, `consumer/${userId}/outlets`);
     get(outletRef).then((snapshot) => {
       if (snapshot.exists()) {
         setOutlet(snapshot.val());
@@ -33,32 +34,34 @@ const RequestPage: React.FC = () => {
 
   const handleQuantityChange = (type: "increment" | "decrement") => {
     setQuantity((prev) => {
-      if (type === "increment" && prev < 25) return prev + 1;
+      if (type === "increment" && prev < 3) return prev + 1;
       if (type === "decrement" && prev > 1) return prev - 1;
       return prev;
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedDate) {
       Alert.alert("Error", "Please select a delivery date.");
       return;
     }
 
     setLoading(true);
+    const formattedDate = new Date().toISOString();
+    
     const requestData = {
-      consumer_id: userId,
+      consumer_id: await AsyncStorage.getItem("consumer_id"),
       type: "Industry",
-      outlet_id: outlets || "Unknown",
+      outlet_id: await AsyncStorage.getItem('outlet_id') || "Unknown",
       quantity,
       panel: selectedDate,
       cylinder_type: selectedCylinder,
       total_price: cylinderPrices[selectedCylinder] * quantity,
-      created_at: Date.now(),
+      created_at: formattedDate,
       empty_cylinder: "pending",
       payment_status: "pending",
-      edelivery: "pending",
-      sdelivery: "pending",
+      edelivery: null,
+      sdelivery: null,
       delivery_status: "pending",
       qrcode: "pending"
     };

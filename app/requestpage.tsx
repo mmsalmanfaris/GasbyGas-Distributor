@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { ref, push, set, get } from "firebase/database";
 import { database } from "../db/DBConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RequestPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
@@ -39,26 +40,28 @@ const RequestPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedDate) {
       Alert.alert("Error", "Please select a delivery date.");
       return;
     }
 
     setLoading(true);
+    const formattedDate = new Date().toISOString();
+    
     const requestData = {
-      consumer_id: userId,
+      consumer_id: await AsyncStorage.getItem("consumer_id"),
       type: "Home",
-      outlet_id: outlets || "Unknown",
+      outlet_id: await AsyncStorage.getItem('outlet_id') || "Unknown",
       quantity,
       panel: selectedDate,
       cylinder_type: selectedCylinder,
       total_price: cylinderPrices[selectedCylinder] * quantity,
-      created_at: Date.now(),
+      created_at: formattedDate,
       empty_cylinder: "pending",
       payment_status: "pending",
-      edelivery: "pending",
-      sdelivery: "pending",
+      edelivery: null,
+      sdelivery: null,
       delivery_status: "pending",
       qrcode: "pending"
     };

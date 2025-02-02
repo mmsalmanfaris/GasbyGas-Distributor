@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Platform, Button, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Ionicons as Icon } from "@expo/vector-icons";
@@ -6,7 +6,7 @@ import { ref, get, child } from 'firebase/database';
 import { database } from "../db/DBConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function BusinessLoginScreen() {
+export default function LoginScreen() {
     const [email, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setPasswordVisible] = useState(false);
@@ -22,87 +22,39 @@ export default function BusinessLoginScreen() {
 
             if (snapshot.exists()) {
                 const consumers = snapshot.val();
-                const consumerArray: any[] = Object.values(consumers);
+                const consumerArray = Object.keys(consumers).map(key => ({
+                    consumerId: key,
+                    ...consumers[key]
+                }));
 
-                const isValidUser = consumerArray.some(
-                    (consumer) => consumer.email === email && consumer.password === password
-                );
 
                 const _user = consumerArray.find(
-                    (consumer) => consumer.email === email && consumer.password === password
+                    (consumer: any) => consumer.email === email && consumer.password === password
                 );
 
                 if (_user) {
-                     const outletsRef = ref(database, "outlets/");
-                    const outletsSnapshot = await get(outletsRef);
 
-                    let outletName = '';
+                    console.log("User Found");
+                    console.log(_user);
+                    await AsyncStorage.setItem("email", _user.email);
+                    await AsyncStorage.setItem("name", _user.name);
+                    await AsyncStorage.setItem("contact", _user.contact);
+                    await AsyncStorage.setItem("address", _user.address);
+                    await AsyncStorage.setItem("district", _user.district);
+                    await AsyncStorage.setItem("nic", _user.nic);
+                    await AsyncStorage.setItem("password", _user.password);                    
+                    await AsyncStorage.setItem("outlet_id", _user.outlet_id);
+                    await AsyncStorage.setItem("rnumber", _user.rnumber);
+                    await AsyncStorage.setItem("consumer_id", _user.consumerId);
+                    
 
-                    if(outletsSnapshot.exists()){
-                        const outletsData = outletsSnapshot.val();
-                        for (const outletId in outletsData) {
-                            if (outletId === _user.outlet_id) {
-                                outletName = outletsData[outletId].name;
-                                break;
-                            }
-                         }
-                    }
-
-
-                    await AsyncStorage.setItem(
-                        "email",
-                        _user.email
-                    );
-                    await AsyncStorage.setItem(
-                        "password",
-                        _user.password
-                    );
-                    await AsyncStorage.setItem(
-                        "contact",
-                        _user.contact
-                    );
-                    await AsyncStorage.setItem(
-                        "address",
-                        _user.address
-                    );
-                    await AsyncStorage.setItem(
-                        "name",
-                        _user.name
-                    );
-                    await AsyncStorage.setItem(
-                        "nic",
-                        _user.nic
-                    );
-                    await AsyncStorage.setItem(
-                        "outlet_id",
-                        _user.outlet_id
-                    );
-                     await AsyncStorage.setItem(
-                        "outlet_name",
-                        outletName
-                    );
-                    await AsyncStorage.setItem(
-                        "rnumber",
-                       _user.rnumber
-                    );
-                    await AsyncStorage.setItem(
-                        "district",
-                        _user.district
-                    );
-
-                }
-
-
-                if (isValidUser) {
-                    console.log('Customer Login Successfully');
+                    
                     alert('Customer Login Successfully');
                     router.push("/businesshomepage");
                 } else {
-                    console.log('Invalid email or password');
                     alert('Invalid email or password');
                 }
             } else {
-                console.log('No consumers found');
                 alert('No consumers found');
             }
         } catch (error) {
@@ -112,103 +64,119 @@ export default function BusinessLoginScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <ScrollView>
-                <Text style={styles.title}>Login to the Account</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email Address"
-                    placeholderTextColor="#888"
-                    onChangeText={setEmailAddress}
-                    value={email}
-                />
-
-                <View style={styles.passwordContainer}>
+        <ImageBackground source={require('../assets/images/sky.jpg')} style={styles.background}>
+            <View style={styles.container}>
+                <View style={styles.loginBox}>
+                    <Text style={styles.title}>Login to Your Account</Text>
                     <TextInput
-                        style={[styles.passwordInput]}
-                        value={password}
-                        onChangeText={setPassword}
-                        placeholder="Password"
-                        secureTextEntry={!isPasswordVisible}
+                        style={styles.input}
+                        placeholder="Email Address"
+                        placeholderTextColor="#888"
+                        onChangeText={setEmailAddress}
+                        value={email}
                     />
-                    <TouchableOpacity onPress={togglePasswordVisibility}>
-                        <Icon
-                            name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                            size={20}
-                            color="#888"
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={styles.passwordInput}
+                            value={password}
+                            onChangeText={setPassword}
+                            placeholder="Password"
+                            secureTextEntry={!isPasswordVisible}
                         />
+                        <TouchableOpacity onPress={togglePasswordVisibility}>
+                            <Icon
+                                name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                                size={20}
+                                color="#888"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={styles.button} onPress={loginCustomer}>
+                        <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.signupLink} onPress={() => router.push("/businessregistration") }>
+                        <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity style={styles.button} onPress={loginCustomer}>
-                    <Text style={styles.buttonText}> Login</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push("/businessregistration")}>
-                    <Text style={styles.buttonContainerText}>Don't have an account? Sign Up</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </View>
+            </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+        justifyContent: 'center',
+    },
     container: {
         flex: 1,
-        marginTop: 20,
-        backgroundColor: '#f9f9f9',
-        padding: 20,
         justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loginBox: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        width: '85%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 5,
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        textAlign: 'center',
         marginBottom: 20,
         color: '#000',
+        textAlign: 'center',
     },
     input: {
-        backgroundColor: '#fff',
+        width: '100%',
+        backgroundColor: '#f9f9f9',
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
         padding: 10,
         marginBottom: 15,
-        color: '#000',
         fontSize: 16,
-    },
-    buttonContainer: {
-        marginTop: 15,
-        paddingVertical: 10,
-    },
-    buttonContainerText: {
-        fontWeight: 'bold',
-        textAlign: "center",
-        fontSize: 16,
-    },
-    button: {
-        backgroundColor: "#2776D1",
-        paddingVertical: 10,
-        borderRadius: 30,
-    },
-    buttonText: {
-        textAlign: 'center',
-        color: "white",
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
     },
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius: 8,
-        paddingHorizontal: 12,
+        borderRadius: 5,
         backgroundColor: '#f9f9f9',
+        paddingHorizontal: 10,
+        width: '100%',
         marginBottom: 15,
     },
     passwordInput: {
         flex: 1,
+        paddingVertical: 10,
+    },
+    button: {
+        backgroundColor: "#2776D1",
         paddingVertical: 12,
-    }
+        borderRadius: 5,
+        width: '100%',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: "white",
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+    },
+    signupLink: {
+        marginTop: 15,
+    },
+    signupText: {
+        fontWeight: 'bold',
+        textAlign: "center",
+        fontSize: 16,
+        color: '#2776D1',
+    },
 });

@@ -34,14 +34,14 @@ const HomePageCustomer: React.FC = () => {
                             for (const consumerId in consumersData) {
                               if (consumersData[consumerId].email === user.email) {
                                 setOutletId(consumersData[consumerId].outlet_id);
-                                 const userRef = ref(database, 'consumers/${consumerId}');
+                                const userRef = ref(database, 'consumers/${consumerId}');
                                 get(userRef).then((snapshot) => {
                                     if (!snapshot.exists()) {
                                           set(userRef, { recentRequest: null, totalRequests: 0 });
                                       } else {
                                          const data = snapshot.val();
                                         setRecentRequest(data.recentRequest || null);
-                                         setTotalRequests(data.totalRequests || 0);
+                                        setTotalRequests(data.totalRequests || 0);
                                       }
                                   });
                                   break;
