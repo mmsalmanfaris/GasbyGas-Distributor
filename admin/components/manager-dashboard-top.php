@@ -96,41 +96,41 @@ $database = $factory->createDatabase();
                             <ul class="nav flex-column ms-3 collapse" id="reportsSubMenu">
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/yearly.php"><i class="bi bi-calendar-month pe-1"></i>Yearly
+                                        href="../reports/yearly.php"><i class="bi bi-calendar-month pe-1"></i>Yearly
                                         Sales</a>
                                 </li>
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly
+                                        href="../reports/monthly.php"><i class="bi bi-calendar-month pe-1"></i>Monthly
                                         Sales</a>
                                 </li>
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
+                                        href="../reports/stock.php"><i class="bi bi-stack pe-1"></i>Stock Level</a>
                                 </li>
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/payment.php"><i
+                                        href="../reports/payment.php"><i
                                             class="bi bi-credit-card-2-front-fill pe-1"></i>Payment Status</a>
                                 </li>
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/consumer.php"><i
+                                        href="../reports/consumer.php"><i
                                             class="bi bi-person-lines-fill pe-1"></i>Consumer Request</a>
                                 </li>
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch
+                                        href="../reports/dispatch.php"><i class="bi bi-calendar-event pe-1"></i>Dispatch
                                         Schedule</a>
                                 </li>
                                 <li class="nav-item mb-1">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/reallocation.php"><i
+                                        href="../reports/reallocation.php"><i
                                             class="bi bi-arrow-left-right pe-1"></i>Reallocation</a>
                                 </li>
                                 <li class="nav-item mb-1 pb-5">
                                     <a class="nav-link fs-6 rounded-2 text-primary d-flex align-items-center text-white"
-                                        href="./reports/not-issued.php"><i
+                                        href="../reports/not-issued.php"><i
                                             class="bi bi-exclamation-triangle-fill pe-1"></i>Not-Issued</a>
                                 </li>
                             </ul>
@@ -140,12 +140,12 @@ $database = $factory->createDatabase();
             </nav>
 
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function() {
                     const reportsMenuLink = document.querySelector('[data-bs-target="#reportsSubMenu"]');
                     const reportsIcon = document.querySelector('.reports-icon');
                     const reportsSubMenu = document.getElementById('reportsSubMenu');
 
-                    reportsMenuLink.addEventListener('click', function () {
+                    reportsMenuLink.addEventListener('click', function() {
                         reportsIcon.classList.toggle('bi-caret-down-fill');
                         reportsIcon.classList.toggle('bi-caret-up-fill');
                         reportsIcon.classList.toggle('rotated');
