@@ -1,15 +1,6 @@
-import {
-    StyleSheet,
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-    Image,
-    Alert,
-  } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, Alert, BackHandler} from 'react-native';
   import React, { useState, useEffect } from 'react';
-  import { router } from 'expo-router';
+  import { router, useFocusEffect } from 'expo-router';
   import Icon from 'react-native-vector-icons/Ionicons';
   import { ref, get, update } from 'firebase/database';
   import { database } from "../db/DBConfig";
@@ -33,7 +24,14 @@ import {
       const [isPasswordVisible, setPasswordVisible] = useState(false);
       const [consumerId, setConsumerId] = useState<string | null>(null);
       const [originalData, setOriginalData] = useState<any>(null); // Store original data
-  
+
+      useFocusEffect(
+        React.useCallback(() => {
+            const onBackPress = () => true; // Prevent back navigation
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            return () => subscription.remove();
+        }, [])
+    ); 
   
       useEffect(() => {
           const fetchUserData = async () => {

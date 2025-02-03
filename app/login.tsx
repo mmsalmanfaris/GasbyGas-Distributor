@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground} from 'react-native';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Ionicons as Icon } from "@expo/vector-icons";
@@ -14,6 +14,7 @@ export default function LoginScreen() {
     const togglePasswordVisibility = () => {
         setPasswordVisible(!isPasswordVisible);
     };
+    
 
     const loginCustomer = async () => {
         try {
@@ -27,13 +28,11 @@ export default function LoginScreen() {
                     ...consumers[key]
                 }));
 
-
                 const _user = consumerArray.find(
                     (consumer: any) => consumer.email === email && consumer.password === password
                 );
 
                 if (_user) {
-
                     console.log("User Found");
                     console.log(_user);
                     await AsyncStorage.setItem("email", _user.email);
@@ -45,9 +44,7 @@ export default function LoginScreen() {
                     await AsyncStorage.setItem("password", _user.password);                    
                     await AsyncStorage.setItem("outlet_id", _user.outlet_id);
                     await AsyncStorage.setItem("rnumber", _user.rnumber);
-                    await AsyncStorage.setItem("consumer_id", _user.consumerId);
-                    
-
+                    await AsyncStorage.setItem("consumer_id", _user.consumerId);                 
                     
                     alert('Customer Login Successfully');
                     router.push("/businesshomepage");
@@ -110,9 +107,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        flex: 1, justifyContent: 'center', alignItems: 'center',
     },
     loginBox: {
         backgroundColor: 'white',
@@ -127,18 +122,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#000',
+        fontSize: 24, fontWeight: 'bold',
+        marginBottom: 20, color: '#000',
         textAlign: 'center',
     },
     input: {
         width: '100%',
         backgroundColor: '#f9f9f9',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
+        borderWidth: 1, borderColor: '#ccc', borderRadius: 5,
         padding: 10,
         marginBottom: 15,
         fontSize: 16,
@@ -155,20 +146,15 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     passwordInput: {
-        flex: 1,
-        paddingVertical: 10,
+        flex: 1, paddingVertical: 10,
     },
     button: {
         backgroundColor: "#2776D1",
-        paddingVertical: 12,
-        borderRadius: 5,
-        width: '100%',
-        alignItems: 'center',
+        paddingVertical: 12, borderRadius: 5,
+        width: '100%', alignItems: 'center',
     },
     buttonText: {
-        color: "white",
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
+        color: "white", fontWeight: 'bold', textTransform: 'uppercase',
     },
     signupLink: {
         marginTop: 15,

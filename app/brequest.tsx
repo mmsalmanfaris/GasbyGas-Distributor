@@ -34,7 +34,7 @@ const RequestPage: React.FC = () => {
 
   const handleQuantityChange = (type: "increment" | "decrement") => {
     setQuantity((prev) => {
-      if (type === "increment" && prev < 3) return prev + 1;
+      if (type === "increment" && prev < 20) return prev + 1;
       if (type === "decrement" && prev > 1) return prev - 1;
       return prev;
     });

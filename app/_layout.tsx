@@ -4,6 +4,8 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { BackHandler } from 'react-native'; // Import BackHandler
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -31,26 +33,25 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        
-        <Stack.Screen name="activity" options={{ headerShown: false }} />
-        <Stack.Screen name="bsuccessmessage" options={{ headerShown: false }} />
-        <Stack.Screen name="brequest" options={{ headerShown: false }} />
-        <Stack.Screen name="businessotp" options={{ headerShown: false }} />
-        <Stack.Screen name="businesshomepage" options={{ headerShown: false }} />
-        <Stack.Screen name="businessprofile" options={{ headerShown: false }} />
-        <Stack.Screen name="requestpage" options={{ headerShown: false }} />
-        <Stack.Screen name="notification" options={{ headerShown: false }} />
-        <Stack.Screen name="profile" options={{ headerShown: false }} />
-        <Stack.Screen name="successmessage" options={{ headerShown: false }} />
-        <Stack.Screen name="otp" options={{ headerShown: false }} />
-        <Stack.Screen name="homepage" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="customerlogin" options={{ headerShown: false }} />
         <Stack.Screen name="customerregister" options={{ headerShown: false }} />
         <Stack.Screen name="businessregistration" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="activity" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="bsuccessmessage" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="brequest" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="businessotp" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="businesshomepage" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="businessprofile" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="requestpage" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="notification" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="profile" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="successmessage" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="otp" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="homepage" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="+not-found" options={{ gestureEnabled: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
+import {View, Text,TouchableOpacity,StyleSheet,SafeAreaView, ScrollView,BackHandler} from 'react-native';
 
 const ActivitiesPage = ({ navigation }: { navigation: any }) => {
   const requestsData = [

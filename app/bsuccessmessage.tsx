@@ -1,11 +1,19 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image,} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity,Image,BackHandler} from 'react-native';
 
 const SuccessMessage: React.FC = () => {
   const handleClose = () => {
     // Add the logic to navigate or close the modal
     console.log('Modal closed');
+
+    useFocusEffect(
+      React.useCallback(() => {
+          const onBackPress = () => true; // Prevent back navigation
+          const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+          return () => subscription.remove();
+      }, [])
+  );
   };
 
   return (

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet, Alert, BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { database } from "../db/DBConfig";
 import { ref, get, set } from "firebase/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,6 +18,15 @@ const HomePageCustomer: React.FC = () => {
     const [stock, setStock] = useState<number | null>(null);
     const [isHeadOfficeAvailable, setIsHeadOfficeAvailable] = useState<boolean>(true);
 
+
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const onBackPress = () => true; // Prevent back navigation
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            return () => subscription.remove();
+        }, [])
+    );
 
     useEffect(() => {
         const fetchInitialData = async () => {

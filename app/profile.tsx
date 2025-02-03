@@ -1,15 +1,6 @@
-import {
-    StyleSheet,
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-    Image,
-    Alert,
-  } from 'react-native';
+import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, Alert, BackHandler } from 'react-native';
   import React, { useState, useEffect } from 'react';
-  import { router } from 'expo-router';
+  import { router, useFocusEffect } from 'expo-router';
   import Icon from 'react-native-vector-icons/Ionicons';
   import { ref, get, update } from 'firebase/database';
   import { database } from "../db/DBConfig";
@@ -35,46 +26,53 @@ import {
       const [originalData, setOriginalData] = useState<any>(null); // Store original data
   
   
+      useFocusEffect(
+        React.useCallback(() => {
+            const onBackPress = () => true; // Prevent back navigation
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            return () => subscription.remove();
+        }, [])
+    );
+    
       useEffect(() => {
           const fetchUserData = async () => {
               try {
                 const _consumerId = await AsyncStorage.getItem("consumer_id");
                 setConsumerId(_consumerId);
-                  const _email = await AsyncStorage.getItem('email');
-                  const _outlet_name = await AsyncStorage.getItem('outlet_name');
-                  const _address = await AsyncStorage.getItem('address');
-                  const _name = await AsyncStorage.getItem('name');
-                  const _password = await AsyncStorage.getItem('password');
-                  const _contact = await AsyncStorage.getItem('contact');
-                  const _nic = await AsyncStorage.getItem('nic');
-                  const _district = await AsyncStorage.getItem('district');        
-                  const _rnumber = await AsyncStorage.getItem('rnumber');
-  
-                  setFullName(_name || '');
-                  setEmailAddress(_email || '');
-                  setAddress(_address || '');
-                  setPassword(_password || '');
-                  setNICnumber(_nic || '');
-                  setDistrict(_district || '');
-                  setOutlet(_outlet_name || '');
-                  setContact(_contact || '');                 
-                  setrnumber(_rnumber || '');
+                const _email = await AsyncStorage.getItem('email');                  
+                setEmailAddress(_email || '');
+                const _outlet_name = await AsyncStorage.getItem('outlet_name');
+                setOutlet(_outlet_name || '');
+                const _address = await AsyncStorage.getItem('address');
+                setAddress(_address || '');
+                const _name = await AsyncStorage.getItem('name');
+                setFullName(_name || '');
+                const _password = await AsyncStorage.getItem('password');
+                setPassword(_password || '');
+                const _contact = await AsyncStorage.getItem('contact');
+                setContact(_contact || ''); 
+                const _nic = await AsyncStorage.getItem('nic');
+                setNICnumber(_nic || '');
+                const _district = await AsyncStorage.getItem('district');  
+                setDistrict(_district || '');      
+                const _rnumber = await AsyncStorage.getItem('rnumber');
+                setrnumber(_rnumber || '');                      
   
                   if(_consumerId){
                       const userRef = ref(database, 'consumers/${_consumerId}');
                       const snapshot = await get(userRef);
                       if (snapshot.exists()) {
                           const userData = snapshot.val();
-                             setOriginalData(userData)
-                              setFullName(userData.name || '');
-                              setEmailAddress(userData.email || '');
-                              setContact(userData.contact || '');
-                              setNICnumber(userData.nic || '');
-                              setAddress(userData.address || '');
-                              setDistrict(userData.district || '');
-                              setOutlet(userData.outlet_id || '');
-                              setPassword(userData.password || '');
-                              setrnumber(userData.rnumber || '');
+                            setOriginalData(userData)
+                            setFullName(userData.name || '');
+                            setEmailAddress(userData.email || '');
+                            setContact(userData.contact || '');
+                            setNICnumber(userData.nic || '');
+                            setAddress(userData.address || '');
+                            setDistrict(userData.district || '');
+                            setOutlet(userData.outlet_id || '');
+                            setPassword(userData.password || '');
+                            setrnumber(userData.rnumber || '');
                           } else {
                             console.log("User data not found.");
                          }
@@ -198,8 +196,15 @@ import {
                        <TextInput
                           style={styles.input}
                           value={outlet_id}
-                           placeholder="Outlet"
-                            editable={false}
+                          placeholder="Outlet"
+                          editable={false}
+                      />
+                      <TextInput
+                          style={styles.input}
+                          value={rnumber}
+                          onChangeText={setrnumber}
+                          placeholder="Registration Number"
+                          editable={false}
                       />
                         
                       

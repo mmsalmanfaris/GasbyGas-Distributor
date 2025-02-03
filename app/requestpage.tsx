@@ -13,7 +13,6 @@ const RequestPage: React.FC = () => {
   const [outlets, setOutlet] = useState<string | null>(null);
   const [selectedCylinder, setSelectedCylinder] = useState<keyof typeof cylinderPrices>('small_2kg');
   
-  const userId = "customer123"; // Replace with actual user ID logic
   
   const cylinderPrices = {
     small_2kg : 950.00,
@@ -22,7 +21,7 @@ const RequestPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const outletRef = ref(database, `consumer/${userId}/outlets`);
+    const outletRef = ref(database, `consumer/outlets`);
     get(outletRef).then((snapshot) => {
       if (snapshot.exists()) {
         setOutlet(snapshot.val());
@@ -34,7 +33,7 @@ const RequestPage: React.FC = () => {
 
   const handleQuantityChange = (type: "increment" | "decrement") => {
     setQuantity((prev) => {
-      if (type === "increment" && prev < 3) return prev + 1;
+      if (type === "increment" && prev < 20) return prev + 1;
       if (type === "decrement" && prev > 1) return prev - 1;
       return prev;
     });
@@ -67,8 +66,8 @@ const RequestPage: React.FC = () => {
     };
 
     const userRequestRef = ref(database, `crequests/`);
-    const totalRequestsRef = ref(database, `users/${userId}/totalRequests`);
-    const recentRequestRef = ref(database, `users/${userId}/recentRequest`);
+    const totalRequestsRef = ref(database, `users/totalRequests`);
+    const recentRequestRef = ref(database, `users/recentRequest`);
 
     push(userRequestRef, requestData)
       .then(() => {
