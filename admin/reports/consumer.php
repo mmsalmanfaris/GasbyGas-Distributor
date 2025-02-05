@@ -7,7 +7,7 @@
   <title>Consumer Request Report - Admin</title>
 
   <?php
-  include_once '../components/manager-dashboard-top.php';
+  include_once '../components/manager-dashboard-top.php'; // Corrected include
   include_once '../../output/message.php';
   require '../includes/firebase.php';
 
@@ -52,6 +52,7 @@
             }
             $monthlyRequests[$month]++;
             $monthlyQuantities[$month] += intval($request['quantity']);
+
             if (!isset($panelCounts[$request['panel']])) {
               $panelCounts[$request['panel']] = 0;
             }
@@ -61,10 +62,12 @@
               $deliveryStatusCounts[$request['delivery_status']] = 0;
             }
             $deliveryStatusCounts[$request['delivery_status']]++;
+
             if (!isset($requestTypeCounts[$request['type']])) {
               $requestTypeCounts[$request['type']] = 0;
             }
             $requestTypeCounts[$request['type']]++;
+
             if (isset($request['cylinder_type'])) {
               if (!isset($cylinderTypeCounts[$request['cylinder_type']])) {
                 $cylinderTypeCounts[$request['cylinder_type']] = 0;
@@ -122,13 +125,13 @@
       <div class="col-3">
         <label for="outletSelect" class="form-label fw-bold">Select Outlet:</label>
         <select class="form-select" id="outletSelect"
-          onchange="window.location.href = '?outlet=' + this.value + '&year=' + document.getElementById('yearSelect').value;">
+          onchange="window.location.href = '?year=' + document.getElementById('yearSelect').value  + '&outlet=' + this.value;">
           <option value="all" <?php echo ($selectedOutlet === 'all' ? 'selected' : ''); ?>>All Outlets</option>
           <?php
           if (is_array($outlets)) {
-            foreach ($outlets as $outlet) {
-              $selected = ($outlet['outlet_id'] === $selectedOutlet) ? 'selected' : '';
-              echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
+            foreach ($outlets as $outletId => $outlet) { // Corrected: Use $outletId
+              $selected = ($outletId === $selectedOutlet) ? 'selected' : ''; // Correct: Compare with $outletId
+              echo '<option value="' . htmlspecialchars($outletId) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>'; // Correct: Use $outletId
             }
           }
           ?>
@@ -167,8 +170,6 @@
 
   </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
     const labels = <?php echo json_encode($labels); ?>;
     const monthlyReqCounts = <?php echo json_encode($monthlyReqCounts); ?>;
@@ -357,6 +358,7 @@
         }
       }]
     });
+
     const ctx5 = document.getElementById('requestTypeChart').getContext('2d');
     const requestTypeChart = new Chart(ctx5, {
       type: 'pie',
@@ -452,6 +454,7 @@
         }
       }
     });
+
     const ctx7 = document.getElementById('customerTypeChart').getContext('2d');
     const customerTypeChart = new Chart(ctx7, {
       type: 'bar',
@@ -494,6 +497,9 @@
         }
       }
     });
+
+
+
     document.getElementById('printBtn').addEventListener('click', function() {
       window.print();
     });
