@@ -7,7 +7,7 @@
   <title>Not Issued Report - Admin</title>
 
   <?php
-  include_once '../components/manager-dashboard-top.php';
+  include_once '../components/manager-dashboard-top.php'; // Corrected include
   include_once '../../output/message.php';
   require '../includes/firebase.php';
 
@@ -27,38 +27,34 @@
     // Calculate the start and end dates of the selected month
     $startDate = date('Y-m-01', strtotime($selectedMonth));
     $endDate = date('Y-m-t', strtotime($selectedMonth));
-    if (is_array($crequests)) {
-      foreach ($crequests as $requestId => $request) {
-        if (
-          $request['empty_cylinder'] === 'received' &&
-          $request['payment_status'] === 'received' &&
-          $request['delivery_status'] === 'pending'
-        ) {
-          if ($selectedOutlet === 'all' || $request['outlet_id'] === $selectedOutlet) {
-            $notIssuedRequests[] = $request;
-            if (isset($consumers[$request['consumer_id']])) {
-              $consumerNames[$request['consumer_id']] = htmlspecialchars($consumers[$request['consumer_id']]['name']);
-            }
-            if ($request['created_at']) {
-              $requestDate = date('Y-m-d', strtotime($request['created_at']));
-              if ($requestDate >= $startDate && $requestDate <= $endDate) {
-                if (!isset($dailyNotIssuedQuantities[$requestDate])) {
-                  $dailyNotIssuedQuantities[$requestDate] = 0;
-                }
-                $dailyNotIssuedQuantities[$requestDate] += intval($request['quantity']);
-                $totalNotIssuedQuantity += intval($request['quantity']);
-              }
-            }
-            $totalNotIssuedCount++;
+    foreach ($crequests as $requestId => $request) {
+      if (
+        $request['empty_cylinder'] === 'received' &&
+        $request['payment_status'] === 'received' &&
+        $request['delivery_status'] === 'pending'
+      ) {
+        if ($selectedOutlet === 'all' || $request['outlet_id'] === $selectedOutlet) {
+          $notIssuedRequests[] = $request;
+          if (isset($consumers[$request['consumer_id']])) {
+            $consumerNames[$request['consumer_id']] = htmlspecialchars($consumers[$request['consumer_id']]['name']);
           }
+          if ($request['created_at']) {
+            $requestDate = date('Y-m-d', strtotime($request['created_at']));
+            if ($requestDate >= $startDate && $requestDate <= $endDate) {
+              if (!isset($dailyNotIssuedQuantities[$requestDate])) {
+                $dailyNotIssuedQuantities[$requestDate] = 0;
+              }
+              $dailyNotIssuedQuantities[$requestDate] += intval($request['quantity']);
+              $totalNotIssuedQuantity += intval($request['quantity']);
+            }
+          }
+          $totalNotIssuedCount++;
         }
       }
     }
   }
-
   $labels = array_keys($dailyNotIssuedQuantities);
   $dailyCounts = array_values($dailyNotIssuedQuantities);
-
   ?>
   <style>
     .chart-container {
@@ -84,13 +80,13 @@
       <div class="col-3">
         <label for="outletSelect" class="form-label fw-bold">Select Outlet:</label>
         <select class="form-select" id="outletSelect"
-          onchange="window.location.href = '?outlet=' + this.value + '&month=' + document.getElementById('monthSelect').value ;">
+          onchange="window.location.href = '?month=' + document.getElementById('monthSelect').value + '&outlet=' + this.value;">
           <option value="all" <?php echo ($selectedOutlet === 'all' ? 'selected' : ''); ?>>All Outlets</option>
           <?php
           if (is_array($outlets)) {
-            foreach ($outlets as $outlet) {
-              $selected = ($outlet['outlet_id'] === $selectedOutlet) ? 'selected' : '';
-              echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
+            foreach ($outlets as $outletId => $outlet) {
+              $selected = ($outletId === $selectedOutlet) ? 'selected' : ''; // Use $outletId here
+              echo '<option value="' . htmlspecialchars($outletId) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
             }
           }
           ?>
@@ -113,7 +109,7 @@
       <canvas id="quantityChart" width="600" height="300"></canvas>
     </div>
     <div class="table-responsive p-3 border mt-5">
-      <table style="width:100%" class="table table-striped">
+      <table id="example" style="width:100%" class="table table-striped">
         <thead>
           <tr>
             <th scope="col">Consumer Name</th>
@@ -143,6 +139,8 @@
       </table>
     </div>
   </main>
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const labels = <?php echo json_encode($labels); ?>;
@@ -186,6 +184,9 @@
     });
     document.getElementById('printBtn').addEventListener('click', function() {
       window.print();
+    });
+    $(document).ready(function() {
+      $('#example').DataTable();
     });
   </script>
   <?php
