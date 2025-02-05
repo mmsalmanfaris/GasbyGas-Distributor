@@ -30,11 +30,10 @@
       foreach ($crequests as $request) {
         if (
           $request['outlet_id'] == $user_outlet_id &&
-          $request['sdelivery'] &&
           $request['payment_status'] === 'received' &&
           $request['delivery_status'] === 'issued'
         ) {
-          $requestDate = date('Y-m-d', strtotime($request['sdelivery']));
+          $requestDate = date('Y-m-d', strtotime($request['created_at']));
           if ($requestDate >= $startDate && $requestDate <= $endDate) {
             $dayOfMonth = date('j', strtotime($requestDate));
             if (!isset($monthlySalesData[$dayOfMonth])) {
