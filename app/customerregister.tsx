@@ -1,22 +1,24 @@
-import {
-    StyleSheet,
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-    ActivityIndicator,
-  } from "react-native";
-  import React, { useState, useEffect } from "react";
-  import { router } from "expo-router";
-  import { Ionicons as Icon } from "@expo/vector-icons";
-  import RNPickerSelect from "react-native-picker-select";
-  import { get, ref, set } from "firebase/database";
-  import { database } from "../db/DBConfig";
-  import AsyncStorage from "@react-native-async-storage/async-storage";
-  
-  
-  export default function CreateAccountScreen() {
+import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from "react";
+import { router } from "expo-router";
+import { Ionicons as Icon } from "@expo/vector-icons";
+import RNPickerSelect from "react-native-picker-select";
+import { get, ref, set } from "firebase/database";
+import { database } from "../db/DBConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CryptoJS from "crypto-js";  // ✅ Use "crypto-js" instead of "react-native-crypto-js"
+
+const hashPassword = (password: string) => {
+  return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+};
+
+// Example usage:
+const password = "my_secure_password";
+const hashedPassword = hashPassword(password);
+console.log("Hashed Password:", hashedPassword);
+
+
+export default function CreateAccountScreen() {
     const [name, setFullName] = useState("");
     const [email, setEmailAddress] = useState("");
     const [contact, setContact] = useState("");
@@ -27,10 +29,8 @@ import {
     const [password, setPassword] = useState("");
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [outlets, setOutlets] = useState<{ label: string; value: string }[]>(
-        []
-    );
-  
+    const [outlets, setOutlets] = useState<{ label: string; value: string }[]>([]);
+
     const districts = [
         { label: "Colombo", value: "Colombo" },
         { label: "Gampaha", value: "Gampaha" },
@@ -58,7 +58,11 @@ import {
         { label: "Ratnapura", value: "Ratnapura" },
         { label: "Kegalle", value: "Kegalle" },
     ];
-  
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!isPasswordVisible);
+    };
+
     useEffect(() => {
         const fetchOutlets = async () => {
             if (district) {
@@ -70,16 +74,10 @@ import {
                         const outletData = snapshot.val();
                         const filteredOutlets = Object.keys(outletData)
                             .filter((key) => outletData[key].district === district)
-                            .map((key) => ({
-                                label: outletData[key].name,
-                                value: key,
-                            }));
-  
-  
+                            .map((key) => ({ label: outletData[key].name, value: key }));
                         setOutlets(filteredOutlets);
                     } else {
                         setOutlets([]);
-                        console.log("No outlets found for this district");
                     }
                 } catch (error) {
                     console.error("Error fetching outlets:", error);
@@ -93,27 +91,13 @@ import {
         };
         fetchOutlets();
     }, [district]);
-  
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!isPasswordVisible);
-    };
-  
+
     const validateInputs = () => {
-        if (
-            !name ||
-            !email ||
-            !contact ||
-            !nic ||
-            !address ||
-            !district ||
-             outlet_id === null ||
-            !password
-        ) {
+        if (!name || !email || !contact || !nic || !address || !district || outlet_id === null || !password) {
             alert("All fields are required.");
             return false;
         }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             alert("Please enter a valid email address.");
             return false;
         }
@@ -127,7 +111,7 @@ import {
         }
         return true;
     };
-  
+
     const checkUniqueFields = async () => {
         const dbRef = ref(database, "consumers");
         const snapshot = await get(dbRef);
@@ -146,24 +130,29 @@ import {
         }
         return true;
     };
-  
-    const formattedDate = new Date().toISOString();
-  
+
     const addCustomer = async () => {
         if (!validateInputs()) return;
         setIsLoading(true);
-  
+    
         const isUnique = await checkUniqueFields();
         if (!isUnique) {
             setIsLoading(false);
             return;
         }
+    
         if (!outlet_id) {
             alert("Please select an outlet.");
             setIsLoading(false);
             return;
         }
-  
+    
+        // Hash the password before saving
+        const hashedPassword = hashPassword(password);
+        
+        // Get the current date and format it
+        const formattedDate = new Date().toISOString();
+    
         const customerData = {
             name,
             email,
@@ -172,31 +161,26 @@ import {
             address,
             district,
             outlet_id,
-            password ,
-            category: "Home",            
+            password: hashedPassword, // Store the hashed password
+            category: "Home",
             created_at: formattedDate,
         };
-  
+    
         const cusRef = ref(database, "consumers/" + Date.now());
-  
+    
         try {
-            const newCusRef = await set(cusRef, customerData);
-            // Get the new customer ID
-            const newCustomerId = cusRef.key;
-  
-            // Store the new customer ID in AsyncStorage
-            if (newCustomerId) {
-                await AsyncStorage.setItem("consumer_id", newCustomerId);
-                await AsyncStorage.setItem("email", email);
-                await AsyncStorage.setItem("name", name);
-                await AsyncStorage.setItem("contact", contact);
-                await AsyncStorage.setItem("address", address);
-                await AsyncStorage.setItem("district", district);
-                await AsyncStorage.setItem("nic", nic);
-                await AsyncStorage.setItem("password", password);                    
-                await AsyncStorage.setItem("outlet_id", outlet_id);
-            }
-  
+            await set(cusRef, customerData);
+    
+            await AsyncStorage.setItem("consumer_id", cusRef.key || "");
+            await AsyncStorage.setItem("email", email);
+            await AsyncStorage.setItem("name", name);
+            await AsyncStorage.setItem("contact", contact);
+            await AsyncStorage.setItem("address", address);
+            await AsyncStorage.setItem("district", district);
+            await AsyncStorage.setItem("nic", nic);
+            await AsyncStorage.setItem("password", hashedPassword); // Store hashed password
+            await AsyncStorage.setItem("outlet_id", outlet_id);
+    
             alert("Account created successfully!");
             setFullName("");
             setEmailAddress("");
@@ -206,7 +190,7 @@ import {
             setDistrict("");
             setOutlet(null);
             setPassword("");
-  
+    
             router.push("/homepage");
         } catch (error) {
             console.error("Error adding customer:", error);
@@ -215,6 +199,9 @@ import {
             setIsLoading(false);
         }
     };
+    
+
+
   
     return (
       

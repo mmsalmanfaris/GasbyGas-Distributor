@@ -1,12 +1,4 @@
-import {
-    collection,
-    addDoc,
-    doc,
-    getDoc,
-    getDocs,
-    updateDoc,
-    deleteDoc,
-  } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, getDocs, updateDoc, deleteDoc,} from "firebase/firestore";
   import { firestoreDB } from "./DBConfig";
   
   export const createDataInFirestore = async ({ _collection, _data }) => {

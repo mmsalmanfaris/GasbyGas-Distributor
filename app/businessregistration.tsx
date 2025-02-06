@@ -1,12 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator,} from "react-native";
 import React, { useState, useEffect } from "react";
 import { router } from "expo-router";
 import { Ionicons as Icon } from "@expo/vector-icons";
@@ -14,6 +6,16 @@ import RNPickerSelect from "react-native-picker-select";
 import { get, ref, set } from "firebase/database";
 import { database } from "../db/DBConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CryptoJS from "crypto-js";  // ✅ Use "crypto-js" instead of "react-native-crypto-js"
+
+const hashPassword = (password: string) => {
+  return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+};
+
+// Example usage:
+const password = "my_secure_password";
+const hashedPassword = hashPassword(password);
+console.log("Hashed Password:", hashedPassword);
 
 
 export default function CreateAccountScreen() {
@@ -150,6 +152,8 @@ export default function CreateAccountScreen() {
   };
 
   const formattedDate = new Date().toISOString();
+  // Hash the password before saving
+  const hashedPassword = hashPassword(password);
 
   const addCustomer = async () => {
       if (!validateInputs()) return;
@@ -174,7 +178,7 @@ export default function CreateAccountScreen() {
           address,
           district,
           outlet_id,
-          password ,
+          password: hashedPassword ,
           category: "Industry",
           rnumber,
           created_at: formattedDate,
@@ -196,7 +200,7 @@ export default function CreateAccountScreen() {
               await AsyncStorage.setItem("address", address);
               await AsyncStorage.setItem("district", district);
               await AsyncStorage.setItem("nic", nic);
-              await AsyncStorage.setItem("password", password);                    
+              await AsyncStorage.setItem("password", hashedPassword);                    
               await AsyncStorage.setItem("outlet_id", outlet_id);
               await AsyncStorage.setItem("rnumber", rnumber);
           }

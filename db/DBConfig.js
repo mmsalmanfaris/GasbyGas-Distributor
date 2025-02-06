@@ -18,3 +18,4 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 export { app, database };
+

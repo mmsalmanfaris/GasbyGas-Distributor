@@ -2,7 +2,7 @@ import {StyleSheet, View, Text, TouchableOpacity, Image, ImageBackground, Dimens
 import React from 'react';
 import { router } from 'expo-router';
 
-export default function CreateAccountScreen() {
+export default function StartPage() {
   return (
     <ImageBackground source={require('../assets/images/gasBg.jpeg')} style={styles.background}>
       <View style={styles.container}>
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     resizeMode: 'cover',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
