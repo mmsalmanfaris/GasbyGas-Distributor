@@ -108,16 +108,69 @@ const HomePageCustomer: React.FC = () => {
         fetchOutletData();
     }, [outletId]);
 
-    const handleRequestGas = () => {
+    const handleRequestGas = async () => {
         if (!isHeadOfficeAvailable) {
-          Alert.alert(
-            "Out of Stock",
-            "Sorry, You can't request for Gas now, due to out of stock, Please try again later."
-          );
+            Alert.alert(
+                "Out of Stock",
+                "Sorry, You can't request Gas now, due to out of stock, Please try again later."
+            );
         } else {
-          router.push("/requestpage");
+            try {
+                if (consumerId) {
+                    // Get the reference for the specific consumer's crequest data
+                    const crequestRef = ref(database, `crequest/${consumerId}`);
+    
+                    // Get current data for the request
+                    const crequestSnapshot = await get(crequestRef);
+                    if (crequestSnapshot.exists()) {
+                        const crequestData = crequestSnapshot.val();
+    
+                        // Ensure totalRequests is a valid number (fallback to 0 if invalid)
+                        const currentTotalRequests = Number(crequestData.totalRequests) || 0;
+    
+                        // Update the recent request and total requests
+                        const newRecentRequest = new Date().toISOString(); // Get the current date and time
+                        const newTotalRequests = currentTotalRequests + 1;
+    
+                        // Update the crequest table with the new values
+                        await set(crequestRef, {
+                            ...crequestData,
+                            recentRequest: newRecentRequest,
+                            totalRequests: newTotalRequests,
+                        });
+    
+                        // Update local state for the UI
+                        setRecentRequest(newRecentRequest);
+                        setTotalRequests(newTotalRequests);
+    
+                        // Navigate to the request page
+                        router.push("/requestpage");
+                    } else {
+                        console.log("No data found in crequest for this consumer");
+    
+                        // If no previous data exists, initialize it
+                        const newRecentRequest = new Date().toISOString(); // Current date and time
+                        const newTotalRequests = 1; // First request
+    
+                        await set(crequestRef, {
+                            recentRequest: newRecentRequest,
+                            totalRequests: newTotalRequests,
+                        });
+    
+                        // Update local state for the UI
+                        setRecentRequest(newRecentRequest);
+                        setTotalRequests(newTotalRequests);
+    
+                        // Navigate to the request page
+                        router.push("/requestpage");
+                    }
+                }
+            } catch (error) {
+                console.error("Error updating request data:", error);
+            }
         }
-      };
+    };
+    
 
     return (
         <View style={styles.container}>
