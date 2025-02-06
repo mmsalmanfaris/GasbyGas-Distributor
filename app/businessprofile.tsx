@@ -86,35 +86,36 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image,
   
   
     const handleUpdate = async () => {
-        if (!consumerId) {
-            Alert.alert("Error", "Consumer ID not found.");
-            return;
-        }
-        try {
-            const userRef = ref(database, 'consumers/${consumerId}');
-            const updates:any = {};
-             if (originalData?.email !== email) {
-                updates.email = email;
-              }
-            if (originalData?.contact !== contact) {
-                updates.contact = contact;
-              }
-             if (originalData?.password !== password) {
-                updates.password = password;
+            if (!consumerId) {
+                Alert.alert("Error", "Consumer ID not found.");
+                return;
             }
-  
-            if(Object.keys(updates).length > 0){
-                await update(userRef, updates);
-               Alert.alert("Success", "Profile updated successfully!");
-              } else {
-                Alert.alert("Info","Nothing to update");
+        
+            try {
+                const userRef = ref(database, `consumers/${consumerId}`); 
+                const updates: any = {};
+        
+                if (originalData?.email !== email) {
+                    updates.email = email;
+                }
+                if (originalData?.contact !== contact) {
+                    updates.contact = contact;
+                }
+                if (originalData?.password !== password) {
+                    updates.password = password; 
+                }
+        
+                if (Object.keys(updates).length > 0) {
+                    await update(userRef, updates);
+                    Alert.alert("Success", "Profile updated successfully!");
+                } else {
+                    Alert.alert("Info", "Nothing to update");
+                }
+            } catch (error) {
+                console.error("Error updating user data:", error);
+                Alert.alert("Error", "Failed to update profile.");
             }
-  
-        } catch (error) {
-           console.error("Error updating user data:", error);
-           Alert.alert("Error", "Failed to update profile.");
-        }
-    };
+        };
   
       const togglePasswordVisibility = () => {
           setPasswordVisible(!isPasswordVisible);

@@ -199,10 +199,7 @@ export default function CreateAccountScreen() {
             setIsLoading(false);
         }
     };
-    
-
-
-  
+      
     return (
       
         <View style={styles.container}>

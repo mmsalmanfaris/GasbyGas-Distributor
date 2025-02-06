@@ -1,96 +1,114 @@
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground} from 'react-native';
-import React, { useState } from 'react';
-import { router } from 'expo-router';
-import { Ionicons as Icon } from "@expo/vector-icons";
-import { ref, get, child } from 'firebase/database';
+import { get, ref, child } from "firebase/database";
 import { database } from "../db/DBConfig";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CryptoJS from "crypto-js";
+import { router } from "expo-router";
+import { useState } from "react";
+import React from "react";
+import { ImageBackground, View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 
-export default function LoginScreen() {
-    const [email, setEmailAddress] = useState('');
-    const [password, setPassword] = useState('');
-    const [isPasswordVisible, setPasswordVisible] = useState(false);
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!isPasswordVisible);
-    };
-    const loginCustomer = async () => {
-        try {
-            const dbRef = ref(database);
-            const snapshot = await get(child(dbRef, "consumers/"));
-            if (snapshot.exists()) {
-                const consumers = snapshot.val();
-                const consumerArray = Object.keys(consumers).map(key => ({
-                    consumerId: key,
-                    ...consumers[key]
-                }));
-                const _user = consumerArray.find(
-                    (consumer: any) => consumer.email === email && consumer.password === password
-                );
-                if (_user) {
-                    console.log("User Found");
-                    console.log(_user);
-                    await AsyncStorage.setItem("email", _user.email);
-                    await AsyncStorage.setItem("name", _user.name);
-                    await AsyncStorage.setItem("contact", _user.contact);
-                    await AsyncStorage.setItem("address", _user.address);
-                    await AsyncStorage.setItem("district", _user.district);
-                    await AsyncStorage.setItem("nic", _user.nic);
-                    await AsyncStorage.setItem("password", _user.password);                    
-                    await AsyncStorage.setItem("outlet_id", _user.outlet_id);
-                    await AsyncStorage.setItem("consumer_id", _user.consumerId);       
-                    alert('Customer Login Successfully');
-                    router.push("/homepage");
-                } else {
-                    alert('Invalid email or password');
-                }
-            } else {
-                alert('No consumers found');
-            }
-        } catch (error) {
-            console.error('Error retrieving data:', error);
-            alert('An error occurred. Please try again later.');
-        }
-    };
+// Function to hash input password
+const hashPassword = (password: string) => {
+  return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+};
 
-    return (
-        <ImageBackground source={require('../assets/images/sky.jpg')} style={styles.background}>
-            <View style={styles.container}>
-                <View style={styles.loginBox}>
-                    <Text style={styles.title}>Login to Your Account</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email Address"
-                        placeholderTextColor="#888"
-                        onChangeText={setEmailAddress}
-                        value={email}
-                    />
-                    <View style={styles.passwordContainer}>
+const loginCustomer = async (email: string, password: string) => {
+  try {
+    const dbRef = ref(database);
+    const snapshot = await get(child(dbRef, "consumers/"));
+    if (snapshot.exists()) {
+      const consumers = snapshot.val();
+      const consumerArray = Object.keys(consumers).map(key => ({
+        consumerId: key,
+        ...consumers[key]
+      }));
+
+      // Hash the input password
+      const hashedInputPassword = hashPassword(password);
+
+      // Find the user by email
+      const _user = consumerArray.find(
+        (consumer: any) => consumer.email === email && consumer.password === hashedInputPassword
+      );
+
+      if (_user) {
+        console.log("User Found", _user);
+        await AsyncStorage.setItem("email", _user.email);
+        await AsyncStorage.setItem("name", _user.name);
+        await AsyncStorage.setItem("contact", _user.contact);
+        await AsyncStorage.setItem("address", _user.address);
+        await AsyncStorage.setItem("district", _user.district);
+        await AsyncStorage.setItem("nic", _user.nic);
+        await AsyncStorage.setItem("outlet_id", _user.outlet_id);
+        await AsyncStorage.setItem("consumer_id", _user.consumerId);
+        await AsyncStorage.setItem("password", _user.password);
+
+        alert("Customer Login Successfully");
+        router.push("/homepage");
+      } else {
+        alert("Invalid email or password");
+      }
+    } else {
+      alert("No consumers found");
+    }
+  } catch (error) {
+    console.error("Error retrieving data:", error);
+    alert("An error occurred. Please try again later.");
+  }
+};
+
+    const CustomerLogin = () => {
+        const [email, setEmailAddress] = useState('');
+        const [password, setPassword] = useState('');
+        const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    
+        const togglePasswordVisibility = () => {
+            setIsPasswordVisible(!isPasswordVisible);
+        };
+    
+        return (
+            <ImageBackground source={require('../assets/images/sky.jpg')} style={styles.background}>
+                <View style={styles.container}>
+                    <View style={styles.loginBox}>
+                        <Text style={styles.title}>Login to Your Account</Text>
                         <TextInput
-                            style={styles.passwordInput}
-                            value={password}
-                            onChangeText={setPassword}
-                            placeholder="Password"
-                            secureTextEntry={!isPasswordVisible}
+                            style={styles.input}
+                            placeholder="Email Address"
+                            placeholderTextColor="#888"
+                            onChangeText={setEmailAddress}
+                            value={email}
                         />
-                        <TouchableOpacity onPress={togglePasswordVisibility}>
-                            <Icon
-                                name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                                size={20}
-                                color="#888"
+                        <View style={styles.passwordContainer}>
+                            <TextInput
+                                style={styles.passwordInput}
+                                value={password}
+                                onChangeText={setPassword}
+                                placeholder="Password"
+                                secureTextEntry={!isPasswordVisible}
                             />
+                            <TouchableOpacity onPress={togglePasswordVisibility}>
+                                <Icon
+                                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                                    size={20}
+                                    color="#888"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity style={styles.button} onPress={() => loginCustomer(email, password)}>
+                            <Text style={styles.buttonText}>Login</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.signupLink} onPress={() => router.push("/customerregister") }>
+                            <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.button} onPress={loginCustomer}>
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.signupLink} onPress={() => router.push("/customerregister") }>
-                        <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
-                    </TouchableOpacity>
                 </View>
-            </View>
-        </ImageBackground>
-    );
-}
+            </ImageBackground>
+        );
+    };
+    
+    export default CustomerLogin;
+
 
 const styles = StyleSheet.create({
     background: {

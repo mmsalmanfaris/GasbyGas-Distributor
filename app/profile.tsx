@@ -19,7 +19,6 @@ import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, 
       const [address, setAddress] = useState('');
       const [district, setDistrict] = useState('');
       const [outlet_id, setOutlet] = useState('');  
-      const [rnumber, setrnumber] = useState('');
       const [password, setPassword] = useState('');
       const [isPasswordVisible, setPasswordVisible] = useState(false);
       const [consumerId, setConsumerId] = useState<string | null>(null);
@@ -41,7 +40,7 @@ import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, 
                 setConsumerId(_consumerId);
                 const _email = await AsyncStorage.getItem('email');                  
                 setEmailAddress(_email || '');
-                const _outlet_name = await AsyncStorage.getItem('outlet_name');
+                const _outlet_name = await AsyncStorage.getItem('outlet_id'); //name of the outlet shows only kalmunai supplier when give like outlet_name
                 setOutlet(_outlet_name || '');
                 const _address = await AsyncStorage.getItem('address');
                 setAddress(_address || '');
@@ -55,8 +54,7 @@ import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, 
                 setNICnumber(_nic || '');
                 const _district = await AsyncStorage.getItem('district');  
                 setDistrict(_district || '');      
-                const _rnumber = await AsyncStorage.getItem('rnumber');
-                setrnumber(_rnumber || '');                      
+                                      
   
                   if(_consumerId){
                       const userRef = ref(database, 'consumers/${_consumerId}');
@@ -72,7 +70,6 @@ import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, 
                             setDistrict(userData.district || '');
                             setOutlet(userData.outlet_id || '');
                             setPassword(userData.password || '');
-                            setrnumber(userData.rnumber || '');
                           } else {
                             console.log("User data not found.");
                          }
@@ -85,34 +82,35 @@ import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, 
       }, []);
   
   
-    const handleUpdate = async () => {
+      const handleUpdate = async () => {
         if (!consumerId) {
             Alert.alert("Error", "Consumer ID not found.");
             return;
         }
+    
         try {
-            const userRef = ref(database, 'consumers/${consumerId}');
-            const updates:any = {};
-             if (originalData?.email !== email) {
+            const userRef = ref(database, `consumers/${consumerId}`); 
+            const updates: any = {};
+    
+            if (originalData?.email !== email) {
                 updates.email = email;
-              }
+            }
             if (originalData?.contact !== contact) {
                 updates.contact = contact;
-              }
-             if (originalData?.password !== password) {
-                updates.password = password;
             }
-  
-            if(Object.keys(updates).length > 0){
-                await update(userRef, updates);
-               Alert.alert("Success", "Profile updated successfully!");
-              } else {
-                Alert.alert("Info","Nothing to update");
+            if (originalData?.password !== password) {
+                updates.password = password; 
             }
-  
+    
+            if (Object.keys(updates).length > 0) {
+                await update(userRef, updates); 
+                Alert.alert("Success", "Profile updated successfully!");
+            } else {
+                Alert.alert("Info", "Nothing to update");
+            }
         } catch (error) {
-           console.error("Error updating user data:", error);
-           Alert.alert("Error", "Failed to update profile.");
+            console.error("Error updating user data:", error);
+            Alert.alert("Error", "Failed to update profile.");
         }
     };
   
@@ -199,14 +197,7 @@ import {StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Image, 
                           placeholder="Outlet"
                           editable={false}
                       />
-                      <TextInput
-                          style={styles.input}
-                          value={rnumber}
-                          onChangeText={setrnumber}
-                          placeholder="Registration Number"
-                          editable={false}
-                      />
-                        
+                                             
                       
                       <View style={styles.passwordContainer}>
                           <TextInput
