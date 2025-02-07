@@ -8,16 +8,8 @@ function check_login_errors()
         $errors = $_SESSION["errors_login"];
 
         foreach ($errors as $error) {
-            echo "<p class='alert alert-warning'> $error </p>";
+            echo "<p class='alert alert-danger'> $error </p>";
         }
-        unset($_SESSION["errors_login"]);
-    } else if (isset($_GET['login']) && $_GET['login'] === "success") {
-        echo '<div class="card w-100">
-                <div class="card-body">
-                    <p class="card-text text-center">Correct Login Credentials. Login Success.</p>
-                </div>
-            </div>';
-
-        header("Location: ./dashboard/");
+        unset($_SESSION["errors_login"]); // Clear errors after displaying
     }
 }
