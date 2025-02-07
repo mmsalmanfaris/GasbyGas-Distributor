@@ -7,7 +7,7 @@
   <title>Payment Status Report - Admin</title>
 
   <?php
-  include_once '../components/manager-dashboard-top.php';
+  include_once '../components/manager-dashboard-top.php'; // Corrected include
   include_once '../../output/message.php';
   require '../includes/firebase.php';
 
@@ -22,32 +22,32 @@
   $totalReceivedAmount = 0;
   $totalCancelledAmount = 0;
 
-  $crequests = $database->getReference('crequests')->getValue();
-  if ($crequests) {
+
+  if ($crequests = $database->getReference('crequests')->getValue()) {
     $startDate = date('Y-m-01', strtotime($selectedMonth));
     $endDate = date('Y-m-t', strtotime($selectedMonth));
+
     foreach ($crequests as $request) {
-      if (isset($request['created_at'])) {
+      // Check if outlet_id exists *before* accessing it.
+      if (isset($request['created_at'], $request['outlet_id'])) {  //Added isset to check the key exists
         $requestDate = date('Y-m-d', strtotime($request['created_at']));
-        if ($requestDate >= $startDate && $requestDate <= $endDate) {
-          if ($selectedOutlet === 'all' || $request['outlet_id'] === $selectedOutlet) {
-            if ($request['payment_status'] === 'pending') {
-              $pendingCount++;
-              if (isset($request['total_price'])) $totalPendingAmount += intval($request['total_price']);
-            } elseif ($request['payment_status'] === 'received') {
-              $receivedCount++;
-              if (isset($request['total_price'])) $totalReceivedAmount += intval($request['total_price']);
-            } elseif ($request['payment_status'] === 'cancelled') {
-              $cancelledCount++;
-              if (isset($request['total_price'])) $totalCancelledAmount += intval($request['total_price']);
-            }
+
+        //Filter by date and outlet.
+        if ($requestDate >= $startDate && $requestDate <= $endDate && ($selectedOutlet === 'all' || $request['outlet_id'] === $selectedOutlet)) {
+          if ($request['payment_status'] === 'pending') {
+            $pendingCount++;
+            if (isset($request['total_price'])) $totalPendingAmount += intval($request['total_price']);
+          } elseif ($request['payment_status'] === 'received') {
+            $receivedCount++;
+            if (isset($request['total_price'])) $totalReceivedAmount += intval($request['total_price']);
+          } elseif ($request['payment_status'] === 'cancelled') {
+            $cancelledCount++;
+            if (isset($request['total_price'])) $totalCancelledAmount += intval($request['total_price']);
           }
         }
       }
     }
   }
-
-
   ?>
   <style>
     .chart-container {
@@ -74,13 +74,13 @@
       <div class="col-3">
         <label for="outletSelect" class="form-label fw-bold">Select Outlet:</label>
         <select class="form-select" id="outletSelect"
-          onchange="window.location.href = '?month=' + document.getElementById('monthSelect').value + '&outlet=' + this.value;">
+          onchange="window.location.href = '?month=' + document.getElementById('monthSelect').value  + '&outlet=' + this.value;">
           <option value="all" <?php echo ($selectedOutlet === 'all' ? 'selected' : ''); ?>>All Outlets</option>
           <?php
           if (is_array($outlets)) {
-            foreach ($outlets as $outlet) {
-              $selected = ($outlet['outlet_id'] === $selectedOutlet) ? 'selected' : '';
-              echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
+            foreach ($outlets as $outletId => $outlet) { // Use $outletId here
+              $selected = ($outletId === $selectedOutlet) ? 'selected' : '';  // Compare with $outletId
+              echo '<option value="' . htmlspecialchars($outletId) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
             }
           }
           ?>
@@ -169,7 +169,7 @@
     });
   </script>
   <?php
-  include_once '../components/manager-dashboard-down.php';
+  include_once '../components/manager-dashboard-down.php'; // corrected
   message_success();
   ?>
 </body>

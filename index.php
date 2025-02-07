@@ -1,5 +1,5 @@
 <?php
-require_once './includes/config_session.inc.php';
+require_once './includes/config_session.inc.php'; // Start session here
 require_once './includes/login_view.inc.php';
 ?>
 
@@ -42,12 +42,13 @@ require_once './includes/login_view.inc.php';
                                     <label class="form-label" for="email">Email</label>
                                     <input type="text" id="email" name="email" class="form-control form-control-lg"
                                         required />
+
                                 </div>
 
                                 <div class="form-outline mb-4">
                                     <label class="form-label" for="password">Password</label>
                                     <input type="password" id="password" name="password"
-                                        class="form-control form-control-lg" required />
+                                        class="form-control form-control-lg" />
                                 </div>
 
                                 <div class="pt-1 mb-4 text-center">

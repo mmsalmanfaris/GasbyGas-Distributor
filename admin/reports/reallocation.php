@@ -7,26 +7,28 @@
   <title>Reallocation Report - Admin</title>
 
   <?php
-  include_once '../components/manager-dashboard-top.php';
+  include_once '../components/manager-dashboard-top.php'; // Corrected include
   include_once '../../output/message.php';
   require '../includes/firebase.php';
 
-
   $selectedMonth = isset($_GET['month']) ? $_GET['month'] : date('Y-m');
   $selectedOutlet = isset($_GET['outlet']) ? $_GET['outlet'] : 'all';
-  $outlets = $database->getReference('outlets')->getValue();
+  $outlets = $database->getReference('outlets')->getValue(); // Get outlets *before* the loop
 
 
   $dailyReallocations = [];
   $dailyReallocatedQuantities = [];
 
-  if ($cancellations = $database->getReference('cancellations')->getValue()) {
+  $cancellations = $database->getReference('cancellations')->getValue();
+  if (is_array($cancellations)) { // Always check if getvalue returned an array
     // Calculate the start and end dates of the selected month
     $startDate = date('Y-m-01', strtotime($selectedMonth));
     $endDate = date('Y-m-t', strtotime($selectedMonth));
-    foreach ($cancellations as $cancellation) {
-      if (isset($cancellation['date'])) {
+
+    foreach ($cancellations as $cancellationId => $cancellation) { // Use $cancellationId
+      if (isset($cancellation['date'], $cancellation['outlet_id'])) { // Check if date and outlet_id *exist*
         $cancellationDate = date('Y-m-d', strtotime($cancellation['date']));
+
         if ($cancellationDate >= $startDate && $cancellationDate <= $endDate) {
           if ($selectedOutlet === 'all' || $cancellation['outlet_id'] === $selectedOutlet) {
             if (!isset($dailyReallocations[$cancellationDate])) {
@@ -40,9 +42,12 @@
       }
     }
   }
+
+
   $labels = array_keys($dailyReallocations);
   $reallocationCounts = array_values($dailyReallocations);
   $reallocationQuantities = array_values($dailyReallocatedQuantities);
+
   ?>
   <style>
     .chart-container {
@@ -68,20 +73,20 @@
       <div class="col-3">
         <label for="outletSelect" class="form-label fw-bold">Select Outlet:</label>
         <select class="form-select" id="outletSelect"
-          onchange="window.location.href = '?outlet=' + this.value + '&month=' + document.getElementById('monthSelect').value ;">
+          onchange="window.location.href = '?month=' + document.getElementById('monthSelect').value + '&outlet=' + this.value;">
           <option value="all" <?php echo ($selectedOutlet === 'all' ? 'selected' : ''); ?>>All Outlets</option>
           <?php
           if (is_array($outlets)) {
-            foreach ($outlets as $outlet) {
-              $selected = ($outlet['outlet_id'] === $selectedOutlet) ? 'selected' : '';
-              echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
+            foreach ($outlets as $outletId => $outlet) { // Use $outletId here
+              $selected = ($outletId === $selectedOutlet) ? 'selected' : ''; // Correct: Compare with $outletId
+              echo '<option value="' . htmlspecialchars($outletId) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
             }
           }
           ?>
         </select>
       </div>
       <div class="col-3 d-flex justify-content-end">
-        <button id="printBtn" class="btn btn-primary">Print Report</button>
+        <button id="printBtn" class="btn btn-primary" onclick="window.print()">Print Report</button>
       </div>
     </div>
     <div class="chart-container">
@@ -171,7 +176,7 @@
     });
   </script>
   <?php
-  include_once '../components/manager-dashboard-down.php';
+  include_once '../components/manager-dashboard-down.php';  // Corrected include
   message_success();
   ?>
 </body>

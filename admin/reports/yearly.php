@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yearly Sales Report - Admin</title>
+  <title>Monthly Sales Report - Admin</title>
 
   <?php
   include_once '../components/manager-dashboard-top.php';
@@ -16,10 +16,58 @@
 
   $outlets = $database->getReference('outlets')->getValue();
 
-
   $monthlySalesData = [];
-  $labels = [];
-  $allMonths = [
+  $allCylinderTypes = ['small_2kg', 'medium_5kg', 'large_12kg'];
+  $salesByType = array_fill_keys($allCylinderTypes, 0); // Initialize all cylinder types
+  $salesByCustomerType = [];
+  $totalCylindersSold = 0;
+  $totalSalesAmount = 0;
+
+  if ($crequests = $database->getReference('crequests')->getValue()) {
+    foreach ($crequests as $request) {
+      // Outlet Filter: Apply BEFORE date/month processing
+      if ($selectedOutlet !== 'all' && (!isset($request['outlet_id']) || $request['outlet_id'] !== $selectedOutlet)) {
+        continue; // Skip this request if it doesn't match the selected outlet
+      }
+
+      if (
+        isset($request['created_at']) &&
+        $request['payment_status'] === 'received' &&
+        isset($request['total_price'])
+      ) {
+        $requestDate = new DateTime($request['created_at']);
+        if ($requestDate->format('Y') == $selectedYear) {
+          $month = $requestDate->format('F');
+          if (!isset($monthlySalesData[$month])) {
+            $monthlySalesData[$month] = 0;
+          }
+          $monthlySalesData[$month] += intval($request['total_price']);
+          $totalCylindersSold += intval($request['quantity']);
+          $totalSalesAmount += intval($request['total_price']);
+
+          // Aggregate sales by cylinder type
+          if (isset($request['cylinder_type'])) {
+            $type = $request['cylinder_type'];
+            // No need to re-check if it exists; we initialized it
+            $salesByType[$type] += intval($request['total_price']);
+          }
+
+          // Aggregate sales by customer type
+          if (isset($request['type'])) {
+            $type = $request['type'];
+            if (!isset($salesByCustomerType[$type])) {
+              $salesByCustomerType[$type] = 0;
+            }
+            $salesByCustomerType[$type] += intval($request['total_price']);
+          }
+        }
+      }
+    }
+  }
+
+
+  // Prepare labels and data for the chart (all months)
+  $labels = [
     'January',
     'February',
     'March',
@@ -33,53 +81,10 @@
     'November',
     'December'
   ];
-  $totalCylindersSold = 0;
-  $totalSalesAmount = 0;
-  $allCylinderTypes = ['small_2kg', 'medium_5kg', 'large_12kg'];
-  $salesByType = array_fill_keys($allCylinderTypes, 0);
-  $salesByCustomerType = [];
+  $monthlySales = [];
 
-
-  if ($crequests = $database->getReference('crequests')->getValue()) {
-    foreach ($crequests as $request) {
-      if (
-        isset($request['created_at']) &&
-        $request['payment_status'] === 'received' &&
-        isset($request['total_price'])
-      ) {
-        $requestDate = new DateTime($request['created_at']);
-        if ($requestDate->format('Y') == $selectedYear) {
-          if ($selectedOutlet === 'all' || $request['outlet_id'] === $selectedOutlet) {
-            $month = $requestDate->format('F');
-            if (!isset($monthlySalesData[$month])) {
-              $monthlySalesData[$month] = 0;
-            }
-            $monthlySalesData[$month] += intval($request['total_price']);
-            $totalCylindersSold += intval($request['quantity']);
-            $totalSalesAmount += intval($request['total_price']);
-
-            // Aggregate sales by cylinder type
-            if (isset($request['cylinder_type'])) {
-              $type = $request['cylinder_type'];
-              $salesByType[$type] += intval($request['total_price']);
-            }
-
-            // Aggregate sales by customer type
-            if (isset($request['type'])) {
-              $type = $request['type'];
-              if (!isset($salesByCustomerType[$type])) {
-                $salesByCustomerType[$type] = 0;
-              }
-              $salesByCustomerType[$type] += intval($request['total_price']);
-            }
-          }
-        }
-      }
-    }
-    foreach ($allMonths as $month) {
-      $labels[] = $month;
-      $monthlySales[] = isset($monthlySalesData[$month]) ? $monthlySalesData[$month] : 0;
-    }
+  foreach ($labels as $month) {
+    $monthlySales[] = $monthlySalesData[$month] ?? 0;
   }
   ?>
   <style>
@@ -101,18 +106,18 @@
       <div class="col-3">
         <label for="yearSelect" class="form-label fw-bold">Select Year:</label>
         <input type="number" class="form-control" id="yearSelect" value="<?php echo $selectedYear; ?>"
-          onchange="window.location.href = '?year=' + this.value + '&outlet=' + document.getElementById('outletSelect').value;" min="2020" max="<?php echo date('Y'); ?>">
+          onchange="window.location.href = '?year=' + this.value + '&outlet=' + document.getElementById('outletSelect').value ;" min="2020" max="<?php echo date('Y'); ?>">
       </div>
       <div class="col-3">
         <label for="outletSelect" class="form-label fw-bold">Select Outlet:</label>
         <select class="form-select" id="outletSelect"
-          onchange="window.location.href = '?outlet=' + this.value + '&year=' + document.getElementById('yearSelect').value;">
+          onchange="window.location.href = '?year=' + document.getElementById('yearSelect').value + '&outlet=' + this.value;">
           <option value="all" <?php echo ($selectedOutlet === 'all' ? 'selected' : ''); ?>>All Outlets</option>
           <?php
           if (is_array($outlets)) {
-            foreach ($outlets as $outlet) {
-              $selected = ($outlet['outlet_id'] === $selectedOutlet) ? 'selected' : '';
-              echo '<option value="' . htmlspecialchars($outlet['outlet_id']) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
+            foreach ($outlets as $outletId => $outlet) {
+              $selected = ($outletId === $selectedOutlet) ? 'selected' : ''; //compare $outletId here
+              echo '<option value="' . htmlspecialchars($outletId) . '" ' . $selected . '>' . htmlspecialchars($outlet['name']) . '</option>';
             }
           }
           ?>
@@ -120,13 +125,12 @@
       </div>
       <div class="col-3 d-flex justify-content-end">
         <button id="printBtn" class="btn btn-primary me-2" onclick="window.print()">Print Report</button>
-        <!-- <button id="exportJpgBtn" class="btn btn-primary">Export as JPG</button> -->
       </div>
     </div>
     <?php if ($totalCylindersSold > 0) { ?>
       <div class="card mb-4">
         <div class="card-body">
-          <h5 class="card-title">Yearly Sales Summary</h5>
+          <h5 class="card-title">Monthly Sales Summary</h5>
           <p class="card-text">
             <strong>Total Cylinders Sold:</strong> <?php echo $totalCylindersSold; ?>
             <span class="ms-5"><strong>Total Sales Amount:</strong> <?php echo $totalSalesAmount; ?></span>
@@ -147,11 +151,8 @@
         <canvas id="salesByCustomerTypeChart" width="400" height="200"></canvas>
       </div>
     </div>
-
   </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
     const labels = <?php echo json_encode($labels); ?>;
     const monthlySales = <?php echo json_encode($monthlySales); ?>;
@@ -253,17 +254,6 @@
           }
         }
       }
-    });
-    document.getElementById('exportJpgBtn').addEventListener('click', function() {
-      const chartCanvas = document.getElementById('monthlySalesChart');
-      const chartImage = chartCanvas.toDataURL('image/jpeg', 1.0);
-      const a = document.createElement('a');
-      a.href = chartImage;
-      a.download = 'monthly_sales_report.jpg';
-      a.click();
-    });
-    document.getElementById('printBtn').addEventListener('click', function() {
-      window.print();
     });
   </script>
   <?php
