@@ -137,8 +137,8 @@ $scheduleDates = [
     </style>
 </head>
 
-<body class=" m-0 p-0">
-    <div class="container-fluid">
+<body class=" ">
+    <div class="container-fluid p-0">
         <div class="row">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
                 <div class="container-fluid">
