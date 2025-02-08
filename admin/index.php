@@ -15,6 +15,14 @@ $dispatchSchedules = $database->getReference('dispatch_schedules')->getValue() ?
 $stockRef = $database->getReference('stock')->getValue();
 $currentStock = isset($stockRef['available']) ? $stockRef['available'] : 0;
 
+$totalStock = 0;
+if ($stockRef) {
+    foreach ($stockRef as $stock) {
+        $totalStock += intval($stock['available']);
+    }
+}
+$currentStock = $totalStock;
+
 // Calculate metrics
 $totalOutlets = count($outlets);
 $pendingRequests = 0;
