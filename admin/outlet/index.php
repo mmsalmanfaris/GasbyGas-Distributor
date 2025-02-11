@@ -92,9 +92,9 @@
                                 echo '<td>' . htmlspecialchars($outlet['town']) . '</td>';
                                 echo '<td>' . htmlspecialchars($outlet['stock']) . '</td>';
                                 echo '<td>
-                    <a href="?outlet_id=' . urlencode($outletId) . '" class="btn btn-warning btn-sm">Edit</a>
-                   <a href="../includes/deleteOutlet.inc.php?outlet_id={$outlet_id}' . ' " class="btn btn-danger btn-sm">Delete</a>
-                  </td>';
+                                <a href="?outlet_id=' . urlencode($outletId) . '" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</a>
+                               <a href="../includes/deleteOutlet.inc.php?outlet_id=' . urlencode($outletId) . '" class="btn btn-danger btn-sm">Delete</a>
+                              </td>';
                                 echo '</tr>';
                             }
                         }
@@ -109,12 +109,12 @@
     </main>
 
     <script>
-        document.querySelector('.btn-primary').addEventListener('click', function () {
+        document.querySelector('.btn-primary').addEventListener('click', function() {
             var myModal = new bootstrap.Modal(document.getElementById('addOutletModal'));
             myModal.show();
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Check if the URL contains the `user_id` parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('outlet_id')) {
@@ -123,8 +123,6 @@
                 editModal.show();
             }
         });
-
-
     </script>
 
     <?php
@@ -135,7 +133,7 @@
 
 
     // Output Message
-    
+
     message_success();
 
 

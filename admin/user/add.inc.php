@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-body text-black p-5">
-                <form action="../includes/userRegister.inc.php" method="post" class="row g-3 needs-validation"
+                <form action="../includes/register.inc.php" method="post" class="row g-3 needs-validation"
                     novalidate>
                     <!-- Row for Name and Email -->
                     <div class="row mb-3">
