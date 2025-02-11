@@ -3,7 +3,7 @@
 include_once '../includes/firebase.php';
 include_once '../../components/header-links.php';
 
-
+// <!-- Edit Model -->
 if (isset($_GET['user_id'])) {
     $userId = $_GET['user_id'];
     $user = $database->getReference("users/{$userId}")->getValue();
@@ -15,6 +15,7 @@ if (isset($_GET['user_id'])) {
                                 <div class="modal-body text-black p-5">
                                     <form action="../includes/updateUser.inc.php" method="post" class="row g-3 needs-validation"
                                         novalidate>
+                                         <input type="hidden" name="id" value="' . htmlspecialchars($userId) . '">  <!-- Add hidden input for id -->
                                         <input type="hidden" name="user_id" value="' . htmlspecialchars($userId) . '">
                                         <!-- Row for Name and Email -->
                                         <div class="row mb-3">
