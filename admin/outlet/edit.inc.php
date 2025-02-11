@@ -20,38 +20,37 @@ if (isset($_GET['outlet_id'])) {
                                     <form action="../includes/updateOutlet.inc.php" method="post" class="row g-3 needs-validation"
                                         novalidate>
                                         <input type="hidden" name="outlet_id" value="' . htmlspecialchars($outletId) . '">
-<<<<<<< HEAD
-                                        <!-- Row for Name and Email -->
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <label for="name" class="form-label">District:</label>
-                                                <input type="text" class="form-control form-control-lg" name="district" id="name" value="' . htmlspecialchars($outlet['district']) . '" required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="email" class="form-label">Outlet Name:</label>
-                                                <input type="email" class="form-control form-control-lg" name="name" id="email" value="' . htmlspecialchars($outlet['name']) . '" required>
-                                            </div>
-                                        </div>
-
-                                        <!-- Row for Password and Contact -->
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <label for="contact" class="form-label">Available Stock:</label>
-                                                <input type="text" class="form-control form-control-lg" name="stock" id="contact" value="' . htmlspecialchars($outlet['stock']) . '" required>
-                                            </div>
-                                             <div class="col-md-6">
-                                                <label for="nic" class="form-label">Outlet Town:</label>
-                                                <input type="text" class="form-control form-control-lg" name="town" id="nic" value="' . htmlspecialchars($outlet['town']) . '" required>
-                                            </div>
-=======
                                         
                                         <!-- District Selection -->
                                         <div class="mb-3">
                                             <label for="district" class="form-label">District:</label>
                                             <select class="form-select form-control-lg" name="district" id="district" required>
-                                                <option value="ampara"' . ($outlet['district'] == 'ampara' ? ' selected' : '') . '>Ampara</option>
-                                                <option value="batticaloa"' . ($outlet['district'] == 'batticaloa' ? ' selected' : '') . '>Batticaloa</option>
-                                                <!-- Add other district options as needed -->
+                                                <option value="" disabled>Select District</option>
+                                                <option value="Ampara"' . ($outlet['district'] == 'Ampara' ? ' selected' : '') . '>Ampara</option>
+                                                <option value="Anuradhapura"' . ($outlet['district'] == 'Anuradhapura' ? ' selected' : '') . '>Anuradhapura</option>
+                                                <option value="Badulla"' . ($outlet['district'] == 'Badulla' ? ' selected' : '') . '>Badulla</option>
+                                                <option value="Batticaloa"' . ($outlet['district'] == 'Batticaloa' ? ' selected' : '') . '>Batticaloa</option>
+                                                <option value="Colombo"' . ($outlet['district'] == 'Colombo' ? ' selected' : '') . '>Colombo</option>
+                                                <option value="Galle"' . ($outlet['district'] == 'Galle' ? ' selected' : '') . '>Galle</option>
+                                                <option value="Gampaha"' . ($outlet['district'] == 'Gampaha' ? ' selected' : '') . '>Gampaha</option>
+                                                <option value="Hambantota"' . ($outlet['district'] == 'Hambantota' ? ' selected' : '') . '>Hambantota</option>
+                                                <option value="Jaffna"' . ($outlet['district'] == 'Jaffna' ? ' selected' : '') . '>Jaffna</option>
+                                                <option value="Kalutara"' . ($outlet['district'] == 'Kalutara' ? ' selected' : '') . '>Kalutara</option>
+                                                <option value="Kandy"' . ($outlet['district'] == 'Kandy' ? ' selected' : '') . '>Kandy</option>
+                                                <option value="Kegalle"' . ($outlet['district'] == 'Kegalle' ? ' selected' : '') . '>Kegalle</option>
+                                                <option value="Kilinochchi"' . ($outlet['district'] == 'Kilinochchi' ? ' selected' : '') . '>Kilinochchi</option>
+                                                <option value="Kurunegala"' . ($outlet['district'] == 'Kurunegala' ? ' selected' : '') . '>Kurunegala</option>
+                                                <option value="Mannar"' . ($outlet['district'] == 'Mannar' ? ' selected' : '') . '>Mannar</option>
+                                                <option value="Matale"' . ($outlet['district'] == 'Matale' ? ' selected' : '') . '>Matale</option>
+                                                <option value="Matara"' . ($outlet['district'] == 'Matara' ? ' selected' : '') . '>Matara</option>
+                                                <option value="Monaragala"' . ($outlet['district'] == 'Monaragala' ? ' selected' : '') . '>Monaragala</option>
+                                                <option value="Mullaitivu"' . ($outlet['district'] == 'Mullaitivu' ? ' selected' : '') . '>Mullaitivu</option>
+                                                <option value="Nuwara-Eliya"' . ($outlet['district'] == 'Nuwara-Eliya' ? ' selected' : '') . '>Nuwara Eliya</option>
+                                                <option value="Polonnaruwa"' . ($outlet['district'] == 'Polonnaruwa' ? ' selected' : '') . '>Polonnaruwa</option>
+                                                <option value="Puttalam"' . ($outlet['district'] == 'Puttalam' ? ' selected' : '') . '>Puttalam</option>
+                                                <option value="Ratnapura"' . ($outlet['district'] == 'Ratnapura' ? ' selected' : '') . '>Ratnapura</option>
+                                                <option value="Trincomalee"' . ($outlet['district'] == 'Trincomalee' ? ' selected' : '') . '>Trincomalee</option>
+                                                <option value="Vavuniya"' . ($outlet['district'] == 'Vavuniya' ? ' selected' : '') . '>Vavuniya</option>
                                             </select>
                                         </div>
 
@@ -74,7 +73,6 @@ if (isset($_GET['outlet_id'])) {
                                             <label for="stock" class="form-label">Stock:</label>
                                             <input type="number" class="form-control form-control-lg" name="stock" id="stock" 
                                                 value="' . htmlspecialchars($outlet['stock']) . '" required>
->>>>>>> 545b15317edc45004bec0b3c174eec46d4fa2393
                                         </div>
 
                                         <!-- Submit Button -->
@@ -92,7 +90,5 @@ if (isset($_GET['outlet_id'])) {
 }
 
 ?>
-
-
 
 <!-- The Modal End -->
