@@ -263,7 +263,7 @@ $scheduleDates = [
                     <div class="col">
                         <div class="card bg-light h-100">
                             <div class="card-body">
-                                <h5 class="card-title">Handed Over</h5>
+                                <h5 class="card-title">Total Requests</h5>
                                 <h2 class="card-text"><?= $metrics['handedOver'] ?></h2>
                             </div>
                         </div>
@@ -307,7 +307,7 @@ $scheduleDates = [
                     <div class="col-md-4">
                         <div class="card h-100">
                             <div class="card-body chart-container">
-                                <h5 class="card-title">Request Types</h5>
+                                <h5 class="card-title"> Quantity Types</h5>
                                 <canvas id="typeChart"></canvas>
                             </div>
                         </div>
