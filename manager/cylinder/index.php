@@ -30,7 +30,7 @@
     $filteredCrequests = [];
     if ($crequests && $user_outlet_id) {
         foreach ($crequests as $request) {
-            if ($request['outlet_id'] === $user_outlet_id) {
+            if (isset($request['outlet_id']) && $request['outlet_id'] === $user_outlet_id) { // added isset() check here.
                 $filteredCrequests[] = $request;
             }
         }
@@ -205,13 +205,13 @@
             <table id="example" class=" p-2 display nowrap" style="width:100%" class="table table-striped table-sm">
                 <thead>
                     <tr>
-                        <th>Consumer</th>
-                        <th>Qty</th>
-                        <th>Panel</th>
-                        <th>Empty</th>
-                        <th>Payment Status</th>
-                        <th>Expected Delivery</th>
-                        <th>Delivery</th>
+                        <th scope="col">Consumer</th>
+                        <th scope="col">Qty</th>
+                        <th scope="col">Panel</th>
+                        <th scope="col">Empty</th>
+                        <th scope="col">Payment Status</th>
+                        <th scope="col">Expected Delivery</th>
+                        <th scope="col">Delivery</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -222,7 +222,6 @@
                             if (isset($consumers[$request['consumer_id']])) {
                                 $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
                             }
-
 
                             $emptyCylinder = $request['empty_cylinder'] ? 'Yes' : 'No';
                             $createdAtDate = isset($request['created_at']) ? date('Y-m-d', strtotime($request['created_at'])) : 'N/A';
@@ -265,12 +264,12 @@
 
 
             fetch('../includes/addDispatchRequest.inc.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dispatchData),
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dispatchData),
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
