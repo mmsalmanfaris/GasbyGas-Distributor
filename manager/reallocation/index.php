@@ -21,12 +21,12 @@
         if ($crequests) {
             foreach ($crequests as $requestId => $request) {
                 if (
-                    $request['outlet_id'] == $user_outlet_id &&
-                    $request['type'] === 'home' &&
-                    $request['empty_cylinder'] === 'pending' &&
-                    $request['payment_status'] === 'pending' &&
-                    $request['delivery_status'] === 'pending' &&
-                    ($selectedPanel === 'all' || $request['panel'] === $selectedPanel)
+                    isset($request['outlet_id']) && $request['outlet_id'] == $user_outlet_id &&
+                    isset($request['type']) && $request['type'] === 'home' &&
+                    isset($request['empty_cylinder']) && $request['empty_cylinder'] === 'pending' &&
+                    isset($request['payment_status']) && $request['payment_status'] === 'pending' &&
+                    isset($request['delivery_status']) && $request['delivery_status'] === 'pending' &&
+                    ($selectedPanel === 'all' || isset($request['panel']) && $request['panel'] === $selectedPanel)
                 ) {
                     $filteredCrequests[] = $request;
                 }
@@ -69,7 +69,7 @@
                 <tbody>
                     <?php
                     if ($filteredCrequests) {
-                        foreach ($filteredCrequests as $requestId => $request) {
+                        foreach ($filteredCrequests as $request) {
                             $consumerName = 'N/A';
                             if (isset($consumers[$request['consumer_id']])) {
                                 $consumerName = htmlspecialchars($consumers[$request['consumer_id']]['name']);
@@ -81,7 +81,7 @@
                             echo '<td>' . ($request['empty_cylinder']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['payment_status']) . '</td>';
                             echo '<td>' . htmlspecialchars($request['delivery_status']) . '</td>';
-                            echo '<td>' . htmlspecialchars($request['sdelivery']) . '</td>';
+                            echo '<td>' . (isset($request['sdelivery']) ? htmlspecialchars($request['sdelivery']) : 'N/A') . '</td>';  // Use conditional check here
                             echo '</tr>';
                         }
                     } else {
@@ -92,17 +92,17 @@
             </table>
         </div>
         <button id="reallocateBtn" class="btn btn-primary mt-5" <?php if ($selectedPanel === 'all' || empty($filteredCrequests))
-            echo 'disabled'; ?>>
+                                                                    echo 'disabled'; ?>>
             Reallocate Tokens
         </button>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#example').DataTable();
 
-            document.getElementById('reallocateBtn').addEventListener('click', function () {
+            document.getElementById('reallocateBtn').addEventListener('click', function() {
                 console.log("Reallocate button clicked!");
                 const tableRows = document.querySelectorAll('#example tbody tr');
                 const cancellations = [];
@@ -129,15 +129,15 @@
                 console.log("Data to send:", cancellations);
 
                 fetch('../includes/addCancellations.inc.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        cancellations: cancellations,
-                        selectedPanel: selectedPanel
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            cancellations: cancellations,
+                            selectedPanel: selectedPanel
+                        })
                     })
-                })
                     .then(response => {
                         console.log("Raw Response:", response);
                         if (!response.ok) {
@@ -158,7 +158,7 @@
                         }
                     })
                     .catch(error => {
-                        console.error('Fetch error:', error);
+                        console.error('Error:', error);
                     });
             });
         });
