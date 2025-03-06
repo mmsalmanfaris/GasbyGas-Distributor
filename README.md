@@ -25,10 +25,5 @@ GasByGas is a Distribution system designed for gas distribution, tracking consum
 ![Usecase_Diagram](https://github.com/user-attachments/assets/2345a09b-87b1-48b1-9435-ed1ba74279e7)
 
 
-## Contributors
-1. @naaji
-2. @afridi
-3. @thasneem
-
 ## License
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE), Feel free to customize.
