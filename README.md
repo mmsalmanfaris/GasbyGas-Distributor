@@ -17,6 +17,7 @@ GasByGas is a Distribution system designed for gas distribution, tracking consum
 - *Frontend*: HTML, CSS, JavaScript, Bootstrap
 - *Database*: MySQL (relational database design based on UML diagram)
 - *Frameworks*: Chart.js, Sweet Alert, SMS Intergration, QR Scanner & Generator.
+- *Mobile App*: ReactNative
 
 
 ## UML Class Diagram
